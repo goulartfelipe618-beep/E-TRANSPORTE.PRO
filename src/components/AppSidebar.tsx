@@ -36,8 +36,7 @@ import {
   Ticket,
   MapPinned,
 } from "lucide-react";
-import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
   Sidebar,
   SidebarContent,
@@ -55,17 +54,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 interface SubItem {
   title: string;
-  url: string;
+  page: PageKey;
   icon: React.ElementType;
 }
 
 interface MenuItem {
   title: string;
   icon: React.ElementType;
-  url?: string;
+  page?: PageKey;
   subItems?: SubItem[];
 }
 
@@ -77,31 +77,31 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         title: "Dashboard",
         icon: LayoutDashboard,
         subItems: [
-          { title: "Métricas", url: "/dashboard/metricas", icon: Activity },
-          { title: "Abrangência", url: "/dashboard/abrangencia", icon: MapPin },
+          { title: "Métricas", page: "dashboard/metricas", icon: Activity },
+          { title: "Abrangência", page: "dashboard/abrangencia", icon: MapPin },
         ],
       },
       {
         title: "Transfer",
         icon: ArrowRightLeft,
         subItems: [
-          { title: "Solicitações", url: "/transfer/solicitacoes", icon: ClipboardList },
-          { title: "Reservas", url: "/transfer/reservas", icon: CalendarCheck },
-          { title: "Contrato", url: "/transfer/contrato", icon: BookOpen },
-          { title: "Geolocalização", url: "/transfer/geolocalizacao", icon: MapPinned },
+          { title: "Solicitações", page: "transfer/solicitacoes", icon: ClipboardList },
+          { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck },
+          { title: "Contrato", page: "transfer/contrato", icon: BookOpen },
+          { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned },
         ],
       },
       {
         title: "Motoristas",
         icon: Users,
         subItems: [
-          { title: "Cadastros", url: "/motoristas/cadastros", icon: UserPlus },
-          { title: "Parcerias", url: "/motoristas/parcerias", icon: Handshake },
-          { title: "Solicitações", url: "/motoristas/solicitacoes", icon: ClipboardList },
-          { title: "Agendamentos", url: "/motoristas/agendamentos", icon: Calendar },
+          { title: "Cadastros", page: "motoristas/cadastros", icon: UserPlus },
+          { title: "Parcerias", page: "motoristas/parcerias", icon: Handshake },
+          { title: "Solicitações", page: "motoristas/solicitacoes", icon: ClipboardList },
+          { title: "Agendamentos", page: "motoristas/agendamentos", icon: Calendar },
         ],
       },
-      { title: "Veículos", icon: Car, url: "/veiculos" },
+      { title: "Veículos", icon: Car, page: "veiculos" },
     ],
   },
   {
@@ -111,23 +111,23 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         title: "Campanhas",
         icon: Megaphone,
         subItems: [
-          { title: "Ativos", url: "/campanhas/ativos", icon: Target },
-          { title: "Leads", url: "/campanhas/leads", icon: UserCheck },
+          { title: "Ativos", page: "campanhas/ativos", icon: Target },
+          { title: "Leads", page: "campanhas/leads", icon: UserCheck },
         ],
       },
-      { title: "Marketing", icon: BarChart3, url: "/marketing" },
+      { title: "Marketing", icon: BarChart3, page: "marketing" },
       {
         title: "Network",
         icon: Globe,
         subItems: [
-          { title: "Hotéis e Resorts", url: "/network/hoteis", icon: Hotel },
-          { title: "Agências de Viagens", url: "/network/agencias", icon: Plane },
-          { title: "Clínicas e Hospitais", url: "/network/clinicas", icon: Building2 },
-          { title: "Laboratórios e Farmácias", url: "/network/laboratorios", icon: FlaskConical },
-          { title: "Produtores de Shows", url: "/network/shows", icon: Music },
-          { title: "Empresas de Casamento", url: "/network/casamentos", icon: Heart },
-          { title: "Embaixadas e Consulados", url: "/network/embaixadas", icon: Landmark },
-          { title: "Órgãos Governamentais", url: "/network/governo", icon: Building },
+          { title: "Hotéis e Resorts", page: "network/hoteis", icon: Hotel },
+          { title: "Agências de Viagens", page: "network/agencias", icon: Plane },
+          { title: "Clínicas e Hospitais", page: "network/clinicas", icon: Building2 },
+          { title: "Laboratórios e Farmácias", page: "network/laboratorios", icon: FlaskConical },
+          { title: "Produtores de Shows", page: "network/shows", icon: Music },
+          { title: "Empresas de Casamento", page: "network/casamentos", icon: Heart },
+          { title: "Embaixadas e Consulados", page: "network/embaixadas", icon: Landmark },
+          { title: "Órgãos Governamentais", page: "network/governo", icon: Building },
         ],
       },
     ],
@@ -139,16 +139,16 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         title: "Sistema",
         icon: Settings,
         subItems: [
-          { title: "Configurações", url: "/sistema/configuracoes", icon: Cog },
-          { title: "Usuários", url: "/sistema/usuarios", icon: UsersRound },
-          { title: "Logs", url: "/sistema/logs", icon: ScrollText },
-          { title: "Aplicativo", url: "/sistema/aplicativo", icon: Smartphone },
-          { title: "Tickets", url: "/sistema/tickets", icon: Ticket },
+          { title: "Configurações", page: "sistema/configuracoes", icon: Cog },
+          { title: "Usuários", page: "sistema/usuarios", icon: UsersRound },
+          { title: "Logs", page: "sistema/logs", icon: ScrollText },
+          { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone },
+          { title: "Tickets", page: "sistema/tickets", icon: Ticket },
         ],
       },
-      { title: "Políticas", icon: Shield, url: "/politicas" },
-      { title: "Anotações", icon: StickyNote, url: "/anotacoes" },
-      { title: "Documentação", icon: FileText, url: "/documentacao" },
+      { title: "Políticas", icon: Shield, page: "politicas" },
+      { title: "Anotações", icon: StickyNote, page: "anotacoes" },
+      { title: "Documentação", icon: FileText, page: "documentacao" },
     ],
   },
 ];
@@ -156,10 +156,10 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
+  const { activePage, setActivePage } = useActivePage();
 
   const isSubActive = (subItems?: SubItem[]) =>
-    subItems?.some((s) => location.pathname.startsWith(s.url)) ?? false;
+    subItems?.some((s) => s.page === activePage) ?? false;
 
   return (
     <Sidebar collapsible="icon">
@@ -210,16 +210,16 @@ export function AppSidebar() {
                           <CollapsibleContent>
                             <SidebarMenu className="ml-4 border-l border-sidebar-border pl-2 mt-1">
                               {item.subItems.map((sub) => (
-                                <SidebarMenuItem key={sub.url}>
-                                  <SidebarMenuButton asChild>
-                                    <NavLink
-                                      to={sub.url}
-                                      className="hover:bg-sidebar-accent/50 text-sm"
-                                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                                    >
-                                      <sub.icon className="h-3.5 w-3.5" />
-                                      <span>{sub.title}</span>
-                                    </NavLink>
+                                <SidebarMenuItem key={sub.page}>
+                                  <SidebarMenuButton
+                                    onClick={() => setActivePage(sub.page)}
+                                    className={cn(
+                                      "hover:bg-sidebar-accent/50 text-sm cursor-pointer",
+                                      activePage === sub.page && "bg-sidebar-accent text-sidebar-primary font-medium"
+                                    )}
+                                  >
+                                    <sub.icon className="h-3.5 w-3.5" />
+                                    <span>{sub.title}</span>
                                   </SidebarMenuButton>
                                 </SidebarMenuItem>
                               ))}
@@ -230,16 +230,15 @@ export function AppSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink
-                          to={item.url!}
-                          end={item.url === "/"}
-                          className="hover:bg-sidebar-accent/50"
-                          activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
+                      <SidebarMenuButton
+                        onClick={() => setActivePage(item.page!)}
+                        className={cn(
+                          "hover:bg-sidebar-accent/50 cursor-pointer",
+                          activePage === item.page && "bg-sidebar-accent text-sidebar-primary font-medium"
+                        )}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   )
