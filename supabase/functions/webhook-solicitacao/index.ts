@@ -29,39 +29,48 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Map all fields from the external site form
+    // Map fields from the external site form (accepts both Portuguese DB names and English site names)
+    const tipo = body.tipo_viagem;
+
     const record: Record<string, unknown> = {
-      tipo_viagem: body.tipo_viagem, // 'somente_ida' | 'ida_e_volta' | 'por_hora'
-      cliente_nome: body.cliente_nome ?? null,
-      cliente_telefone: body.cliente_telefone ?? null,
-      cliente_email: body.cliente_email ?? null,
-      // Ida
-      ida_passageiros: body.ida_passageiros ?? null,
-      ida_embarque: body.ida_embarque ?? null,
-      ida_data: body.ida_data ?? null,
-      ida_hora: body.ida_hora ?? null,
-      ida_destino: body.ida_destino ?? null,
-      ida_mensagem: body.ida_mensagem ?? null,
-      ida_cupom: body.ida_cupom ?? null,
-      // Volta
-      volta_passageiros: body.volta_passageiros ?? null,
-      volta_embarque: body.volta_embarque ?? null,
-      volta_data: body.volta_data ?? null,
-      volta_hora: body.volta_hora ?? null,
-      volta_destino: body.volta_destino ?? null,
-      volta_mensagem: body.volta_mensagem ?? null,
-      volta_cupom: body.volta_cupom ?? null,
-      // Por Hora
-      por_hora_passageiros: body.por_hora_passageiros ?? null,
-      por_hora_endereco_inicio: body.por_hora_endereco_inicio ?? null,
-      por_hora_data: body.por_hora_data ?? null,
-      por_hora_hora: body.por_hora_hora ?? null,
-      por_hora_qtd_horas: body.por_hora_qtd_horas ?? null,
-      por_hora_ponto_encerramento: body.por_hora_ponto_encerramento ?? null,
-      por_hora_itinerario: body.por_hora_itinerario ?? null,
-      por_hora_cupom: body.por_hora_cupom ?? null,
+      tipo_viagem: tipo,
+      cliente_nome: body.cliente_nome ?? body.clientName ?? body.name ?? null,
+      cliente_telefone: body.cliente_telefone ?? body.clientPhone ?? body.phone ?? null,
+      cliente_email: body.cliente_email ?? body.clientEmail ?? body.email ?? null,
       status: "pendente",
     };
+
+    // Map fields based on trip type, accepting both PT-BR db names and EN site names
+    if (tipo === "somente_ida" || tipo === "ida_e_volta") {
+      record.ida_passageiros = body.ida_passageiros ?? body.passengers ?? null;
+      record.ida_embarque = body.ida_embarque ?? body.pickupAddress ?? null;
+      record.ida_data = body.ida_data ?? (body.date ? body.date.substring(0, 10) : null);
+      record.ida_hora = body.ida_hora ?? body.time ?? null;
+      record.ida_destino = body.ida_destino ?? body.destination ?? null;
+      record.ida_mensagem = body.ida_mensagem ?? body.message ?? null;
+      record.ida_cupom = body.ida_cupom ?? body.coupon ?? null;
+    }
+
+    if (tipo === "ida_e_volta") {
+      record.volta_passageiros = body.volta_passageiros ?? body.returnPassengers ?? body.passengers ?? null;
+      record.volta_embarque = body.volta_embarque ?? body.returnPickupAddress ?? null;
+      record.volta_data = body.volta_data ?? (body.returnDate ? body.returnDate.substring(0, 10) : null);
+      record.volta_hora = body.volta_hora ?? body.returnTime ?? null;
+      record.volta_destino = body.volta_destino ?? body.returnDestination ?? null;
+      record.volta_mensagem = body.volta_mensagem ?? body.returnMessage ?? null;
+      record.volta_cupom = body.volta_cupom ?? body.returnCoupon ?? null;
+    }
+
+    if (tipo === "por_hora") {
+      record.por_hora_passageiros = body.por_hora_passageiros ?? body.passengers ?? null;
+      record.por_hora_endereco_inicio = body.por_hora_endereco_inicio ?? body.pickupAddress ?? null;
+      record.por_hora_data = body.por_hora_data ?? (body.date ? body.date.substring(0, 10) : null);
+      record.por_hora_hora = body.por_hora_hora ?? body.time ?? null;
+      record.por_hora_qtd_horas = body.por_hora_qtd_horas ?? body.hours ?? null;
+      record.por_hora_ponto_encerramento = body.por_hora_ponto_encerramento ?? body.endPoint ?? null;
+      record.por_hora_itinerario = body.por_hora_itinerario ?? body.itinerary ?? null;
+      record.por_hora_cupom = body.por_hora_cupom ?? body.coupon ?? null;
+    }
 
     if (!record.tipo_viagem) {
       return new Response(
