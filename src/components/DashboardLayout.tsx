@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Outlet } from "react-router-dom";
+import { PageRenderer } from "@/components/PageRenderer";
 
 export function DashboardLayout() {
   return (
@@ -13,7 +13,7 @@ export function DashboardLayout() {
             <h1 className="text-sm font-semibold text-foreground">TransExec — Gestão de Frota</h1>
           </header>
           <main className="flex-1 p-6 overflow-auto">
-            <Outlet />
+            <PageRenderer />
           </main>
         </div>
       </div>
