@@ -1,0 +1,1 @@
+ALTER TABLE public.solicitacoes_transfer ADD COLUMN cliente_origem text;

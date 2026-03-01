@@ -37,6 +37,7 @@ Deno.serve(async (req) => {
       cliente_nome: body.cliente_nome ?? body.clientName ?? body.name ?? null,
       cliente_telefone: body.cliente_telefone ?? body.clientPhone ?? body.phone ?? null,
       cliente_email: body.cliente_email ?? body.clientEmail ?? body.email ?? null,
+      cliente_origem: body.cliente_origem ?? body.source ?? body.origin ?? body.howDidYouFindUs ?? null,
       status: "pendente",
     };
 

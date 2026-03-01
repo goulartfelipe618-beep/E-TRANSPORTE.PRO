@@ -192,8 +192,9 @@ export default function TransferSolicitacoes() {
             <div className="space-y-3 text-sm">
               <Detail label="Tipo de Viagem" value={tipoMap[selected.tipo_viagem] || selected.tipo_viagem} />
               <Detail label="Cliente" value={selected.cliente_nome || "—"} />
-              <Detail label="Telefone" value={selected.cliente_telefone || "—"} />
+              <Detail label="Telefone / WhatsApp" value={selected.cliente_telefone || "—"} />
               <Detail label="E-mail" value={selected.cliente_email || "—"} />
+              <Detail label="Como nos encontrou" value={(selected as any).cliente_origem || "—"} />
 
               {/* Ida fields */}
               {(selected.tipo_viagem === "somente_ida" || selected.tipo_viagem === "ida_e_volta") && (
