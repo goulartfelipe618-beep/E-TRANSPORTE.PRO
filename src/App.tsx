@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageProvider } from "@/contexts/PageContext";
+import { TransferProvider } from "@/contexts/TransferContext";
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <PageProvider>
-        <DashboardLayout />
+        <TransferProvider>
+          <DashboardLayout />
+        </TransferProvider>
       </PageProvider>
     </TooltipProvider>
   </QueryClientProvider>
