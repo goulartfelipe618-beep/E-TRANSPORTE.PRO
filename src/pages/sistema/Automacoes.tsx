@@ -357,17 +357,18 @@ function AutomacaoDetail({
     return flattenKeys(selectedTest.payload);
   }, [selectedTest]);
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("webhook_tests")
-        .select("*")
-        .eq("automacao_id", automacao.id)
-        .order("created_at", { ascending: false });
-      if (data) setTests(data as WebhookTest[]);
-      setLoadingTests(false);
-    })();
-  }, [automacao.id]);
+  const fetchTests = async () => {
+    setLoadingTests(true);
+    const { data } = await supabase
+      .from("webhook_tests")
+      .select("*")
+      .eq("automacao_id", automacao.id)
+      .order("created_at", { ascending: false });
+    if (data) setTests(data as WebhookTest[]);
+    setLoadingTests(false);
+  };
+
+  useEffect(() => { fetchTests(); }, [automacao.id]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(webhookUrl);
@@ -491,10 +492,15 @@ function AutomacaoDetail({
         <div className="space-y-4">
           <Card className="border-none shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
-                Testes Recebidos
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-primary" />
+                  Testes Recebidos
+                </CardTitle>
+                <Button variant="outline" size="icon" onClick={fetchTests} title="Recarregar testes">
+                  <RefreshCw className={`h-4 w-4 ${loadingTests ? "animate-spin" : ""}`} />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {loadingTests ? (
