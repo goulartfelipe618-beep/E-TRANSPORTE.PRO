@@ -44,6 +44,95 @@ export type Database = {
         }
         Relationships: []
       }
+      campanhas: {
+        Row: {
+          cor: string
+          created_at: string
+          descricao: string | null
+          id: string
+          link: string | null
+          nome: string
+          plataforma: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          cor?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          link?: string | null
+          nome: string
+          plataforma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          link?: string | null
+          nome?: string
+          plataforma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          campanha_id: string | null
+          created_at: string
+          data_conversao: string | null
+          email: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          payload: Json
+          status: string
+          telefone: string | null
+          updated_at: string
+          valor_venda: number | null
+        }
+        Insert: {
+          campanha_id?: string | null
+          created_at?: string
+          data_conversao?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          payload?: Json
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          valor_venda?: number | null
+        }
+        Update: {
+          campanha_id?: string | null
+          created_at?: string
+          data_conversao?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          payload?: Json
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          valor_venda?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_campanha_id_fkey"
+            columns: ["campanha_id"]
+            isOneToOne: false
+            referencedRelation: "campanhas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       motorista_veiculos: {
         Row: {
           ano: number
