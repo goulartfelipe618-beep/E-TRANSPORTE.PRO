@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageProvider } from "@/contexts/PageContext";
 import { TransferProvider } from "@/contexts/TransferContext";
+import { GlobalConfigProvider } from "@/contexts/GlobalConfigContext";
 
 const queryClient = new QueryClient();
 
@@ -13,11 +14,13 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PageProvider>
-        <TransferProvider>
-          <DashboardLayout />
-        </TransferProvider>
-      </PageProvider>
+      <GlobalConfigProvider>
+        <PageProvider>
+          <TransferProvider>
+            <DashboardLayout />
+          </TransferProvider>
+        </PageProvider>
+      </GlobalConfigProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

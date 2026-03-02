@@ -55,6 +55,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 
 interface SubItem {
   title: string;
@@ -157,6 +158,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { activePage, setActivePage } = useActivePage();
+  const { projectName, logoUrl } = useGlobalConfig();
 
   const isSubActive = (subItems?: SubItem[]) =>
     subItems?.some((s) => s.page === activePage) ?? false;
@@ -166,18 +168,26 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         {!collapsed ? (
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
-              TE
-            </div>
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="h-8 w-8 rounded-lg object-contain" />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
+                {projectName.substring(0, 2).toUpperCase()}
+              </div>
+            )}
             <div>
-              <h2 className="text-sm font-bold text-sidebar-foreground">TransExec</h2>
-              <p className="text-[10px] text-sidebar-foreground/60">Transporte Executivo</p>
+              <h2 className="text-sm font-bold text-sidebar-foreground">{projectName}</h2>
+              <p className="text-[10px] text-sidebar-foreground/60">Gestão de Frota</p>
             </div>
           </div>
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm mx-auto">
-            TE
-          </div>
+          logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="h-8 w-8 rounded-lg object-contain mx-auto" />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm mx-auto">
+              {projectName.substring(0, 2).toUpperCase()}
+            </div>
+          )
         )}
       </SidebarHeader>
 

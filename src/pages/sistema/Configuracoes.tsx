@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useSystemSettings } from "@/hooks/useSystemSettings";
+import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Upload, Type, Globe, MapPin, Shield, Key, RefreshCw,
@@ -22,6 +23,7 @@ const FONTS = [
 export default function SistemaConfiguracoes() {
   const { toast } = useToast();
   const { settings, isLoading, upsert } = useSystemSettings();
+  const { refetch: refetchGlobal } = useGlobalConfig();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [projectName, setProjectName] = useState("");
@@ -46,6 +48,7 @@ export default function SistemaConfiguracoes() {
   const handleSave = async (key: string, value: string, label: string) => {
     try {
       await upsert.mutateAsync({ key, value });
+      refetchGlobal();
       toast({ title: "Salvo", description: `${label} atualizado com sucesso.` });
     } catch {
       toast({ title: "Erro", description: `Falha ao salvar ${label}.`, variant: "destructive" });
@@ -67,6 +70,7 @@ export default function SistemaConfiguracoes() {
       const url = urlData.publicUrl + "?t=" + Date.now();
       setLogoUrl(url);
       await upsert.mutateAsync({ key: "logo_url", value: url });
+      refetchGlobal();
       toast({ title: "Logo atualizado", description: "Logomarca salva com sucesso." });
     } catch {
       toast({ title: "Erro", description: "Falha ao enviar logomarca.", variant: "destructive" });
