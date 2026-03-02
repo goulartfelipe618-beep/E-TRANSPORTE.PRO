@@ -160,11 +160,9 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Default tipo_viagem if not provided
     if (!record.tipo_viagem) {
-      return new Response(
-        JSON.stringify({ error: "tipo_viagem é obrigatório" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      record.tipo_viagem = "somente_ida";
     }
 
     const { data, error } = await supabase
