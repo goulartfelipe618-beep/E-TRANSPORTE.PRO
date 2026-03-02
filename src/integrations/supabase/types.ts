@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      anotacoes: {
+        Row: {
+          conteudo: string
+          cor: string
+          created_at: string
+          id: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          conteudo?: string
+          cor?: string
+          created_at?: string
+          id?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Update: {
+          conteudo?: string
+          cor?: string
+          created_at?: string
+          id?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       automacoes: {
         Row: {
           created_at: string
