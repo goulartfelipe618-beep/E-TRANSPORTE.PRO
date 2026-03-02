@@ -17,9 +17,10 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { RefreshCw, Plus, Trash2, Edit, Download } from "lucide-react";
+import { RefreshCw, Plus, Trash2, Edit, Download, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ComunicarDialog from "@/components/ComunicarDialog";
 
 interface Lead {
   id: string;
@@ -57,6 +58,7 @@ export default function CampanhasLeads() {
   const [editOpen, setEditOpen] = useState<Lead | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [comunicando, setComunicando] = useState<Lead | null>(null);
 
   // Form
   const [nome, setNome] = useState("");
@@ -291,6 +293,9 @@ export default function CampanhasLeads() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <Button variant="outline" size="sm" onClick={() => setComunicando(l)} title="Comunicar">
+                          <MessageSquare className="h-3.5 w-3.5 mr-1" /> Comunicar
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(l)} title="Editar">
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -348,6 +353,23 @@ export default function CampanhasLeads() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar com ${comunicando.nome}` : undefined}
+        payload={comunicando ? {
+          tipo: "lead",
+          id: comunicando.id,
+          nome: comunicando.nome,
+          telefone: comunicando.telefone,
+          email: comunicando.email,
+          campanha: getCampanhaNome(comunicando.campanha_id),
+          status: comunicando.status,
+          observacoes: comunicando.observacoes,
+          valor_venda: comunicando.valor_venda,
+        } : {}}
+      />
     </div>
   );
 }
