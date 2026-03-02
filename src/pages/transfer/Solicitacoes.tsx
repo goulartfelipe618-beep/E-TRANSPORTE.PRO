@@ -143,25 +143,6 @@ export default function TransferSolicitacoes() {
         </Button>
       </div>
 
-      {/* Webhook URL */}
-      <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-        <CardContent className="py-4">
-          <div className="flex items-center gap-3">
-            <Link className="h-5 w-5 text-primary shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground mb-1">URL do Webhook para o desenvolvedor do site:</p>
-              <code className="text-xs bg-muted px-2 py-1 rounded block truncate">{webhookUrl}</code>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleCopy} className="shrink-0">
-              {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
-              {copied ? "Copiado" : "Copiar"}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Método: <strong>POST</strong> · Content-Type: <strong>application/json</strong>
-          </p>
-        </CardContent>
-      </Card>
 
       <Card className="border-none shadow-sm">
         <CardHeader>
