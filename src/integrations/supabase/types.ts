@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      agendamentos_motorista: {
+        Row: {
+          created_at: string
+          data_servico: string
+          horario: string
+          id: string
+          local_destino: string | null
+          local_origem: string | null
+          motorista_email: string | null
+          motorista_nome: string
+          motorista_telefone: string
+          observacoes: string | null
+          status: string
+          tipo_servico: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_servico: string
+          horario: string
+          id?: string
+          local_destino?: string | null
+          local_origem?: string | null
+          motorista_email?: string | null
+          motorista_nome: string
+          motorista_telefone: string
+          observacoes?: string | null
+          status?: string
+          tipo_servico?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_servico?: string
+          horario?: string
+          id?: string
+          local_destino?: string | null
+          local_origem?: string | null
+          motorista_email?: string | null
+          motorista_nome?: string
+          motorista_telefone?: string
+          observacoes?: string | null
+          status?: string
+          tipo_servico?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       anotacoes: {
         Row: {
           conteudo: string
@@ -104,6 +152,36 @@ export type Database = {
           plataforma?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      comunicadores: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string
+          webhook_url: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+          webhook_url: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+          webhook_url?: string
         }
         Relationships: []
       }

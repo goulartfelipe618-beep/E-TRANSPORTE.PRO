@@ -36,6 +36,7 @@ import SistemaLogs from "@/pages/sistema/Logs";
 import SistemaAplicativo from "@/pages/sistema/Aplicativo";
 import SistemaTickets from "@/pages/sistema/Tickets";
 import SistemaAutomacoes from "@/pages/sistema/Automacoes";
+import SistemaComunicador from "@/pages/sistema/Comunicador";
 // Outros
 import Politicas from "@/pages/Politicas";
 import Anotacoes from "@/pages/Anotacoes";
@@ -70,6 +71,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "sistema/aplicativo": SistemaAplicativo,
   "sistema/tickets": SistemaTickets,
   "sistema/automacoes": SistemaAutomacoes,
+  "sistema/comunicador": SistemaComunicador,
   "politicas": Politicas,
   "anotacoes": Anotacoes,
   "documentacao": Documentacao,

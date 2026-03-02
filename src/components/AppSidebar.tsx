@@ -35,6 +35,7 @@ import {
   Smartphone,
   Ticket,
   MapPinned,
+  MessageSquare,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -142,6 +143,7 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         subItems: [
           { title: "Configurações", page: "sistema/configuracoes", icon: Cog },
           { title: "Automações", page: "sistema/automacoes", icon: Cog },
+          { title: "Comunicador", page: "sistema/comunicador", icon: MessageSquare },
           { title: "Usuários", page: "sistema/usuarios", icon: UsersRound },
           { title: "Logs", page: "sistema/logs", icon: ScrollText },
           { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone },
