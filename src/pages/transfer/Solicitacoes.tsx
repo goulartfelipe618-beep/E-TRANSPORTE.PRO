@@ -12,7 +12,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus } from "lucide-react";
+import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -138,9 +138,14 @@ export default function TransferSolicitacoes() {
           <h1 className="text-2xl font-bold text-foreground">Solicitações de Transfer</h1>
           <p className="text-muted-foreground">Registros recebidos via webhook do site. Converta em reserva para confirmar.</p>
         </div>
-        <Button onClick={() => setCreatingManual(true)}>
-          <Plus className="h-4 w-4 mr-2" /> Criar Reserva
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchSolicitacoes(); }} title="Recarregar">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button onClick={() => setCreatingManual(true)}>
+            <Plus className="h-4 w-4 mr-2" /> Criar Reserva
+          </Button>
+        </div>
       </div>
 
 
