@@ -663,6 +663,65 @@ export type Database = {
         }
         Relationships: []
       }
+      tracking_links: {
+        Row: {
+          categoria: string
+          cliente_nome: string | null
+          cliente_telefone: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          last_location_at: string | null
+          latitude: number | null
+          longitude: number | null
+          observacoes: string | null
+          reserva_id: string | null
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          categoria?: string
+          cliente_nome?: string | null
+          cliente_telefone?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_location_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          observacoes?: string | null
+          reserva_id?: string | null
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          categoria?: string
+          cliente_nome?: string | null
+          cliente_telefone?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_location_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          observacoes?: string | null
+          reserva_id?: string | null
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_links_reserva_id_fkey"
+            columns: ["reserva_id"]
+            isOneToOne: false
+            referencedRelation: "reservas_transfer"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_tests: {
         Row: {
           automacao_id: string | null
