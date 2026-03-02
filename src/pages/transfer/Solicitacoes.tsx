@@ -255,7 +255,6 @@ export default function TransferSolicitacoes() {
                   <Detail label="Data" value={selected.volta_data || "—"} />
                   <Detail label="Hora" value={selected.volta_hora || "—"} />
                   <Detail label="Mensagem" value={selected.volta_mensagem || "—"} />
-                  <Detail label="Cupom" value={selected.volta_cupom || "—"} />
                 </>
               )}
 
