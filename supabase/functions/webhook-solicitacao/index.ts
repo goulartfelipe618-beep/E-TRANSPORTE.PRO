@@ -6,6 +6,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Treat empty strings, null, undefined as null
+const clean = (v: unknown) => (v === "" || v === undefined || v === null ? null : v);
+// Clean + parse as integer or null
+const cleanInt = (v: unknown) => {
+  if (v === "" || v === undefined || v === null) return null;
+  const n = Number(v);
+  return isNaN(n) ? null : n;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -20,8 +29,6 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-
-    // Log the incoming payload for debugging
     console.log("Webhook received payload:", JSON.stringify(body));
 
     const supabase = createClient(
@@ -29,64 +36,58 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Map fields from the external site form (accepts both Portuguese DB names and English site names)
     const tipo = body.tipo_viagem;
-
-    const record: Record<string, unknown> = {
-      tipo_viagem: tipo,
-      cliente_nome: body.cliente_nome ?? body.clientName ?? body.name ?? null,
-      cliente_telefone: body.cliente_telefone ?? body.clientPhone ?? body.phone ?? null,
-      cliente_email: body.cliente_email ?? body.clientEmail ?? body.email ?? null,
-      cliente_origem: body.cliente_origem ?? body.source ?? body.origin ?? body.howDidYouFindUs ?? null,
-      status: "pendente",
-    };
-
-    // Support nested objects (body.ida.*, body.volta.*) and flat fields
     const ida = body.ida ?? {};
     const volta = body.volta ?? {};
     const porHora = body.por_hora ?? {};
 
+    const record: Record<string, unknown> = {
+      tipo_viagem: tipo,
+      cliente_nome: clean(body.cliente_nome ?? body.clientName ?? body.name),
+      cliente_telefone: clean(body.cliente_telefone ?? body.clientPhone ?? body.phone),
+      cliente_email: clean(body.cliente_email ?? body.clientEmail ?? body.email),
+      cliente_origem: clean(body.cliente_origem ?? body.source ?? body.origin ?? body.howDidYouFindUs),
+      status: "pendente",
+    };
+
     if (tipo === "somente_ida" || tipo === "ida_e_volta") {
-      record.ida_passageiros = body.ida_passageiros ?? ida.passengers ?? body.passengers ?? null;
-      record.ida_embarque = body.ida_embarque ?? ida.pickupAddress ?? body.pickupAddress ?? null;
-      const idaDateRaw = body.ida_data ?? ida.date ?? body.date ?? null;
+      record.ida_passageiros = cleanInt(body.ida_passageiros ?? ida.passengers ?? body.passengers);
+      record.ida_embarque = clean(body.ida_embarque ?? ida.pickupAddress ?? body.pickupAddress);
+      const idaDateRaw = clean(body.ida_data ?? ida.date ?? body.date);
       record.ida_data = idaDateRaw ? String(idaDateRaw).substring(0, 10) : null;
-      record.ida_hora = body.ida_hora ?? ida.time ?? body.time ?? null;
-      record.ida_destino = body.ida_destino ?? ida.destination ?? body.destination ?? null;
-      record.ida_mensagem = body.ida_mensagem ?? ida.message ?? body.message ?? null;
-      record.ida_cupom = body.ida_cupom ?? ida.coupon ?? body.coupon ?? null;
+      record.ida_hora = clean(body.ida_hora ?? ida.time ?? body.time);
+      record.ida_destino = clean(body.ida_destino ?? ida.destination ?? body.destination);
+      record.ida_mensagem = clean(body.ida_mensagem ?? ida.message ?? body.message);
+      record.ida_cupom = clean(body.ida_cupom ?? ida.coupon ?? body.coupon);
     }
 
     if (tipo === "ida_e_volta") {
-      record.volta_passageiros = body.volta_passageiros ?? volta.passengers ?? body.returnPassengers ?? null;
-      record.volta_embarque = body.volta_embarque ?? volta.pickupAddress ?? body.returnPickupAddress ?? null;
-      const voltaDateRaw = body.volta_data ?? volta.date ?? body.returnDate ?? null;
+      record.volta_passageiros = cleanInt(body.volta_passageiros ?? volta.passengers ?? body.returnPassengers);
+      record.volta_embarque = clean(body.volta_embarque ?? volta.pickupAddress ?? body.returnPickupAddress);
+      const voltaDateRaw = clean(body.volta_data ?? volta.date ?? body.returnDate);
       record.volta_data = voltaDateRaw ? String(voltaDateRaw).substring(0, 10) : null;
-      record.volta_hora = body.volta_hora ?? volta.time ?? body.returnTime ?? null;
-      record.volta_destino = body.volta_destino ?? volta.destination ?? body.returnDestination ?? null;
-      record.volta_mensagem = body.volta_mensagem ?? volta.message ?? body.returnMessage ?? null;
-      record.volta_cupom = body.volta_cupom ?? volta.coupon ?? body.returnCoupon ?? null;
+      record.volta_hora = clean(body.volta_hora ?? volta.time ?? body.returnTime);
+      record.volta_destino = clean(body.volta_destino ?? volta.destination ?? body.returnDestination);
+      record.volta_mensagem = clean(body.volta_mensagem ?? volta.message ?? body.returnMessage);
+      record.volta_cupom = clean(body.volta_cupom ?? volta.coupon ?? body.returnCoupon);
     }
 
     if (tipo === "por_hora") {
-      record.por_hora_passageiros = body.por_hora_passageiros ?? porHora.passengers ?? body.passengers ?? null;
-      record.por_hora_endereco_inicio = body.por_hora_endereco_inicio ?? porHora.pickupAddress ?? body.pickupAddress ?? null;
-      const phDateRaw = body.por_hora_data ?? porHora.date ?? body.date ?? null;
+      record.por_hora_passageiros = cleanInt(body.por_hora_passageiros ?? porHora.passengers ?? body.passengers);
+      record.por_hora_endereco_inicio = clean(body.por_hora_endereco_inicio ?? porHora.pickupAddress ?? body.pickupAddress);
+      const phDateRaw = clean(body.por_hora_data ?? porHora.date ?? body.date);
       record.por_hora_data = phDateRaw ? String(phDateRaw).substring(0, 10) : null;
-      record.por_hora_hora = body.por_hora_hora ?? porHora.time ?? body.time ?? null;
-      record.por_hora_qtd_horas = body.por_hora_qtd_horas ?? porHora.hours ?? body.hours ?? null;
-      record.por_hora_ponto_encerramento = body.por_hora_ponto_encerramento ?? porHora.endPoint ?? body.endPoint ?? null;
-      record.por_hora_itinerario = body.por_hora_itinerario ?? porHora.itinerary ?? body.itinerary ?? null;
-      record.por_hora_cupom = body.por_hora_cupom ?? porHora.coupon ?? body.coupon ?? null;
+      record.por_hora_hora = clean(body.por_hora_hora ?? porHora.time ?? body.time);
+      record.por_hora_qtd_horas = cleanInt(body.por_hora_qtd_horas ?? porHora.hours ?? body.hours);
+      record.por_hora_ponto_encerramento = clean(body.por_hora_ponto_encerramento ?? porHora.endPoint ?? body.endPoint);
+      record.por_hora_itinerario = clean(body.por_hora_itinerario ?? porHora.itinerary ?? body.itinerary);
+      record.por_hora_cupom = clean(body.por_hora_cupom ?? porHora.coupon ?? body.coupon);
     }
 
     if (!record.tipo_viagem) {
       return new Response(
         JSON.stringify({ error: "tipo_viagem é obrigatório" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -97,6 +98,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) {
+      console.error("Insert error:", error.message);
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -105,18 +107,13 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, id: data.id }),
-      {
-        status: 201,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    console.error("Webhook error:", err);
     return new Response(
       JSON.stringify({ error: "Invalid JSON body" }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
