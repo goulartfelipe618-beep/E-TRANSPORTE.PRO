@@ -12,7 +12,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2 } from "lucide-react";
+import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -39,6 +39,8 @@ export default function TransferSolicitacoes() {
   const [convertLoading, setConvertLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [creatingManual, setCreatingManual] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const { toast } = useToast();
 
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao`;
@@ -101,6 +103,23 @@ export default function TransferSolicitacoes() {
     fetchSolicitacoes();
   };
 
+  const handleCreateReserva = async (formData: Record<string, any>) => {
+    setCreateLoading(true);
+    const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas", "valor_base", "desconto_percentual", "valor_total"];
+    const reserva: Record<string, any> = { status: "confirmada" };
+    for (const [k, v] of Object.entries(formData)) {
+      reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
+    }
+    const { error } = await supabase.from("reservas_transfer").insert(reserva as any);
+    if (error) {
+      toast({ title: "Erro ao criar reserva", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} — reserva manual criada.` });
+      setCreatingManual(false);
+    }
+    setCreateLoading(false);
+  };
+
   const getEmbarque = (s: SolicitacaoRow) => s.tipo_viagem === "por_hora" ? s.por_hora_endereco_inicio || "—" : s.ida_embarque || "—";
   const getDesembarque = (s: SolicitacaoRow) => s.tipo_viagem === "por_hora" ? s.por_hora_ponto_encerramento || "—" : s.ida_destino || "—";
   const getDataHora = (s: SolicitacaoRow) => {
@@ -114,9 +133,14 @@ export default function TransferSolicitacoes() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Solicitações de Transfer</h1>
-        <p className="text-muted-foreground">Registros recebidos via webhook do site. Converta em reserva para confirmar.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Solicitações de Transfer</h1>
+          <p className="text-muted-foreground">Registros recebidos via webhook do site. Converta em reserva para confirmar.</p>
+        </div>
+        <Button onClick={() => setCreatingManual(true)}>
+          <Plus className="h-4 w-4 mr-2" /> Criar Reserva
+        </Button>
       </div>
 
       {/* Webhook URL */}
@@ -293,6 +317,15 @@ export default function TransferSolicitacoes() {
         onClose={() => setConverting(null)}
         onConfirm={handleConvertConfirm}
         loading={convertLoading}
+      />
+
+      {/* Manual Create Form */}
+      <ConvertForm
+        open={creatingManual}
+        onClose={() => setCreatingManual(false)}
+        onConfirm={handleCreateReserva}
+        loading={createLoading}
+        mode="create"
       />
     </div>
   );
