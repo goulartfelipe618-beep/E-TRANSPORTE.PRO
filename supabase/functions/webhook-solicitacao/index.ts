@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
       record.volta_hora = clean(body.volta_hora ?? volta.time ?? body.returnTime);
       record.volta_destino = clean(body.volta_destino ?? volta.destination ?? body.returnDestination);
       record.volta_mensagem = clean(body.volta_mensagem ?? volta.message ?? body.returnMessage);
-      record.volta_cupom = clean(body.volta_cupom ?? volta.coupon ?? body.returnCoupon);
+      // volta_cupom not used — only one coupon per request (ida_cupom)
     }
 
     if (tipo === "por_hora") {
