@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      reservas_transfer: {
+        Row: {
+          cliente_email: string | null
+          cliente_nome: string | null
+          cliente_origem: string | null
+          cliente_telefone: string | null
+          created_at: string
+          id: string
+          ida_cupom: string | null
+          ida_data: string | null
+          ida_destino: string | null
+          ida_embarque: string | null
+          ida_hora: string | null
+          ida_mensagem: string | null
+          ida_passageiros: number | null
+          por_hora_cupom: string | null
+          por_hora_data: string | null
+          por_hora_endereco_inicio: string | null
+          por_hora_hora: string | null
+          por_hora_itinerario: string | null
+          por_hora_passageiros: number | null
+          por_hora_ponto_encerramento: string | null
+          por_hora_qtd_horas: number | null
+          solicitacao_id: string | null
+          status: string
+          tipo_viagem: string
+          updated_at: string
+          volta_cupom: string | null
+          volta_data: string | null
+          volta_destino: string | null
+          volta_embarque: string | null
+          volta_hora: string | null
+          volta_mensagem: string | null
+          volta_passageiros: number | null
+        }
+        Insert: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          created_at?: string
+          id?: string
+          ida_cupom?: string | null
+          ida_data?: string | null
+          ida_destino?: string | null
+          ida_embarque?: string | null
+          ida_hora?: string | null
+          ida_mensagem?: string | null
+          ida_passageiros?: number | null
+          por_hora_cupom?: string | null
+          por_hora_data?: string | null
+          por_hora_endereco_inicio?: string | null
+          por_hora_hora?: string | null
+          por_hora_itinerario?: string | null
+          por_hora_passageiros?: number | null
+          por_hora_ponto_encerramento?: string | null
+          por_hora_qtd_horas?: number | null
+          solicitacao_id?: string | null
+          status?: string
+          tipo_viagem: string
+          updated_at?: string
+          volta_cupom?: string | null
+          volta_data?: string | null
+          volta_destino?: string | null
+          volta_embarque?: string | null
+          volta_hora?: string | null
+          volta_mensagem?: string | null
+          volta_passageiros?: number | null
+        }
+        Update: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          created_at?: string
+          id?: string
+          ida_cupom?: string | null
+          ida_data?: string | null
+          ida_destino?: string | null
+          ida_embarque?: string | null
+          ida_hora?: string | null
+          ida_mensagem?: string | null
+          ida_passageiros?: number | null
+          por_hora_cupom?: string | null
+          por_hora_data?: string | null
+          por_hora_endereco_inicio?: string | null
+          por_hora_hora?: string | null
+          por_hora_itinerario?: string | null
+          por_hora_passageiros?: number | null
+          por_hora_ponto_encerramento?: string | null
+          por_hora_qtd_horas?: number | null
+          solicitacao_id?: string | null
+          status?: string
+          tipo_viagem?: string
+          updated_at?: string
+          volta_cupom?: string | null
+          volta_data?: string | null
+          volta_destino?: string | null
+          volta_embarque?: string | null
+          volta_hora?: string | null
+          volta_mensagem?: string | null
+          volta_passageiros?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_transfer_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes_transfer"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitacoes_transfer: {
         Row: {
           cliente_email: string | null
