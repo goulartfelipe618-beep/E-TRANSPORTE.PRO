@@ -14,6 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
+      motorista_veiculos: {
+        Row: {
+          ano: number
+          chassi: string | null
+          combustivel: string | null
+          cor: string | null
+          created_at: string
+          crlv_url: string | null
+          fotos_url: string[] | null
+          id: string
+          marca: string
+          modelo: string
+          motorista_id: string
+          observacoes: string | null
+          placa: string
+          renavam: string | null
+          seguro_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          chassi?: string | null
+          combustivel?: string | null
+          cor?: string | null
+          created_at?: string
+          crlv_url?: string | null
+          fotos_url?: string[] | null
+          id?: string
+          marca: string
+          modelo: string
+          motorista_id: string
+          observacoes?: string | null
+          placa: string
+          renavam?: string | null
+          seguro_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          chassi?: string | null
+          combustivel?: string | null
+          cor?: string | null
+          created_at?: string
+          crlv_url?: string | null
+          fotos_url?: string[] | null
+          id?: string
+          marca?: string
+          modelo?: string
+          motorista_id?: string
+          observacoes?: string | null
+          placa?: string
+          renavam?: string | null
+          seguro_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "motorista_veiculos_motorista_id_fkey"
+            columns: ["motorista_id"]
+            isOneToOne: false
+            referencedRelation: "motoristas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      motoristas: {
+        Row: {
+          agencia: string | null
+          banco: string | null
+          cep: string | null
+          chave_pix: string | null
+          cidade: string | null
+          cnh_categoria: string | null
+          cnh_frente_url: string | null
+          cnh_numero: string | null
+          cnh_validade: string | null
+          cnh_verso_url: string | null
+          comprovante_residencia_url: string | null
+          conta: string | null
+          cpf: string
+          created_at: string
+          data_nascimento: string | null
+          email: string | null
+          endereco: string | null
+          estado: string | null
+          foto_perfil_url: string | null
+          id: string
+          nome_completo: string
+          observacoes: string | null
+          possui_veiculo: boolean
+          rg: string | null
+          status: string
+          telefone: string
+          tipo_conta: string | null
+          tipo_pagamento: string | null
+          updated_at: string
+        }
+        Insert: {
+          agencia?: string | null
+          banco?: string | null
+          cep?: string | null
+          chave_pix?: string | null
+          cidade?: string | null
+          cnh_categoria?: string | null
+          cnh_frente_url?: string | null
+          cnh_numero?: string | null
+          cnh_validade?: string | null
+          cnh_verso_url?: string | null
+          comprovante_residencia_url?: string | null
+          conta?: string | null
+          cpf: string
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          foto_perfil_url?: string | null
+          id?: string
+          nome_completo: string
+          observacoes?: string | null
+          possui_veiculo?: boolean
+          rg?: string | null
+          status?: string
+          telefone: string
+          tipo_conta?: string | null
+          tipo_pagamento?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agencia?: string | null
+          banco?: string | null
+          cep?: string | null
+          chave_pix?: string | null
+          cidade?: string | null
+          cnh_categoria?: string | null
+          cnh_frente_url?: string | null
+          cnh_numero?: string | null
+          cnh_validade?: string | null
+          cnh_verso_url?: string | null
+          comprovante_residencia_url?: string | null
+          conta?: string | null
+          cpf?: string
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          foto_perfil_url?: string | null
+          id?: string
+          nome_completo?: string
+          observacoes?: string | null
+          possui_veiculo?: boolean
+          rg?: string | null
+          status?: string
+          telefone?: string
+          tipo_conta?: string | null
+          tipo_pagamento?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reservas_transfer: {
         Row: {
           cliente_cpf_cnpj: string | null
