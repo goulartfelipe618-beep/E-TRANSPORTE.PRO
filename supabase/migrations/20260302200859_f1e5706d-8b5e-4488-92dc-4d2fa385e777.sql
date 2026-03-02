@@ -1,0 +1,1 @@
+ALTER TABLE public.automacoes ADD COLUMN tipo text NOT NULL DEFAULT 'transfer_executivo';

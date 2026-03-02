@@ -25,10 +25,15 @@ import { useToast } from "@/hooks/use-toast";
 interface Automacao {
   id: string;
   nome: string;
+  tipo: string;
   webhook_enabled: boolean;
   mapping: Record<string, string>;
   created_at: string;
 }
+
+const TIPOS_AUTOMACAO: Record<string, string> = {
+  transfer_executivo: "Transfer Executivo",
+};
 
 interface WebhookTest {
   id: string;
@@ -110,6 +115,7 @@ export default function AutomacoesPage() {
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newTipo, setNewTipo] = useState("");
   const [creating, setCreating] = useState(false);
   const { toast } = useToast();
 
@@ -125,14 +131,15 @@ export default function AutomacoesPage() {
   useEffect(() => { fetchAutomacoes(); }, []);
 
   const handleCreate = async () => {
-    if (!newName.trim()) return;
+    if (!newName.trim() || !newTipo) return;
     setCreating(true);
-    const { error } = await supabase.from("automacoes").insert({ nome: newName.trim() });
+    const { error } = await supabase.from("automacoes").insert({ nome: newName.trim(), tipo: newTipo });
     if (error) {
       toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Automação criada!" });
       setNewName("");
+      setNewTipo("");
       setCreateOpen(false);
       fetchAutomacoes();
     }
@@ -191,8 +198,9 @@ export default function AutomacoesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Status</TableHead>
+                   <TableHead>Nome</TableHead>
+                   <TableHead>Tipo</TableHead>
+                   <TableHead>Status</TableHead>
                   <TableHead>Criada em</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -205,6 +213,11 @@ export default function AutomacoesPage() {
                         <Zap className="h-4 w-4 text-primary" />
                         {a.nome}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-normal">
+                        {TIPOS_AUTOMACAO[a.tipo] || a.tipo}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={a.webhook_enabled ? "default" : "secondary"}>
@@ -254,17 +267,32 @@ export default function AutomacoesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nova Automação</DialogTitle>
-            <DialogDescription>Dê um nome para identificar este webhook.</DialogDescription>
+            <DialogDescription>Dê um nome e selecione o tipo de automação.</DialogDescription>
           </DialogHeader>
-          <Input
-            placeholder="Ex: Formulário do site principal"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-          />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Nome da Automação</label>
+              <Input
+                placeholder="Ex: Formulário do site principal"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Tipo de Automação</label>
+              <Select value={newTipo} onValueChange={setNewTipo}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancelar</Button>
-            <Button onClick={handleCreate} disabled={creating || !newName.trim()}>
+            <Button onClick={handleCreate} disabled={creating || !newName.trim() || !newTipo}>
               {creating ? "Criando..." : "Criar"}
             </Button>
           </DialogFooter>
