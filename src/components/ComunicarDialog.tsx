@@ -117,6 +117,7 @@ function getLabel(key: string): string {
 export default function ComunicarDialog({ open, onClose, payload, titulo }: ComunicarDialogProps) {
   const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [saudacao, setSaudacao] = useState("Olá, recebemos a sua solicitação:");
   const [mensagem, setMensagem] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -139,6 +140,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
     if (!open) return;
     setSelectedId(null);
     setMensagem("");
+    setSaudacao("Olá, recebemos a sua solicitação:");
     setSelectedFields(new Set(payloadEntries.map((e) => e.key)));
     setLoading(true);
     supabase
@@ -174,8 +176,12 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
     const lines = payloadEntries
       .filter((e) => selectedFields.has(e.key))
       .map((e) => `*${e.label}:* ${e.value}`);
-    return lines.join("\n");
-  }, [payloadEntries, selectedFields]);
+    const parts: string[] = [];
+    if (saudacao.trim()) parts.push(saudacao.trim());
+    if (lines.length > 0) parts.push("\n" + lines.join("\n"));
+    if (mensagem.trim()) parts.push("\n" + mensagem.trim());
+    return parts.join("\n");
+  }, [payloadEntries, selectedFields, saudacao, mensagem]);
 
   const handleSend = async () => {
     if (!selectedId) {
@@ -265,6 +271,17 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
             )}
           </div>
 
+          {/* Greeting message */}
+          <div className="space-y-2">
+            <Label>Mensagem de Saudação</Label>
+            <Textarea
+              placeholder="Ex: Olá, recebemos a sua solicitação de transfer:"
+              value={saudacao}
+              onChange={(e) => setSaudacao(e.target.value)}
+              rows={2}
+            />
+          </div>
+
           {/* Data fields with checkboxes */}
           {payloadEntries.length > 0 && (
             <div className="space-y-2">
@@ -301,25 +318,23 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
             </div>
           )}
 
-          {/* Preview */}
-          {selectedFields.size > 0 && (
-            <div className="space-y-2">
-              <Label>Pré-visualização da Mensagem</Label>
-              <div className="border border-border rounded-lg p-3 bg-muted/30 text-xs whitespace-pre-wrap font-mono max-h-32 overflow-y-auto text-foreground">
-                {formattedMessage}
-              </div>
-            </div>
-          )}
-
           {/* Additional message */}
           <div className="space-y-2">
             <Label>Mensagem Adicional (opcional)</Label>
             <Textarea
-              placeholder="Digite uma mensagem que será enviada junto com os dados..."
+              placeholder="Digite uma mensagem que será enviada após os dados..."
               value={mensagem}
               onChange={(e) => setMensagem(e.target.value)}
-              rows={3}
+              rows={2}
             />
+          </div>
+
+          {/* Preview */}
+          <div className="space-y-2">
+            <Label>Pré-visualização da Mensagem</Label>
+            <div className="border border-border rounded-lg p-3 bg-muted/30 text-xs whitespace-pre-wrap font-mono max-h-40 overflow-y-auto text-foreground">
+              {formattedMessage || <span className="text-muted-foreground italic">Nenhum dado selecionado</span>}
+            </div>
           </div>
 
           {/* Send button */}
