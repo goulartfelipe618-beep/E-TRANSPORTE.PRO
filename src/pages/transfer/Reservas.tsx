@@ -39,7 +39,7 @@ export default function TransferReservas() {
   const [selected, setSelected] = useState<ReservaRow | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { projectName, logoUrl } = useGlobalConfig();
+  const { projectName, logoUrl, mapProvider, mapApiKey } = useGlobalConfig();
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
@@ -164,7 +164,7 @@ export default function TransferReservas() {
                 variant="outline"
                 size="sm"
                 className="gap-2"
-                onClick={() => generateReservaPdf(selected, { projectName, logoUrl })}
+                onClick={() => generateReservaPdf(selected, { projectName, logoUrl, mapProvider, mapApiKey })}
               >
                 <Download className="h-4 w-4" />
                 Baixar Confirmação (PDF)
