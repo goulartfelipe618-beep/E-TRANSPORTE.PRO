@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Search, User, FileText, CreditCard, Car, Upload, X, Phone, Mail, Edit, Trash2 } from "lucide-react";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -282,7 +283,7 @@ export default function MotoristasCadastros() {
                 <div className="grid gap-3">
                   <div className="grid gap-2">
                     <Label>Endereço Completo</Label>
-                    <Input value={form.endereco} onChange={(e) => setField("endereco", e.target.value)} placeholder="Rua, número, complemento, bairro" />
+                    <AddressAutocomplete value={form.endereco} onChange={(v) => setField("endereco", v)} placeholder="Rua, número, complemento, bairro" />
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="grid gap-2">

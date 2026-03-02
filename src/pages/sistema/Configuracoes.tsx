@@ -12,8 +12,9 @@ import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Upload, Type, Shield, Key, RefreshCw,
-  Save, Loader2, Image as ImageIcon, Lock, Smartphone
+  Save, Loader2, Image as ImageIcon, Lock, Smartphone, MapPin
 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const FONTS = [
   "Poppins", "Inter", "Roboto", "Open Sans", "Montserrat",
@@ -30,12 +31,16 @@ export default function SistemaConfiguracoes() {
   const [font, setFont] = useState("Poppins");
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [mapProvider, setMapProvider] = useState("");
+  const [mapApiKey, setMapApiKey] = useState("");
 
   useEffect(() => {
     if (!isLoading) {
       setProjectName(settings["project_name"] || "TransExec");
       setFont(settings["global_font"] || "Poppins");
       setLogoUrl(settings["logo_url"] || "");
+      setMapProvider(settings["map_provider"] || "");
+      setMapApiKey(settings["map_api_key"] || "");
     }
   }, [isLoading, settings]);
 
@@ -149,6 +154,77 @@ export default function SistemaConfiguracoes() {
           <Button size="sm" onClick={() => handleSave("global_font", font, "Fonte")} disabled={saving}>
             <Save className="h-4 w-4 mr-2" /> Salvar
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* API de Mapas */}
+      <Card className="border-none shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg"><MapPin className="h-5 w-5" /> API de Mapas</CardTitle>
+          <CardDescription>Configure a API de mapas para autocomplete de endereços e mapas no PDF de confirmação</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Provedor de Mapas *</Label>
+            <RadioGroup value={mapProvider} onValueChange={setMapProvider} className="flex gap-6">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="mapbox" id="mapbox" />
+                <Label htmlFor="mapbox" className="cursor-pointer">Mapbox</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="google" id="google" />
+                <Label htmlFor="google" className="cursor-pointer">Google Maps</Label>
+              </div>
+            </RadioGroup>
+          </div>
+          {mapProvider && (
+            <div className="space-y-2">
+              <Label className="text-sm">
+                Chave de API ({mapProvider === "mapbox" ? "Mapbox Access Token" : "Google Maps API Key"}) *
+              </Label>
+              <Input
+                type="password"
+                value={mapApiKey}
+                onChange={(e) => setMapApiKey(e.target.value)}
+                placeholder={mapProvider === "mapbox" ? "pk.eyJ1Ijo..." : "AIzaSy..."}
+              />
+              <p className="text-xs text-muted-foreground">
+                {mapProvider === "mapbox"
+                  ? "Obtenha em mapbox.com → Account → Tokens"
+                  : "Obtenha em console.cloud.google.com → APIs & Services → Credentials"}
+              </p>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              disabled={!mapProvider || !mapApiKey || saving}
+              onClick={async () => {
+                await upsert.mutateAsync({ key: "map_provider", value: mapProvider });
+                await upsert.mutateAsync({ key: "map_api_key", value: mapApiKey });
+                refetchGlobal();
+                toast({ title: "Salvo", description: "Configuração de mapas atualizada." });
+              }}
+            >
+              <Save className="h-4 w-4 mr-2" /> Salvar
+            </Button>
+            {mapProvider && mapApiKey && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  setMapProvider("");
+                  setMapApiKey("");
+                  await upsert.mutateAsync({ key: "map_provider", value: "" });
+                  await upsert.mutateAsync({ key: "map_api_key", value: "" });
+                  refetchGlobal();
+                  toast({ title: "Removido", description: "Configuração de mapas removida." });
+                }}
+              >
+                Remover
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 

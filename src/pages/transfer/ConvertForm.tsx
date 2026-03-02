@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowRightLeft } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
@@ -123,8 +124,8 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
               <div className="space-y-3 border rounded-md p-3 bg-muted/30">
                 <p className="text-xs font-semibold text-foreground">→ Ida</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Local de Embarque (IDA) *" value={form.ida_embarque} onChange={(v) => set("ida_embarque", v)} />
-                  <Field label="Local de Desembarque (IDA) *" value={form.ida_destino} onChange={(v) => set("ida_destino", v)} />
+                  <AddressField label="Local de Embarque (IDA) *" value={form.ida_embarque} onChange={(v) => set("ida_embarque", v)} />
+                  <AddressField label="Local de Desembarque (IDA) *" value={form.ida_destino} onChange={(v) => set("ida_destino", v)} />
                   <Field label="Data/Hora do Embarque (IDA) *" value={form.ida_data} onChange={(v) => set("ida_data", v)} type="date" />
                   <Field label="Hora" value={form.ida_hora} onChange={(v) => set("ida_hora", v)} type="time" />
                   <Field label="Número de Passageiros *" value={form.ida_passageiros} onChange={(v) => set("ida_passageiros", v)} type="number" />
@@ -142,8 +143,8 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
               <div className="space-y-3 border rounded-md p-3 bg-muted/30">
                 <p className="text-xs font-semibold text-foreground">⇆ Volta</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Local de Embarque (Volta)" value={form.volta_embarque} onChange={(v) => set("volta_embarque", v)} />
-                  <Field label="Local de Desembarque (Volta)" value={form.volta_destino} onChange={(v) => set("volta_destino", v)} />
+                  <AddressField label="Local de Embarque (Volta)" value={form.volta_embarque} onChange={(v) => set("volta_embarque", v)} />
+                  <AddressField label="Local de Desembarque (Volta)" value={form.volta_destino} onChange={(v) => set("volta_destino", v)} />
                   <Field label="Data" value={form.volta_data} onChange={(v) => set("volta_data", v)} type="date" />
                   <Field label="Hora" value={form.volta_hora} onChange={(v) => set("volta_hora", v)} type="time" />
                   <Field label="Passageiros" value={form.volta_passageiros} onChange={(v) => set("volta_passageiros", v)} type="number" />
@@ -161,8 +162,8 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
               <div className="space-y-3 border rounded-md p-3 bg-muted/30">
                 <p className="text-xs font-semibold text-foreground">⏱ Por Hora</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Endereço de Início" value={form.por_hora_endereco_inicio} onChange={(v) => set("por_hora_endereco_inicio", v)} />
-                  <Field label="Ponto de Encerramento" value={form.por_hora_ponto_encerramento} onChange={(v) => set("por_hora_ponto_encerramento", v)} />
+                  <AddressField label="Endereço de Início" value={form.por_hora_endereco_inicio} onChange={(v) => set("por_hora_endereco_inicio", v)} />
+                  <AddressField label="Ponto de Encerramento" value={form.por_hora_ponto_encerramento} onChange={(v) => set("por_hora_ponto_encerramento", v)} />
                   <Field label="Data" value={form.por_hora_data} onChange={(v) => set("por_hora_data", v)} type="date" />
                   <Field label="Hora" value={form.por_hora_hora} onChange={(v) => set("por_hora_hora", v)} type="time" />
                   <Field label="Passageiros" value={form.por_hora_passageiros} onChange={(v) => set("por_hora_passageiros", v)} type="number" />
@@ -234,6 +235,17 @@ function Field({ label, value, onChange, type = "text", placeholder }: {
     <div>
       <Label className="text-xs text-muted-foreground">{label}</Label>
       <Input type={type} value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+    </div>
+  );
+}
+
+function AddressField({ label, value, onChange }: {
+  label: string; value: any; onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <AddressAutocomplete value={value ?? ""} onChange={onChange} placeholder="Digite o endereço..." />
     </div>
   );
 }
