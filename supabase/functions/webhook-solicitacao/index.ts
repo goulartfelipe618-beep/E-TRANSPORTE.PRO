@@ -34,7 +34,6 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Get automacao_id from query params
     const url = new URL(req.url);
     const automacaoId = url.searchParams.get("automacao_id");
 
@@ -45,7 +44,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch the automation config
     const { data: automacao, error: autoErr } = await supabase
       .from("automacoes")
       .select("*")
@@ -86,7 +84,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --- Normal flow: webhook is enabled, use mapping from automacao ---
+    // ── Resolve helper ──
     const mapping: Record<string, string> | null = automacao.mapping && Object.keys(automacao.mapping).length > 0
       ? automacao.mapping
       : null;
@@ -103,6 +101,51 @@ Deno.serve(async (req) => {
       return val;
     };
 
+    // ── MOTORISTA flow ──
+    if (automacao.tipo === "solicitacao_motorista") {
+      const possuiVeiculoRaw = mapping ? resolve("possui_veiculo") : (body.possui_veiculo ?? body.hasVehicle);
+      const possuiVeiculo = possuiVeiculoRaw === true || possuiVeiculoRaw === "true" || possuiVeiculoRaw === "sim" || possuiVeiculoRaw === "Sim" || possuiVeiculoRaw === 1;
+
+      const record: Record<string, unknown> = {
+        nome_completo: clean(mapping ? resolve("nome_completo") : (body.nome_completo ?? body.name ?? body.nome)) || "Sem nome",
+        cpf: clean(mapping ? resolve("cpf") : (body.cpf ?? body.document)),
+        telefone: clean(mapping ? resolve("telefone") : (body.telefone ?? body.phone)),
+        email: clean(mapping ? resolve("email") : (body.email)),
+        cidade: clean(mapping ? resolve("cidade") : (body.cidade ?? body.city)),
+        estado: clean(mapping ? resolve("estado") : (body.estado ?? body.state)),
+        cnh_numero: clean(mapping ? resolve("cnh_numero") : (body.cnh_numero ?? body.cnh)),
+        cnh_categoria: clean(mapping ? resolve("cnh_categoria") : (body.cnh_categoria ?? body.cnhCategory)),
+        possui_veiculo: possuiVeiculo,
+        veiculo_marca: clean(mapping ? resolve("veiculo_marca") : (body.veiculo_marca ?? body.vehicleBrand)),
+        veiculo_modelo: clean(mapping ? resolve("veiculo_modelo") : (body.veiculo_modelo ?? body.vehicleModel)),
+        veiculo_ano: clean(mapping ? resolve("veiculo_ano") : (body.veiculo_ano ?? body.vehicleYear)),
+        veiculo_placa: clean(mapping ? resolve("veiculo_placa") : (body.veiculo_placa ?? body.vehiclePlate)),
+        experiencia: clean(mapping ? resolve("experiencia") : (body.experiencia ?? body.experience)),
+        mensagem: clean(mapping ? resolve("mensagem") : (body.mensagem ?? body.message)),
+        status: "pendente",
+      };
+
+      const { data, error } = await supabase
+        .from("solicitacoes_motorista")
+        .insert(record)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Insert error:", error.message);
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, id: data.id }),
+        { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── TRANSFER flow (existing) ──
     const tipoFromMapping = mapping ? resolve("tipo_viagem") : null;
     const tipo = clean(tipoFromMapping ?? body.tipo_viagem) as string;
 
