@@ -17,7 +17,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Copy, Check, Link, Trash2, Save, Eye, Zap, Power, Plus, ArrowLeft, Settings2 } from "lucide-react";
+import { Copy, Check, Link, Trash2, Save, Eye, Zap, Power, Plus, ArrowLeft, Settings2, RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -199,10 +199,15 @@ export default function AutomacoesPage() {
           <h1 className="text-2xl font-bold text-foreground">Automações</h1>
           <p className="text-muted-foreground">Gerencie seus webhooks e mapeamentos de campos.</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Automação
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchAutomacoes(); }} title="Recarregar">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nova Automação
+          </Button>
+        </div>
       </div>
 
       <Card className="border-none shadow-sm">
