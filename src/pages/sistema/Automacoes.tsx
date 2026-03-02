@@ -565,10 +565,24 @@ function AutomacaoDetail({
                   {availableVars.map((varKey) => {
                     const val = resolveValue(selectedTest.payload, varKey);
                     if (typeof val === "object" && val !== null) return null;
+                    const strVal = String(val ?? "");
+                    const isUrl = strVal.startsWith("http://") || strVal.startsWith("https://");
+                    const isImage = isUrl && /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(strVal);
                     return (
-                      <div key={varKey} className="flex items-center justify-between gap-2 py-1.5 px-2 rounded bg-muted/50 text-sm">
-                        <Badge variant="secondary" className="font-mono text-xs shrink-0">{varKey}</Badge>
-                        <span className="text-foreground truncate text-right">{String(val ?? "")}</span>
+                      <div key={varKey} className="flex flex-col gap-1 py-1.5 px-2 rounded bg-muted/50 text-sm">
+                        <div className="flex items-center justify-between gap-2">
+                          <Badge variant="secondary" className="font-mono text-xs shrink-0">{varKey}</Badge>
+                          {isUrl ? (
+                            <a href={strVal} target="_blank" rel="noopener noreferrer" className="text-primary underline truncate text-right text-xs max-w-[200px]">
+                              {varKey.endsWith("__filename") ? strVal : "Ver arquivo ↗"}
+                            </a>
+                          ) : (
+                            <span className="text-foreground truncate text-right">{strVal}</span>
+                          )}
+                        </div>
+                        {isImage && (
+                          <img src={strVal} alt={varKey} className="h-16 w-auto rounded border object-cover mt-1" />
+                        )}
                       </div>
                     );
                   })}

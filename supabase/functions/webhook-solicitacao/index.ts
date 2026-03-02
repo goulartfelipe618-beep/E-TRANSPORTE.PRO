@@ -13,6 +13,90 @@ const cleanInt = (v: unknown) => {
   return isNaN(n) ? null : n;
 };
 
+/** Parse any incoming request into a flat key-value payload + list of files */
+async function parseRequest(
+  req: Request,
+  supabase: any,
+  automacaoId: string
+): Promise<Record<string, unknown>> {
+  const ct = (req.headers.get("content-type") || "").toLowerCase();
+
+  // ── JSON ──
+  if (ct.includes("application/json")) {
+    return await req.json();
+  }
+
+  // ── URL-encoded form ──
+  if (ct.includes("application/x-www-form-urlencoded")) {
+    const text = await req.text();
+    const params = new URLSearchParams(text);
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of params.entries()) {
+      result[key] = value;
+    }
+    return result;
+  }
+
+  // ── Multipart form data (files + fields) ──
+  if (ct.includes("multipart/form-data")) {
+    const formData = await req.formData();
+    const result: Record<string, unknown> = {};
+
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === "string") {
+        // Regular text field
+        result[key] = value;
+      } else if (value instanceof File) {
+        // File upload — store in Supabase Storage
+        const file = value as File;
+        const timestamp = Date.now();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${automacaoId}/${timestamp}_${safeName}`;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const { error: uploadErr } = await supabase.storage
+          .from("webhook-uploads")
+          .upload(path, arrayBuffer, {
+            contentType: file.type || "application/octet-stream",
+            upsert: false,
+          });
+
+        if (uploadErr) {
+          console.error(`File upload error for ${key}:`, uploadErr.message);
+          result[key] = `[upload_error: ${uploadErr.message}]`;
+        } else {
+          const { data: urlData } = supabase.storage
+            .from("webhook-uploads")
+            .getPublicUrl(path);
+          result[key] = urlData.publicUrl;
+          // Also store metadata
+          result[`${key}__filename`] = file.name;
+          result[`${key}__type`] = file.type;
+          result[`${key}__size`] = file.size;
+        }
+      }
+    }
+    return result;
+  }
+
+  // ── Fallback: try JSON anyway ──
+  try {
+    return await req.json();
+  } catch {
+    const text = await req.text();
+    // Try URL-encoded as last resort
+    try {
+      const params = new URLSearchParams(text);
+      const result: Record<string, unknown> = {};
+      for (const [key, value] of params.entries()) {
+        result[key] = value;
+      }
+      if (Object.keys(result).length > 0) return result;
+    } catch { /* ignore */ }
+    return { _raw_body: text };
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -26,9 +110,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
-    console.log("Webhook received payload:", JSON.stringify(body));
-
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -57,7 +138,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    // If webhook is disabled, save as test
+    // Parse the incoming request (JSON, form-urlencoded, or multipart)
+    const body = await parseRequest(req, supabase, automacaoId);
+    console.log("Webhook received payload keys:", Object.keys(body));
+
+    // ══════════════════════════════════════════════
+    // If webhook is disabled → save as test
+    // ══════════════════════════════════════════════
     if (!automacao.webhook_enabled) {
       const { count } = await supabase
         .from("webhook_tests")
@@ -84,7 +171,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ── Resolve helper ──
+    // ══════════════════════════════════════════════
+    // Webhook enabled → process with mapping
+    // ══════════════════════════════════════════════
     const mapping: Record<string, string> | null = automacao.mapping && Object.keys(automacao.mapping).length > 0
       ? automacao.mapping
       : null;
@@ -145,7 +234,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ── TRANSFER flow (existing) ──
+    // ── TRANSFER flow ──
     const tipoFromMapping = mapping ? resolve("tipo_viagem") : null;
     const tipo = clean(tipoFromMapping ?? body.tipo_viagem) as string;
 
@@ -183,36 +272,36 @@ Deno.serve(async (req) => {
       const porHora = body.por_hora ?? {};
 
       if (tipo === "somente_ida" || tipo === "ida_e_volta") {
-        record.ida_passageiros = cleanInt(body.ida_passageiros ?? ida.passengers ?? body.passengers);
-        record.ida_embarque = clean(body.ida_embarque ?? ida.pickupAddress ?? body.pickupAddress);
-        const idaDateRaw = clean(body.ida_data ?? ida.date ?? body.date);
+        record.ida_passageiros = cleanInt(body.ida_passageiros ?? (ida as any).passengers ?? body.passengers);
+        record.ida_embarque = clean(body.ida_embarque ?? (ida as any).pickupAddress ?? body.pickupAddress);
+        const idaDateRaw = clean(body.ida_data ?? (ida as any).date ?? body.date);
         record.ida_data = idaDateRaw ? String(idaDateRaw).substring(0, 10) : null;
-        record.ida_hora = clean(body.ida_hora ?? ida.time ?? body.time);
-        record.ida_destino = clean(body.ida_destino ?? ida.destination ?? body.destination);
-        record.ida_mensagem = clean(body.ida_mensagem ?? ida.message ?? body.message);
-        record.ida_cupom = clean(body.ida_cupom ?? ida.coupon ?? body.coupon);
+        record.ida_hora = clean(body.ida_hora ?? (ida as any).time ?? body.time);
+        record.ida_destino = clean(body.ida_destino ?? (ida as any).destination ?? body.destination);
+        record.ida_mensagem = clean(body.ida_mensagem ?? (ida as any).message ?? body.message);
+        record.ida_cupom = clean(body.ida_cupom ?? (ida as any).coupon ?? body.coupon);
       }
 
       if (tipo === "ida_e_volta") {
-        record.volta_passageiros = cleanInt(body.volta_passageiros ?? volta.passengers ?? body.returnPassengers);
-        record.volta_embarque = clean(body.volta_embarque ?? volta.pickupAddress ?? body.returnPickupAddress);
-        const voltaDateRaw = clean(body.volta_data ?? volta.date ?? body.returnDate);
+        record.volta_passageiros = cleanInt(body.volta_passageiros ?? (volta as any).passengers ?? body.returnPassengers);
+        record.volta_embarque = clean(body.volta_embarque ?? (volta as any).pickupAddress ?? body.returnPickupAddress);
+        const voltaDateRaw = clean(body.volta_data ?? (volta as any).date ?? body.returnDate);
         record.volta_data = voltaDateRaw ? String(voltaDateRaw).substring(0, 10) : null;
-        record.volta_hora = clean(body.volta_hora ?? volta.time ?? body.returnTime);
-        record.volta_destino = clean(body.volta_destino ?? volta.destination ?? body.returnDestination);
-        record.volta_mensagem = clean(body.volta_mensagem ?? volta.message ?? body.returnMessage);
+        record.volta_hora = clean(body.volta_hora ?? (volta as any).time ?? body.returnTime);
+        record.volta_destino = clean(body.volta_destino ?? (volta as any).destination ?? body.returnDestination);
+        record.volta_mensagem = clean(body.volta_mensagem ?? (volta as any).message ?? body.returnMessage);
       }
 
       if (tipo === "por_hora") {
-        record.por_hora_passageiros = cleanInt(body.por_hora_passageiros ?? porHora.passengers ?? body.passengers);
-        record.por_hora_endereco_inicio = clean(body.por_hora_endereco_inicio ?? porHora.pickupAddress ?? body.pickupAddress);
-        const phDateRaw = clean(body.por_hora_data ?? porHora.date ?? body.date);
+        record.por_hora_passageiros = cleanInt(body.por_hora_passageiros ?? (porHora as any).passengers ?? body.passengers);
+        record.por_hora_endereco_inicio = clean(body.por_hora_endereco_inicio ?? (porHora as any).pickupAddress ?? body.pickupAddress);
+        const phDateRaw = clean(body.por_hora_data ?? (porHora as any).date ?? body.date);
         record.por_hora_data = phDateRaw ? String(phDateRaw).substring(0, 10) : null;
-        record.por_hora_hora = clean(body.por_hora_hora ?? porHora.time ?? body.time);
-        record.por_hora_qtd_horas = cleanInt(body.por_hora_qtd_horas ?? porHora.hours ?? body.hours);
-        record.por_hora_ponto_encerramento = clean(body.por_hora_ponto_encerramento ?? porHora.endPoint ?? body.endPoint ?? porHora.dropoffAddress ?? body.dropoffAddress);
-        record.por_hora_itinerario = clean(body.por_hora_itinerario ?? porHora.itinerary ?? body.itinerary ?? porHora.message ?? body.message);
-        record.por_hora_cupom = clean(body.por_hora_cupom ?? porHora.coupon ?? body.coupon);
+        record.por_hora_hora = clean(body.por_hora_hora ?? (porHora as any).time ?? body.time);
+        record.por_hora_qtd_horas = cleanInt(body.por_hora_qtd_horas ?? (porHora as any).hours ?? body.hours);
+        record.por_hora_ponto_encerramento = clean(body.por_hora_ponto_encerramento ?? (porHora as any).endPoint ?? body.endPoint ?? (porHora as any).dropoffAddress ?? body.dropoffAddress);
+        record.por_hora_itinerario = clean(body.por_hora_itinerario ?? (porHora as any).itinerary ?? body.itinerary ?? (porHora as any).message ?? body.message);
+        record.por_hora_cupom = clean(body.por_hora_cupom ?? (porHora as any).coupon ?? body.coupon);
       }
     }
 
@@ -241,7 +330,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("Webhook error:", err);
     return new Response(
-      JSON.stringify({ error: "Invalid JSON body" }),
+      JSON.stringify({ error: "Invalid request body" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
