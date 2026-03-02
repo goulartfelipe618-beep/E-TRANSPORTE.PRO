@@ -9,6 +9,7 @@ import TransferSolicitacoes from "@/pages/transfer/Solicitacoes";
 import TransferReservas from "@/pages/transfer/Reservas";
 import TransferContrato from "@/pages/transfer/Contrato";
 import TransferGeolocalizacao from "@/pages/transfer/Geolocalizacao";
+import TransferAutomacao from "@/pages/transfer/Automacao";
 // Motoristas
 import MotoristasCadastros from "@/pages/motoristas/Cadastros";
 import MotoristasParcerias from "@/pages/motoristas/Parcerias";
@@ -48,6 +49,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "transfer/reservas": TransferReservas,
   "transfer/contrato": TransferContrato,
   "transfer/geolocalizacao": TransferGeolocalizacao,
+  "transfer/automacao": TransferAutomacao,
   "motoristas/cadastros": MotoristasCadastros,
   "motoristas/parcerias": MotoristasParcerias,
   "motoristas/solicitacoes": MotoristasSolicitacoes,

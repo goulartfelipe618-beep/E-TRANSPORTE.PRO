@@ -7,6 +7,7 @@ export type PageKey =
   | "transfer/reservas"
   | "transfer/contrato"
   | "transfer/geolocalizacao"
+  | "transfer/automacao"
   | "motoristas/cadastros"
   | "motoristas/parcerias"
   | "motoristas/solicitacoes"

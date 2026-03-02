@@ -90,6 +90,7 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck },
           { title: "Contrato", page: "transfer/contrato", icon: BookOpen },
           { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned },
+          { title: "Automação", page: "transfer/automacao", icon: Cog },
         ],
       },
       {
