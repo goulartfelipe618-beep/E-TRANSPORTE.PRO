@@ -34,10 +34,20 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Check if this is a test request
-    const isTest = req.headers.get("x-webhook-test") === "true";
-    if (isTest) {
-      // Count existing tests to generate label
+    // Check if this is a test request via header
+    const isTestHeader = req.headers.get("x-webhook-test") === "true";
+
+    // Check if webhook is enabled
+    const { data: enabledSetting } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "webhook_enabled")
+      .single();
+
+    const webhookEnabled = enabledSetting?.value === "true";
+
+    // If webhook is disabled OR test header is set, save as test
+    if (isTestHeader || !webhookEnabled) {
       const { count } = await supabase
         .from("webhook_tests")
         .select("*", { count: "exact", head: true });
@@ -62,7 +72,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --- Normal flow: use mapping from system_settings ---
+    // --- Normal flow: webhook is enabled, use mapping ---
     const { data: mappingSetting } = await supabase
       .from("system_settings")
       .select("value")
@@ -74,11 +84,9 @@ Deno.serve(async (req) => {
       try { mapping = JSON.parse(mappingSetting.value); } catch {}
     }
 
-    // If mapping exists, resolve variables from incoming payload
     const resolve = (key: string) => {
       if (!mapping || !mapping[key]) return null;
       const varName = mapping[key];
-      // Support nested access with dot notation
       const parts = varName.split(".");
       let val: any = body;
       for (const p of parts) {
@@ -88,7 +96,6 @@ Deno.serve(async (req) => {
       return val;
     };
 
-    // Determine tipo_viagem
     const tipoFromMapping = mapping ? resolve("tipo_viagem") : null;
     const tipo = clean(tipoFromMapping ?? body.tipo_viagem) as string;
 
@@ -102,7 +109,6 @@ Deno.serve(async (req) => {
     };
 
     if (mapping) {
-      // Use mapping for all fields
       const idaFields = ["ida_passageiros", "ida_embarque", "ida_data", "ida_hora", "ida_destino", "ida_mensagem", "ida_cupom"];
       const voltaFields = ["volta_passageiros", "volta_embarque", "volta_data", "volta_hora", "volta_destino", "volta_mensagem"];
       const phFields = ["por_hora_passageiros", "por_hora_endereco_inicio", "por_hora_data", "por_hora_hora", "por_hora_qtd_horas", "por_hora_ponto_encerramento", "por_hora_itinerario", "por_hora_cupom"];
@@ -121,7 +127,6 @@ Deno.serve(async (req) => {
         }
       }
     } else {
-      // Fallback: legacy field resolution
       const ida = body.ida ?? {};
       const volta = body.volta ?? {};
       const porHora = body.por_hora ?? {};
@@ -160,7 +165,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Default tipo_viagem if not provided
     if (!record.tipo_viagem) {
       record.tipo_viagem = "somente_ida";
     }
