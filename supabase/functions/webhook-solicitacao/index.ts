@@ -79,8 +79,8 @@ Deno.serve(async (req) => {
       record.por_hora_data = phDateRaw ? String(phDateRaw).substring(0, 10) : null;
       record.por_hora_hora = clean(body.por_hora_hora ?? porHora.time ?? body.time);
       record.por_hora_qtd_horas = cleanInt(body.por_hora_qtd_horas ?? porHora.hours ?? body.hours);
-      record.por_hora_ponto_encerramento = clean(body.por_hora_ponto_encerramento ?? porHora.endPoint ?? body.endPoint);
-      record.por_hora_itinerario = clean(body.por_hora_itinerario ?? porHora.itinerary ?? body.itinerary);
+      record.por_hora_ponto_encerramento = clean(body.por_hora_ponto_encerramento ?? porHora.endPoint ?? body.endPoint ?? porHora.dropoffAddress ?? body.dropoffAddress);
+      record.por_hora_itinerario = clean(body.por_hora_itinerario ?? porHora.itinerary ?? body.itinerary ?? porHora.message ?? body.message);
       record.por_hora_cupom = clean(body.por_hora_cupom ?? porHora.coupon ?? body.coupon);
     }
 
