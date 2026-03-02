@@ -479,6 +479,72 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_motorista: {
+        Row: {
+          cidade: string | null
+          cnh_categoria: string | null
+          cnh_numero: string | null
+          cpf: string | null
+          created_at: string
+          email: string | null
+          estado: string | null
+          experiencia: string | null
+          id: string
+          mensagem: string | null
+          nome_completo: string
+          possui_veiculo: boolean | null
+          status: string
+          telefone: string | null
+          updated_at: string
+          veiculo_ano: string | null
+          veiculo_marca: string | null
+          veiculo_modelo: string | null
+          veiculo_placa: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          cnh_categoria?: string | null
+          cnh_numero?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          estado?: string | null
+          experiencia?: string | null
+          id?: string
+          mensagem?: string | null
+          nome_completo: string
+          possui_veiculo?: boolean | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          veiculo_ano?: string | null
+          veiculo_marca?: string | null
+          veiculo_modelo?: string | null
+          veiculo_placa?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          cnh_categoria?: string | null
+          cnh_numero?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          estado?: string | null
+          experiencia?: string | null
+          id?: string
+          mensagem?: string | null
+          nome_completo?: string
+          possui_veiculo?: boolean | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          veiculo_ano?: string | null
+          veiculo_marca?: string | null
+          veiculo_modelo?: string | null
+          veiculo_placa?: string | null
+        }
+        Relationships: []
+      }
       solicitacoes_transfer: {
         Row: {
           automacao_id: string | null
