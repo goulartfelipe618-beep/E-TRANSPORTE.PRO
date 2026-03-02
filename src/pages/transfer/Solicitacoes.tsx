@@ -75,22 +75,15 @@ export default function TransferSolicitacoes() {
     setConvertLoading(true);
 
     // Build reserva insert payload
-    const { tipo_viagem, cliente_nome, cliente_telefone, cliente_email, cliente_origem, ...rest } = formData;
     const reserva: Record<string, any> = {
       solicitacao_id: converting.id,
-      tipo_viagem,
-      cliente_nome: cliente_nome || null,
-      cliente_telefone: cliente_telefone || null,
-      cliente_email: cliente_email || null,
-      cliente_origem: cliente_origem || null,
       status: "confirmada",
     };
 
-    // Copy travel fields, converting empty strings to null and numbers
-    const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas"];
-    for (const [k, v] of Object.entries(rest)) {
-      if (k === "tipo_viagem") continue;
-      reserva[k] = numFields.includes(k) ? (v !== "" ? Number(v) : null) : (v || null);
+    // Copy all fields, converting empty strings to null and numbers where needed
+    const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas", "valor_base", "desconto_percentual", "valor_total"];
+    for (const [k, v] of Object.entries(formData)) {
+      reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
 
     const { error: insertErr } = await supabase.from("reservas_transfer").insert(reserva as any);
@@ -102,7 +95,7 @@ export default function TransferSolicitacoes() {
 
     // Mark solicitacao as converted
     await supabase.from("solicitacoes_transfer").update({ status: "convertida" }).eq("id", converting.id);
-    toast({ title: "Reserva criada!", description: `${cliente_nome || "Cliente"} convertida em reserva.` });
+    toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} convertida em reserva.` });
     setConverting(null);
     setConvertLoading(false);
     fetchSolicitacoes();

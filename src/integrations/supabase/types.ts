@@ -16,11 +16,13 @@ export type Database = {
     Tables: {
       reservas_transfer: {
         Row: {
+          cliente_cpf_cnpj: string | null
           cliente_email: string | null
           cliente_nome: string | null
           cliente_origem: string | null
           cliente_telefone: string | null
           created_at: string
+          desconto_percentual: number | null
           id: string
           ida_cupom: string | null
           ida_data: string | null
@@ -29,6 +31,10 @@ export type Database = {
           ida_hora: string | null
           ida_mensagem: string | null
           ida_passageiros: number | null
+          metodo_pagamento: string | null
+          motorista_nome: string | null
+          motorista_telefone: string | null
+          observacoes: string | null
           por_hora_cupom: string | null
           por_hora_data: string | null
           por_hora_endereco_inicio: string | null
@@ -41,6 +47,9 @@ export type Database = {
           status: string
           tipo_viagem: string
           updated_at: string
+          valor_base: number | null
+          valor_total: number | null
+          veiculo: string | null
           volta_cupom: string | null
           volta_data: string | null
           volta_destino: string | null
@@ -50,11 +59,13 @@ export type Database = {
           volta_passageiros: number | null
         }
         Insert: {
+          cliente_cpf_cnpj?: string | null
           cliente_email?: string | null
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_telefone?: string | null
           created_at?: string
+          desconto_percentual?: number | null
           id?: string
           ida_cupom?: string | null
           ida_data?: string | null
@@ -63,6 +74,10 @@ export type Database = {
           ida_hora?: string | null
           ida_mensagem?: string | null
           ida_passageiros?: number | null
+          metodo_pagamento?: string | null
+          motorista_nome?: string | null
+          motorista_telefone?: string | null
+          observacoes?: string | null
           por_hora_cupom?: string | null
           por_hora_data?: string | null
           por_hora_endereco_inicio?: string | null
@@ -75,6 +90,9 @@ export type Database = {
           status?: string
           tipo_viagem: string
           updated_at?: string
+          valor_base?: number | null
+          valor_total?: number | null
+          veiculo?: string | null
           volta_cupom?: string | null
           volta_data?: string | null
           volta_destino?: string | null
@@ -84,11 +102,13 @@ export type Database = {
           volta_passageiros?: number | null
         }
         Update: {
+          cliente_cpf_cnpj?: string | null
           cliente_email?: string | null
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_telefone?: string | null
           created_at?: string
+          desconto_percentual?: number | null
           id?: string
           ida_cupom?: string | null
           ida_data?: string | null
@@ -97,6 +117,10 @@ export type Database = {
           ida_hora?: string | null
           ida_mensagem?: string | null
           ida_passageiros?: number | null
+          metodo_pagamento?: string | null
+          motorista_nome?: string | null
+          motorista_telefone?: string | null
+          observacoes?: string | null
           por_hora_cupom?: string | null
           por_hora_data?: string | null
           por_hora_endereco_inicio?: string | null
@@ -109,6 +133,9 @@ export type Database = {
           status?: string
           tipo_viagem?: string
           updated_at?: string
+          valor_base?: number | null
+          valor_total?: number | null
+          veiculo?: string | null
           volta_cupom?: string | null
           volta_data?: string | null
           volta_destino?: string | null
