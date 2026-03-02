@@ -15,18 +15,32 @@ import type { Tables } from "@/integrations/supabase/types";
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
 interface ConvertFormProps {
-  solicitacao: SolicitacaoRow | null;
+  solicitacao?: SolicitacaoRow | null;
   open: boolean;
   onClose: () => void;
   onConfirm: (data: Record<string, any>) => void;
   loading?: boolean;
+  mode?: "convert" | "create";
 }
 
-export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loading }: ConvertFormProps) {
+export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loading, mode = "convert" }: ConvertFormProps) {
   const [form, setForm] = useState<Record<string, any>>({});
 
+  const emptyForm = {
+    tipo_viagem: "somente_ida",
+    cliente_nome: "", cliente_cpf_cnpj: "", cliente_email: "", cliente_telefone: "", cliente_origem: "",
+    ida_passageiros: "", ida_embarque: "", ida_destino: "", ida_data: "", ida_hora: "", ida_mensagem: "", ida_cupom: "",
+    volta_passageiros: "", volta_embarque: "", volta_destino: "", volta_data: "", volta_hora: "", volta_mensagem: "", volta_cupom: "",
+    por_hora_passageiros: "", por_hora_endereco_inicio: "", por_hora_data: "", por_hora_hora: "", por_hora_qtd_horas: "", por_hora_ponto_encerramento: "", por_hora_itinerario: "", por_hora_cupom: "",
+    veiculo: "", motorista_nome: "", motorista_telefone: "",
+    valor_base: 0, desconto_percentual: 0, metodo_pagamento: "",
+    observacoes: "",
+  };
+
   useEffect(() => {
-    if (solicitacao) {
+    if (mode === "create") {
+      setForm(emptyForm);
+    } else if (solicitacao) {
       setForm({
         tipo_viagem: solicitacao.tipo_viagem,
         cliente_nome: solicitacao.cliente_nome || "",
@@ -34,44 +48,19 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
         cliente_email: solicitacao.cliente_email || "",
         cliente_telefone: solicitacao.cliente_telefone || "",
         cliente_origem: solicitacao.cliente_origem || "",
-        // Ida
-        ida_passageiros: solicitacao.ida_passageiros ?? "",
-        ida_embarque: solicitacao.ida_embarque || "",
-        ida_destino: solicitacao.ida_destino || "",
-        ida_data: solicitacao.ida_data || "",
-        ida_hora: solicitacao.ida_hora || "",
-        ida_mensagem: solicitacao.ida_mensagem || "",
-        ida_cupom: solicitacao.ida_cupom || "",
-        // Volta
-        volta_passageiros: solicitacao.volta_passageiros ?? "",
-        volta_embarque: solicitacao.volta_embarque || "",
-        volta_destino: solicitacao.volta_destino || "",
-        volta_data: solicitacao.volta_data || "",
-        volta_hora: solicitacao.volta_hora || "",
-        volta_mensagem: solicitacao.volta_mensagem || "",
-        volta_cupom: solicitacao.volta_cupom || "",
-        // Por Hora
-        por_hora_passageiros: solicitacao.por_hora_passageiros ?? "",
-        por_hora_endereco_inicio: solicitacao.por_hora_endereco_inicio || "",
-        por_hora_data: solicitacao.por_hora_data || "",
-        por_hora_hora: solicitacao.por_hora_hora || "",
-        por_hora_qtd_horas: solicitacao.por_hora_qtd_horas ?? "",
-        por_hora_ponto_encerramento: solicitacao.por_hora_ponto_encerramento || "",
-        por_hora_itinerario: solicitacao.por_hora_itinerario || "",
-        por_hora_cupom: solicitacao.por_hora_cupom || "",
-        // Veículo / Motorista
-        veiculo: "",
-        motorista_nome: "",
-        motorista_telefone: "",
-        // Valores
-        valor_base: 0,
-        desconto_percentual: 0,
-        metodo_pagamento: "",
-        // Observações
+        ida_passageiros: solicitacao.ida_passageiros ?? "", ida_embarque: solicitacao.ida_embarque || "", ida_destino: solicitacao.ida_destino || "",
+        ida_data: solicitacao.ida_data || "", ida_hora: solicitacao.ida_hora || "", ida_mensagem: solicitacao.ida_mensagem || "", ida_cupom: solicitacao.ida_cupom || "",
+        volta_passageiros: solicitacao.volta_passageiros ?? "", volta_embarque: solicitacao.volta_embarque || "", volta_destino: solicitacao.volta_destino || "",
+        volta_data: solicitacao.volta_data || "", volta_hora: solicitacao.volta_hora || "", volta_mensagem: solicitacao.volta_mensagem || "", volta_cupom: solicitacao.volta_cupom || "",
+        por_hora_passageiros: solicitacao.por_hora_passageiros ?? "", por_hora_endereco_inicio: solicitacao.por_hora_endereco_inicio || "",
+        por_hora_data: solicitacao.por_hora_data || "", por_hora_hora: solicitacao.por_hora_hora || "", por_hora_qtd_horas: solicitacao.por_hora_qtd_horas ?? "",
+        por_hora_ponto_encerramento: solicitacao.por_hora_ponto_encerramento || "", por_hora_itinerario: solicitacao.por_hora_itinerario || "", por_hora_cupom: solicitacao.por_hora_cupom || "",
+        veiculo: "", motorista_nome: "", motorista_telefone: "",
+        valor_base: 0, desconto_percentual: 0, metodo_pagamento: "",
         observacoes: "",
       });
     }
-  }, [solicitacao]);
+  }, [solicitacao, mode, open]);
 
   const set = (key: string, value: string | number) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -93,9 +82,9 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Converter em Reserva</DialogTitle>
+          <DialogTitle>{mode === "create" ? "Criar Nova Reserva" : "Converter em Reserva"}</DialogTitle>
           <DialogDescription>
-            Revise os dados, preencha informações adicionais e confirme. Tipo: {tipoMap[tipo] || tipo}
+            {mode === "create" ? "Preencha os dados para criar uma nova reserva manual." : `Revise os dados, preencha informações adicionais e confirme. Tipo: ${tipoMap[tipo] || tipo}`}
           </DialogDescription>
         </DialogHeader>
 
@@ -230,7 +219,7 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button onClick={() => onConfirm({ ...form, valor_total: valorTotal })} disabled={loading}>
             <ArrowRightLeft className="h-4 w-4 mr-2" />
-            {loading ? "Convertendo..." : "Confirmar Reserva"}
+            {loading ? "Salvando..." : mode === "create" ? "Criar Reserva" : "Confirmar Reserva"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -11,8 +11,8 @@ import { useSystemSettings } from "@/hooks/useSystemSettings";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Upload, Type, Globe, MapPin, Shield, Key, RefreshCw,
-  Monitor, Save, Loader2, Image as ImageIcon, Lock, Smartphone
+  Upload, Type, Shield, Key, RefreshCw,
+  Save, Loader2, Image as ImageIcon, Lock, Smartphone
 } from "lucide-react";
 
 const FONTS = [
@@ -28,8 +28,6 @@ export default function SistemaConfiguracoes() {
 
   const [projectName, setProjectName] = useState("");
   const [font, setFont] = useState("Poppins");
-  const [gaId, setGaId] = useState("");
-  const [mapsKey, setMapsKey] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
@@ -37,8 +35,6 @@ export default function SistemaConfiguracoes() {
     if (!isLoading) {
       setProjectName(settings["project_name"] || "TransExec");
       setFont(settings["global_font"] || "Poppins");
-      setGaId(settings["ga_id"] || "");
-      setMapsKey(settings["maps_api_key"] || "");
       setLogoUrl(settings["logo_url"] || "");
     }
   }, [isLoading, settings]);
@@ -151,38 +147,6 @@ export default function SistemaConfiguracoes() {
             Exemplo de texto com a fonte <strong>{font}</strong>
           </p>
           <Button size="sm" onClick={() => handleSave("global_font", font, "Fonte")} disabled={saving}>
-            <Save className="h-4 w-4 mr-2" /> Salvar
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Google Analytics */}
-      <Card className="border-none shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg"><Globe className="h-5 w-5" /> Google Analytics</CardTitle>
-          <CardDescription>ID de rastreamento para análise de tráfego</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Label>ID do Google Analytics (GA4)</Label>
-          <Input value={gaId} onChange={(e) => setGaId(e.target.value)} placeholder="G-XXXXXXXXXX" />
-          <Button size="sm" onClick={() => handleSave("ga_id", gaId, "Google Analytics")} disabled={saving}>
-            <Save className="h-4 w-4 mr-2" /> Salvar
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Google Maps */}
-      <Card className="border-none shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg"><MapPin className="h-5 w-5" /> Chave de API do Google Maps</CardTitle>
-          <CardDescription>Chave para integração com mapas e geolocalização</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Label>API Key</Label>
-          <Input value={mapsKey} onChange={(e) => setMapsKey(e.target.value)} placeholder="AIzaSy..." type="password" />
-          <Button size="sm" onClick={() => handleSave("maps_api_key", mapsKey, "Google Maps API Key")} disabled={saving}>
             <Save className="h-4 w-4 mr-2" /> Salvar
           </Button>
         </CardContent>
