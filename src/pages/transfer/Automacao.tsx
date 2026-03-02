@@ -13,7 +13,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Copy, Check, Link, Trash2, Save, Eye, Zap } from "lucide-react";
+import { Copy, Check, Link, Trash2, Save, Eye, Zap, Power } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -100,6 +101,8 @@ export default function TransferAutomacao() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("somente_ida");
+  const [webhookEnabled, setWebhookEnabled] = useState(false);
+  const [togglingWebhook, setTogglingWebhook] = useState(false);
   const { toast } = useToast();
 
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao`;
@@ -130,9 +133,42 @@ export default function TransferAutomacao() {
     }
   };
 
+  const fetchWebhookEnabled = async () => {
+    const { data } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "webhook_enabled")
+      .single();
+    setWebhookEnabled(data?.value === "true");
+  };
+
+  const handleToggleWebhook = async (enabled: boolean) => {
+    setTogglingWebhook(true);
+    const { data: existing } = await supabase
+      .from("system_settings")
+      .select("id")
+      .eq("key", "webhook_enabled")
+      .single();
+
+    if (existing) {
+      await supabase.from("system_settings").update({ value: String(enabled) }).eq("key", "webhook_enabled");
+    } else {
+      await supabase.from("system_settings").insert({ key: "webhook_enabled", value: String(enabled) });
+    }
+    setWebhookEnabled(enabled);
+    setTogglingWebhook(false);
+    toast({
+      title: enabled ? "Webhook ativado!" : "Webhook desativado!",
+      description: enabled
+        ? "Novos envios serão registrados como solicitações."
+        : "Novos envios serão salvos como testes para mapeamento.",
+    });
+  };
+
   useEffect(() => {
     fetchTests();
     fetchMapping();
+    fetchWebhookEnabled();
   }, []);
 
   const handleCopy = async () => {
@@ -199,7 +235,7 @@ export default function TransferAutomacao() {
         <p className="text-muted-foreground">Configure o mapeamento entre variáveis do webhook e os campos de solicitação de transfer.</p>
       </div>
 
-      {/* Webhook URL */}
+      {/* Webhook URL + Toggle */}
       <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
         <CardContent className="py-4">
           <div className="flex items-center gap-3">
@@ -213,9 +249,26 @@ export default function TransferAutomacao() {
               {copied ? "Copiado" : "Copiar"}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Para enviar um <strong>teste</strong>, inclua o header <code className="bg-muted px-1 rounded">x-webhook-test: true</code> na requisição POST.
-          </p>
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-primary/20">
+            <div className="flex items-center gap-2">
+              <Power className={`h-4 w-4 ${webhookEnabled ? "text-green-500" : "text-muted-foreground"}`} />
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Webhook {webhookEnabled ? "Ativado" : "Desativado"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {webhookEnabled
+                    ? "Envios criam solicitações com o mapeamento configurado."
+                    : "Envios são salvos como testes para configurar o mapeamento."}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={webhookEnabled}
+              onCheckedChange={handleToggleWebhook}
+              disabled={togglingWebhook}
+            />
+          </div>
         </CardContent>
       </Card>
 
