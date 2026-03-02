@@ -20,6 +20,7 @@ export type Database = {
           id: string
           mapping: Json
           nome: string
+          tipo: string
           updated_at: string
           webhook_enabled: boolean
         }
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           mapping?: Json
           nome: string
+          tipo?: string
           updated_at?: string
           webhook_enabled?: boolean
         }
@@ -36,6 +38,7 @@ export type Database = {
           id?: string
           mapping?: Json
           nome?: string
+          tipo?: string
           updated_at?: string
           webhook_enabled?: boolean
         }
