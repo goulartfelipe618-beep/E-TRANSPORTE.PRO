@@ -18,7 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Trash2, UserCheck, UserX, ArrowRightLeft, User, FileText, CreditCard, Car, Upload, X, RefreshCw } from "lucide-react";
+import { Eye, Trash2, UserCheck, UserX, ArrowRightLeft, User, FileText, CreditCard, Car, Upload, X, RefreshCw, MessageSquare } from "lucide-react";
+import ComunicarDialog from "@/components/ComunicarDialog";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -80,6 +81,7 @@ export default function MotoristasSolicitacoes() {
     foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null,
     crlv: null, seguro: null,
   });
+  const [comunicando, setComunicando] = useState<SolicitacaoMotorista | null>(null);
   const { toast } = useToast();
 
   const fetchSolicitacoes = async () => {
@@ -314,6 +316,9 @@ export default function MotoristasSolicitacoes() {
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => setSelected(sol)} title="Ver detalhes">
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setComunicando(sol)} title="Comunicar">
+                          <MessageSquare className="h-3.5 w-3.5 mr-1" /> Comunicar
                         </Button>
                         {sol.status === "pendente" && (
                           <>
@@ -690,6 +695,25 @@ export default function MotoristasSolicitacoes() {
           </Tabs>
         </DialogContent>
       </Dialog>
+
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar com ${comunicando.nome_completo}` : undefined}
+        payload={comunicando ? {
+          tipo: "solicitacao_motorista",
+          id: comunicando.id,
+          nome: comunicando.nome_completo,
+          cpf: comunicando.cpf,
+          telefone: comunicando.telefone,
+          email: comunicando.email,
+          cidade: comunicando.cidade,
+          estado: comunicando.estado,
+          cnh_categoria: comunicando.cnh_categoria,
+          possui_veiculo: comunicando.possui_veiculo,
+          status: comunicando.status,
+        } : {}}
+      />
     </div>
   );
 }

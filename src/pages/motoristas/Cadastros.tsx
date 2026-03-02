@@ -8,7 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Search, User, FileText, CreditCard, Car, Upload, X, Phone, Mail, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, User, FileText, CreditCard, Car, Upload, X, Phone, Mail, Edit, Trash2, MessageSquare } from "lucide-react";
+import ComunicarDialog from "@/components/ComunicarDialog";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -72,6 +73,7 @@ export default function MotoristasCadastros() {
   const [activeTab, setActiveTab] = useState("pessoal");
   const [form, setForm] = useState({ ...emptyForm });
   const [loading, setLoading] = useState(false);
+  const [comunicando, setComunicando] = useState<MotoristaDB | null>(null);
   const [files, setFiles] = useState<Record<string, File | null>>({
     foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null,
     crlv: null, seguro: null, fotos_veiculo: null,
@@ -525,6 +527,9 @@ export default function MotoristasCadastros() {
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor[m.status] || "bg-muted text-muted-foreground"}`}>
                   {m.status}
                 </span>
+                <Button variant="outline" size="sm" onClick={() => setComunicando(m)} title="Comunicar" className="h-7 text-xs">
+                  <MessageSquare className="h-3 w-3 mr-1" /> Comunicar
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => handleDelete(m.id)} className="h-7 w-7">
                   <Trash2 className="h-3.5 w-3.5 text-destructive" />
                 </Button>
@@ -553,6 +558,23 @@ export default function MotoristasCadastros() {
           </div>
         )}
       </div>
+
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar com ${comunicando.nome_completo}` : undefined}
+        payload={comunicando ? {
+          tipo: "motorista_cadastrado",
+          id: comunicando.id,
+          nome: comunicando.nome_completo,
+          cpf: comunicando.cpf,
+          telefone: comunicando.telefone,
+          email: comunicando.email,
+          cidade: comunicando.cidade,
+          estado: comunicando.estado,
+          status: comunicando.status,
+        } : {}}
+      />
     </div>
   );
 }
