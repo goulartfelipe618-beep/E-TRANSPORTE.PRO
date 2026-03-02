@@ -29,6 +29,7 @@ export type PageKey =
   | "sistema/aplicativo"
   | "sistema/tickets"
   | "sistema/automacoes"
+  | "sistema/comunicador"
   | "politicas"
   | "anotacoes"
   | "documentacao";
