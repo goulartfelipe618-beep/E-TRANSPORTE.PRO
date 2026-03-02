@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Search, Building2, FileText, Car, Users, Upload, X, Phone, Mail, Trash2, Save } from "lucide-react";
+import { Plus, Search, Building2, FileText, Car, Users, Upload, X, Phone, Mail, Trash2, Save, MessageSquare } from "lucide-react";
+import ComunicarDialog from "@/components/ComunicarDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -79,6 +80,7 @@ export default function MotoristasParcerias() {
   const [veiculos, setVeiculos] = useState<VeiculoForm[]>([emptyVeiculo()]);
   const [subparceiros, setSubparceiros] = useState<SubparceiroForm[]>([]);
   const [loading, setLoading] = useState(false);
+  const [comunicando, setComunicando] = useState<ParceiroDB | null>(null);
 
   const fetchParceiros = async () => {
     const { data } = await (supabase as any).from("parceiros").select("*").order("created_at", { ascending: false });
@@ -543,6 +545,9 @@ export default function MotoristasParcerias() {
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor[p.status] || "bg-muted text-muted-foreground"}`}>
                   {p.status}
                 </span>
+                <Button variant="outline" size="sm" onClick={() => setComunicando(p)} title="Comunicar" className="h-7 text-xs">
+                  <MessageSquare className="h-3 w-3 mr-1" /> Comunicar
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)} className="h-7 w-7">
                   <Trash2 className="h-3.5 w-3.5 text-destructive" />
                 </Button>
@@ -573,6 +578,25 @@ export default function MotoristasParcerias() {
           </div>
         )}
       </div>
+
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar com ${comunicando.nome_fantasia || comunicando.razao_social}` : undefined}
+        payload={comunicando ? {
+          tipo: "parceiro",
+          id: comunicando.id,
+          razao_social: comunicando.razao_social,
+          nome_fantasia: comunicando.nome_fantasia,
+          cnpj: comunicando.cnpj,
+          telefone: comunicando.telefone,
+          whatsapp: comunicando.whatsapp,
+          email: comunicando.email,
+          responsavel_nome: comunicando.responsavel_nome,
+          responsavel_telefone: comunicando.responsavel_telefone,
+          status: comunicando.status,
+        } : {}}
+      />
     </div>
   );
 }
