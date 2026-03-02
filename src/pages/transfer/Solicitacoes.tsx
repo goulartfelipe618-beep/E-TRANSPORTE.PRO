@@ -12,11 +12,12 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus, RefreshCw } from "lucide-react";
+import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus, RefreshCw, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
 import ConvertForm from "./ConvertForm";
+import ComunicarDialog from "@/components/ComunicarDialog";
 
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
@@ -41,6 +42,7 @@ export default function TransferSolicitacoes() {
   const [copied, setCopied] = useState(false);
   const [creatingManual, setCreatingManual] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
+  const [comunicando, setComunicando] = useState<SolicitacaoRow | null>(null);
   const { toast } = useToast();
 
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao`;
@@ -195,6 +197,10 @@ export default function TransferSolicitacoes() {
                         <Button variant="ghost" size="icon" onClick={() => setSelected(sol)} title="Ver detalhes">
                           <Eye className="h-4 w-4" />
                         </Button>
+                        <Button variant="outline" size="sm" onClick={() => setComunicando(sol)} title="Comunicar ao cliente">
+                          <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                          Comunicar
+                        </Button>
                         {sol.status === "pendente" && (
                           <Button variant="default" size="sm" onClick={() => setConverting(sol)}>
                             <ArrowRightLeft className="h-3.5 w-3.5 mr-1" />
@@ -312,6 +318,26 @@ export default function TransferSolicitacoes() {
         onConfirm={handleCreateReserva}
         loading={createLoading}
         mode="create"
+      />
+
+      {/* Comunicar Dialog */}
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar sobre solicitação de ${comunicando.cliente_nome || "Cliente"}` : undefined}
+        payload={comunicando ? {
+          tipo: "solicitacao_transfer",
+          id: comunicando.id,
+          tipo_viagem: comunicando.tipo_viagem,
+          cliente_nome: comunicando.cliente_nome,
+          cliente_telefone: comunicando.cliente_telefone,
+          cliente_email: comunicando.cliente_email,
+          embarque: comunicando.tipo_viagem === "por_hora" ? comunicando.por_hora_endereco_inicio : comunicando.ida_embarque,
+          destino: comunicando.tipo_viagem === "por_hora" ? comunicando.por_hora_ponto_encerramento : comunicando.ida_destino,
+          data: comunicando.tipo_viagem === "por_hora" ? comunicando.por_hora_data : comunicando.ida_data,
+          hora: comunicando.tipo_viagem === "por_hora" ? comunicando.por_hora_hora : comunicando.ida_hora,
+          status: comunicando.status,
+        } : {}}
       />
     </div>
   );
