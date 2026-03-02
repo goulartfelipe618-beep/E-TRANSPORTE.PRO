@@ -33,6 +33,7 @@ interface Automacao {
 
 const TIPOS_AUTOMACAO: Record<string, string> = {
   transfer_executivo: "Transfer Executivo",
+  solicitacao_motorista: "Solicitação Motorista",
 };
 
 interface WebhookTest {
@@ -43,7 +44,8 @@ interface WebhookTest {
   automacao_id: string | null;
 }
 
-const fieldGroups = {
+/* ── Field groups for Transfer ── */
+const transferFieldGroups = {
   comum: [
     { key: "tipo_viagem", label: "Tipo de Viagem" },
     { key: "cliente_nome", label: "Nome do Cliente" },
@@ -86,6 +88,25 @@ const fieldGroups = {
     { key: "por_hora_cupom", label: "Cupom" },
   ],
 };
+
+/* ── Field groups for Motorista ── */
+const motoristaFieldGroups = [
+  { key: "nome_completo", label: "Nome Completo" },
+  { key: "cpf", label: "CPF" },
+  { key: "telefone", label: "Telefone" },
+  { key: "email", label: "E-mail" },
+  { key: "cidade", label: "Cidade" },
+  { key: "estado", label: "Estado (UF)" },
+  { key: "cnh_numero", label: "Número da CNH" },
+  { key: "cnh_categoria", label: "Categoria da CNH" },
+  { key: "possui_veiculo", label: "Possui Veículo (sim/não)" },
+  { key: "veiculo_marca", label: "Marca do Veículo" },
+  { key: "veiculo_modelo", label: "Modelo do Veículo" },
+  { key: "veiculo_ano", label: "Ano do Veículo" },
+  { key: "veiculo_placa", label: "Placa do Veículo" },
+  { key: "experiencia", label: "Experiência" },
+  { key: "mensagem", label: "Mensagem / Observações" },
+];
 
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
   const keys: string[] = [];
@@ -286,6 +307,7 @@ export default function AutomacoesPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
+                  <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -319,9 +341,10 @@ function AutomacaoDetail({
   const [saving, setSaving] = useState(false);
   const [loadingTests, setLoadingTests] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState("somente_ida");
+  const [activeTab, setActiveTab] = useState(automacao.tipo === "solicitacao_motorista" ? "motorista" : "somente_ida");
   const { toast } = useToast();
 
+  const isMotorista = automacao.tipo === "solicitacao_motorista";
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
   const availableVars = useMemo(() => {
@@ -370,6 +393,47 @@ function AutomacaoDetail({
     setSaving(false);
   };
 
+  const renderVarSelect = (field: { key: string; label: string }) => (
+    <div key={field.key} className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-foreground">{field.label}</label>
+      <Select
+        value={mapping[field.key] || ""}
+        onValueChange={(v) => handleSetVar(field.key, v)}
+      >
+        <SelectTrigger className="h-9">
+          <SelectValue placeholder="Selecione a variável..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__clear__">
+            <span className="text-muted-foreground">— Nenhuma —</span>
+          </SelectItem>
+          {availableVars
+            .filter((v) => {
+              const val = resolveValue(selectedTest!.payload, v);
+              return typeof val !== "object" || val === null;
+            })
+            .map((v) => (
+              <SelectItem key={v} value={v}>
+                <span className="font-mono text-xs">{v}</span>
+                <span className="ml-2 text-muted-foreground text-xs">
+                  = {String(resolveValue(selectedTest!.payload, v) ?? "")}
+                </span>
+              </SelectItem>
+            ))}
+        </SelectContent>
+      </Select>
+      {mapping[field.key] && (
+        <p className="text-xs text-muted-foreground">
+          Mapeado para: <code className="bg-muted px-1 rounded">{mapping[field.key]}</code>
+          {" → "}
+          <span className="text-foreground font-medium">
+            {String(resolveValue(selectedTest!.payload, mapping[field.key]) ?? "—")}
+          </span>
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -405,7 +469,9 @@ function AutomacaoDetail({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {automacao.webhook_enabled
-                    ? "Envios criam solicitações com o mapeamento configurado."
+                    ? isMotorista
+                      ? "Envios criam solicitações de motorista com o mapeamento configurado."
+                      : "Envios criam solicitações de transfer com o mapeamento configurado."
                     : "Envios são salvos como testes para configurar o mapeamento."}
                 </p>
               </div>
@@ -523,7 +589,13 @@ function AutomacaoDetail({
               <p className="text-muted-foreground text-sm">
                 Selecione um teste recebido para visualizar as variáveis disponíveis e configurar o mapeamento.
               </p>
+            ) : isMotorista ? (
+              /* ── Motorista mapping: single list ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {motoristaFieldGroups.map(renderVarSelect)}
+              </div>
             ) : (
+              /* ── Transfer mapping: tabbed ── */
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-3 mb-4">
                   <TabsTrigger value="somente_ida">Somente Ida</TabsTrigger>
@@ -533,46 +605,7 @@ function AutomacaoDetail({
                 {["somente_ida", "ida_e_volta", "por_hora"].map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-0">
                     <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
-                      {[...fieldGroups.comum, ...fieldGroups[tab as keyof typeof fieldGroups]].map((field) => (
-                        <div key={field.key} className="flex flex-col gap-1.5">
-                          <label className="text-sm font-medium text-foreground">{field.label}</label>
-                          <Select
-                            value={mapping[field.key] || ""}
-                            onValueChange={(v) => handleSetVar(field.key, v)}
-                          >
-                            <SelectTrigger className="h-9">
-                              <SelectValue placeholder="Selecione a variável..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__clear__">
-                                <span className="text-muted-foreground">— Nenhuma —</span>
-                              </SelectItem>
-                              {availableVars
-                                .filter((v) => {
-                                  const val = resolveValue(selectedTest.payload, v);
-                                  return typeof val !== "object" || val === null;
-                                })
-                                .map((v) => (
-                                  <SelectItem key={v} value={v}>
-                                    <span className="font-mono text-xs">{v}</span>
-                                    <span className="ml-2 text-muted-foreground text-xs">
-                                      = {String(resolveValue(selectedTest.payload, v) ?? "")}
-                                    </span>
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                          {mapping[field.key] && (
-                            <p className="text-xs text-muted-foreground">
-                              Mapeado para: <code className="bg-muted px-1 rounded">{mapping[field.key]}</code>
-                              {" → "}
-                              <span className="text-foreground font-medium">
-                                {String(resolveValue(selectedTest.payload, mapping[field.key]) ?? "—")}
-                              </span>
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                      {[...transferFieldGroups.comum, ...transferFieldGroups[tab as keyof typeof transferFieldGroups]].map(renderVarSelect)}
                     </div>
                   </TabsContent>
                 ))}
