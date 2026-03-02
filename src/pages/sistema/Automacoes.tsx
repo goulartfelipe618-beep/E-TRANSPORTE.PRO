@@ -13,19 +13,31 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Copy, Check, Link, Trash2, Save, Eye, Zap, Power } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Copy, Check, Link, Trash2, Save, Eye, Zap, Power, Plus, ArrowLeft, Settings2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+interface Automacao {
+  id: string;
+  nome: string;
+  webhook_enabled: boolean;
+  mapping: Record<string, string>;
+  created_at: string;
+}
 
 interface WebhookTest {
   id: string;
   label: string;
   payload: Record<string, unknown>;
   created_at: string;
+  automacao_id: string | null;
 }
 
-// All fields organized by trip type
 const fieldGroups = {
   comum: [
     { key: "tipo_viagem", label: "Tipo de Viagem" },
@@ -70,7 +82,6 @@ const fieldGroups = {
   ],
 };
 
-// Flatten all payload keys recursively
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
   const keys: string[] = [];
   for (const [k, v] of Object.entries(obj)) {
@@ -93,83 +104,214 @@ function resolveValue(obj: Record<string, unknown>, path: string): unknown {
   return val;
 }
 
-export default function TransferAutomacao() {
-  const [tests, setTests] = useState<WebhookTest[]>([]);
-  const [selectedTest, setSelectedTest] = useState<WebhookTest | null>(null);
-  const [mapping, setMapping] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState(false);
+export default function AutomacoesPage() {
+  const [automacoes, setAutomacoes] = useState<Automacao[]>([]);
+  const [selected, setSelected] = useState<Automacao | null>(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState("somente_ida");
-  const [webhookEnabled, setWebhookEnabled] = useState(false);
-  const [togglingWebhook, setTogglingWebhook] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [creating, setCreating] = useState(false);
   const { toast } = useToast();
 
-  const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao`;
+  const fetchAutomacoes = async () => {
+    const { data } = await supabase
+      .from("automacoes")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (data) setAutomacoes(data.map((a: any) => ({ ...a, mapping: (a.mapping as Record<string, string>) || {} })));
+    setLoading(false);
+  };
 
-  // Available variable keys from the selected test
+  useEffect(() => { fetchAutomacoes(); }, []);
+
+  const handleCreate = async () => {
+    if (!newName.trim()) return;
+    setCreating(true);
+    const { error } = await supabase.from("automacoes").insert({ nome: newName.trim() });
+    if (error) {
+      toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Automação criada!" });
+      setNewName("");
+      setCreateOpen(false);
+      fetchAutomacoes();
+    }
+    setCreating(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("webhook_tests").delete().eq("automacao_id", id);
+    await supabase.from("automacoes").delete().eq("id", id);
+    if (selected?.id === id) setSelected(null);
+    fetchAutomacoes();
+    toast({ title: "Automação excluída" });
+  };
+
+  const handleToggle = async (automacao: Automacao, enabled: boolean) => {
+    await supabase.from("automacoes").update({ webhook_enabled: enabled }).eq("id", automacao.id);
+    setAutomacoes((prev) => prev.map((a) => a.id === automacao.id ? { ...a, webhook_enabled: enabled } : a));
+    if (selected?.id === automacao.id) setSelected({ ...automacao, webhook_enabled: enabled });
+    toast({ title: enabled ? "Webhook ativado!" : "Webhook desativado!" });
+  };
+
+  if (selected) {
+    return (
+      <AutomacaoDetail
+        automacao={selected}
+        onBack={() => { setSelected(null); fetchAutomacoes(); }}
+        onToggle={(enabled) => handleToggle(selected, enabled)}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Automações</h1>
+          <p className="text-muted-foreground">Gerencie seus webhooks e mapeamentos de campos.</p>
+        </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Nova Automação
+        </Button>
+      </div>
+
+      <Card className="border-none shadow-sm">
+        <CardContent className="p-0">
+          {loading ? (
+            <p className="p-6 text-muted-foreground text-sm">Carregando...</p>
+          ) : automacoes.length === 0 ? (
+            <div className="p-12 text-center">
+              <Zap className="h-12 w-12 mx-auto text-muted-foreground/40 mb-4" />
+              <p className="text-muted-foreground">Nenhuma automação criada.</p>
+              <p className="text-muted-foreground text-sm">Clique em "Nova Automação" para começar.</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Criada em</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {automacoes.map((a) => (
+                  <TableRow key={a.id} className="cursor-pointer" onClick={() => setSelected(a)}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-primary" />
+                        {a.nome}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={a.webhook_enabled ? "default" : "secondary"}>
+                        {a.webhook_enabled ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {new Date(a.created_at).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <Switch
+                          checked={a.webhook_enabled}
+                          onCheckedChange={(v) => handleToggle(a, v)}
+                        />
+                        <Button variant="ghost" size="icon" onClick={() => setSelected(a)} title="Configurar">
+                          <Settings2 className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir automação?</AlertDialogTitle>
+                              <AlertDialogDescription>Todos os testes associados também serão removidos.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(a.id)}>Excluir</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nova Automação</DialogTitle>
+            <DialogDescription>Dê um nome para identificar este webhook.</DialogDescription>
+          </DialogHeader>
+          <Input
+            placeholder="Ex: Formulário do site principal"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancelar</Button>
+            <Button onClick={handleCreate} disabled={creating || !newName.trim()}>
+              {creating ? "Criando..." : "Criar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+/* ────────────────────────── DETAIL VIEW ────────────────────────── */
+
+function AutomacaoDetail({
+  automacao,
+  onBack,
+  onToggle,
+}: {
+  automacao: Automacao;
+  onBack: () => void;
+  onToggle: (enabled: boolean) => void;
+}) {
+  const [tests, setTests] = useState<WebhookTest[]>([]);
+  const [selectedTest, setSelectedTest] = useState<WebhookTest | null>(null);
+  const [mapping, setMapping] = useState<Record<string, string>>(automacao.mapping);
+  const [saving, setSaving] = useState(false);
+  const [loadingTests, setLoadingTests] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("somente_ida");
+  const { toast } = useToast();
+
+  const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
+
   const availableVars = useMemo(() => {
     if (!selectedTest) return [];
     return flattenKeys(selectedTest.payload);
   }, [selectedTest]);
 
-  const fetchTests = async () => {
-    const { data } = await supabase
-      .from("webhook_tests")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (data) setTests(data as WebhookTest[]);
-    setLoading(false);
-  };
-
-  const fetchMapping = async () => {
-    const { data } = await supabase
-      .from("system_settings")
-      .select("value")
-      .eq("key", "webhook_mapping")
-      .single();
-    if (data?.value) {
-      try { setMapping(JSON.parse(data.value)); } catch {}
-    }
-  };
-
-  const fetchWebhookEnabled = async () => {
-    const { data } = await supabase
-      .from("system_settings")
-      .select("value")
-      .eq("key", "webhook_enabled")
-      .single();
-    setWebhookEnabled(data?.value === "true");
-  };
-
-  const handleToggleWebhook = async (enabled: boolean) => {
-    setTogglingWebhook(true);
-    const { data: existing } = await supabase
-      .from("system_settings")
-      .select("id")
-      .eq("key", "webhook_enabled")
-      .single();
-
-    if (existing) {
-      await supabase.from("system_settings").update({ value: String(enabled) }).eq("key", "webhook_enabled");
-    } else {
-      await supabase.from("system_settings").insert({ key: "webhook_enabled", value: String(enabled) });
-    }
-    setWebhookEnabled(enabled);
-    setTogglingWebhook(false);
-    toast({
-      title: enabled ? "Webhook ativado!" : "Webhook desativado!",
-      description: enabled
-        ? "Novos envios serão registrados como solicitações."
-        : "Novos envios serão salvos como testes para mapeamento.",
-    });
-  };
-
   useEffect(() => {
-    fetchTests();
-    fetchMapping();
-    fetchWebhookEnabled();
-  }, []);
+    (async () => {
+      const { data } = await supabase
+        .from("webhook_tests")
+        .select("*")
+        .eq("automacao_id", automacao.id)
+        .order("created_at", { ascending: false });
+      if (data) setTests(data as WebhookTest[]);
+      setLoadingTests(false);
+    })();
+  }, [automacao.id]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(webhookUrl);
@@ -181,58 +323,35 @@ export default function TransferAutomacao() {
   const handleDeleteTest = async (id: string) => {
     await supabase.from("webhook_tests").delete().eq("id", id);
     if (selectedTest?.id === id) setSelectedTest(null);
-    fetchTests();
+    setTests((prev) => prev.filter((t) => t.id !== id));
     toast({ title: "Teste excluído" });
   };
 
   const handleSetVar = (fieldKey: string, varName: string) => {
-    setMapping((prev) => ({
-      ...prev,
-      [fieldKey]: varName === "__clear__" ? "" : varName,
-    }));
+    setMapping((prev) => ({ ...prev, [fieldKey]: varName === "__clear__" ? "" : varName }));
   };
 
   const handleSaveMapping = async () => {
     setSaving(true);
-    // Clean empty values
-    const cleanMapping: Record<string, string> = {};
+    const clean: Record<string, string> = {};
     for (const [k, v] of Object.entries(mapping)) {
-      if (v) cleanMapping[k] = v;
+      if (v) clean[k] = v;
     }
-
-    const { data: existing } = await supabase
-      .from("system_settings")
-      .select("id")
-      .eq("key", "webhook_mapping")
-      .single();
-
-    if (existing) {
-      await supabase
-        .from("system_settings")
-        .update({ value: JSON.stringify(cleanMapping) })
-        .eq("key", "webhook_mapping");
-    } else {
-      await supabase
-        .from("system_settings")
-        .insert({ key: "webhook_mapping", value: JSON.stringify(cleanMapping) });
-    }
-
-    toast({ title: "Mapeamento salvo!", description: "As próximas solicitações usarão esta configuração." });
+    await supabase.from("automacoes").update({ mapping: clean }).eq("id", automacao.id);
+    toast({ title: "Mapeamento salvo!" });
     setSaving(false);
   };
 
-  const currentFields = useMemo(() => {
-    return [
-      ...fieldGroups.comum,
-      ...fieldGroups[activeTab as keyof typeof fieldGroups] || [],
-    ];
-  }, [activeTab]);
-
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Automação de Webhook</h1>
-        <p className="text-muted-foreground">Configure o mapeamento entre variáveis do webhook e os campos de solicitação de transfer.</p>
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={onBack}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{automacao.nome}</h1>
+          <p className="text-muted-foreground text-sm">Configure o webhook e mapeamento de campos.</p>
+        </div>
       </div>
 
       {/* Webhook URL + Toggle */}
@@ -241,7 +360,7 @@ export default function TransferAutomacao() {
           <div className="flex items-center gap-3">
             <Link className="h-5 w-5 text-primary shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground mb-1">URL do Webhook (use no formulário externo):</p>
+              <p className="text-sm font-medium text-foreground mb-1">URL do Webhook:</p>
               <code className="text-xs bg-muted px-2 py-1 rounded block truncate">{webhookUrl}</code>
             </div>
             <Button variant="outline" size="sm" onClick={handleCopy} className="shrink-0">
@@ -251,29 +370,25 @@ export default function TransferAutomacao() {
           </div>
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-primary/20">
             <div className="flex items-center gap-2">
-              <Power className={`h-4 w-4 ${webhookEnabled ? "text-green-500" : "text-muted-foreground"}`} />
+              <Power className={`h-4 w-4 ${automacao.webhook_enabled ? "text-green-500" : "text-muted-foreground"}`} />
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  Webhook {webhookEnabled ? "Ativado" : "Desativado"}
+                  Webhook {automacao.webhook_enabled ? "Ativado" : "Desativado"}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {webhookEnabled
+                  {automacao.webhook_enabled
                     ? "Envios criam solicitações com o mapeamento configurado."
                     : "Envios são salvos como testes para configurar o mapeamento."}
                 </p>
               </div>
             </div>
-            <Switch
-              checked={webhookEnabled}
-              onCheckedChange={handleToggleWebhook}
-              disabled={togglingWebhook}
-            />
+            <Switch checked={automacao.webhook_enabled} onCheckedChange={onToggle} />
           </div>
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* LEFT: Tests received */}
+        {/* LEFT: Tests */}
         <div className="space-y-4">
           <Card className="border-none shadow-sm">
             <CardHeader className="pb-3">
@@ -283,11 +398,11 @@ export default function TransferAutomacao() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {loadingTests ? (
                 <p className="text-muted-foreground text-sm">Carregando...</p>
               ) : tests.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  Nenhum teste recebido. Envie uma requisição POST com header <code className="bg-muted px-1 rounded text-xs">x-webhook-test: true</code>.
+                  Nenhum teste recebido. Desative o webhook e envie uma requisição POST para a URL acima.
                 </p>
               ) : (
                 <Table>
@@ -300,10 +415,7 @@ export default function TransferAutomacao() {
                   </TableHeader>
                   <TableBody>
                     {tests.map((t) => (
-                      <TableRow
-                        key={t.id}
-                        className={selectedTest?.id === t.id ? "bg-primary/10" : "cursor-pointer"}
-                      >
+                      <TableRow key={t.id} className={selectedTest?.id === t.id ? "bg-primary/10" : "cursor-pointer"}>
                         <TableCell className="font-medium">{t.label}</TableCell>
                         <TableCell className="whitespace-nowrap text-sm">
                           {new Date(t.created_at).toLocaleString("pt-BR")}
@@ -314,7 +426,6 @@ export default function TransferAutomacao() {
                               variant={selectedTest?.id === t.id ? "default" : "ghost"}
                               size="icon"
                               onClick={() => setSelectedTest(t)}
-                              title="Usar variáveis deste teste"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -345,13 +456,10 @@ export default function TransferAutomacao() {
             </CardContent>
           </Card>
 
-          {/* Selected test payload */}
           {selectedTest && (
             <Card className="border-none shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  Variáveis — {selectedTest.label}
-                </CardTitle>
+                <CardTitle className="text-base">Variáveis — {selectedTest.label}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-1.5 max-h-[400px] overflow-y-auto">
@@ -371,7 +479,7 @@ export default function TransferAutomacao() {
           )}
         </div>
 
-        {/* RIGHT: Mapping fields */}
+        {/* RIGHT: Mapping */}
         <Card className="border-none shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -394,7 +502,6 @@ export default function TransferAutomacao() {
                   <TabsTrigger value="ida_e_volta">Ida e Volta</TabsTrigger>
                   <TabsTrigger value="por_hora">Por Hora</TabsTrigger>
                 </TabsList>
-
                 {["somente_ida", "ida_e_volta", "por_hora"].map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-0">
                     <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
