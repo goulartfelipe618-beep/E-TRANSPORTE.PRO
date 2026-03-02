@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { RefreshCw, Save, Trash2, Plus, MessageSquare, Webhook } from "lucide-react";
+import { RefreshCw, Save, Trash2, Plus, MessageSquare, Webhook, Pencil, Lock } from "lucide-react";
 
 interface Comunicador {
   id: string;
@@ -23,6 +23,7 @@ const MAX_COMUNICADORES = 3;
 export default function SistemaComunicador() {
   const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -42,14 +43,18 @@ export default function SistemaComunicador() {
       toast.error(`Máximo de ${MAX_COMUNICADORES} comunicadores permitidos`);
       return;
     }
-    const { error } = await supabase.from("comunicadores").insert({
+    const { data, error } = await supabase.from("comunicadores").insert({
       nome: `Comunicador ${comunicadores.length + 1}`,
       webhook_url: "",
       descricao: "",
       ativo: false,
-    });
+    }).select().single();
     if (error) toast.error("Erro ao adicionar");
-    else { toast.success("Comunicador adicionado"); fetch(); }
+    else {
+      toast.success("Comunicador adicionado");
+      setEditingIds((prev) => new Set(prev).add(data.id));
+      fetch();
+    }
   };
 
   const handleSave = async (c: Comunicador) => {
@@ -64,7 +69,10 @@ export default function SistemaComunicador() {
       ativo: c.ativo,
     }).eq("id", c.id);
     if (error) toast.error("Erro ao salvar");
-    else toast.success("Salvo com sucesso");
+    else {
+      toast.success("Salvo com sucesso");
+      setEditingIds((prev) => { const next = new Set(prev); next.delete(c.id); return next; });
+    }
   };
 
   const handleToggle = async (id: string, ativo: boolean) => {
@@ -124,18 +132,30 @@ export default function SistemaComunicador() {
             </div>
           ) : (
             <div className="space-y-6">
-              {comunicadores.map((c, idx) => (
-                <div key={c.id} className="border border-border rounded-lg p-4 space-y-4">
+              {comunicadores.map((c, idx) => {
+                const isEditing = editingIds.has(c.id);
+                return (
+                <div key={c.id} className={`border rounded-lg p-4 space-y-4 transition-colors ${isEditing ? "border-border bg-background" : "border-border bg-muted/40 opacity-80"}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Badge variant={c.ativo ? "default" : "outline"} className="text-xs">
                         {c.ativo ? "Ativo" : "Inativo"}
                       </Badge>
                       <span className="text-sm font-medium text-muted-foreground">#{idx + 1}</span>
+                      {!isEditing && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Lock className="h-3 w-3" /> Bloqueado
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Switch checked={c.ativo} onCheckedChange={(v) => handleToggle(c.id, v)} />
-                      <Button size="icon" variant="ghost" onClick={() => handleDelete(c.id)}>
+                      {!isEditing && (
+                        <Button size="icon" variant="outline" onClick={() => setEditingIds((prev) => new Set(prev).add(c.id))} title="Editar">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Switch checked={c.ativo} onCheckedChange={(v) => handleToggle(c.id, v)} disabled={!isEditing} />
+                      <Button size="icon" variant="ghost" onClick={() => handleDelete(c.id)} disabled={!isEditing}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
@@ -148,6 +168,7 @@ export default function SistemaComunicador() {
                         placeholder="Ex: WhatsApp Principal"
                         value={c.nome}
                         onChange={(e) => updateField(c.id, "nome", e.target.value)}
+                        disabled={!isEditing}
                       />
                     </div>
                     <div className="space-y-1">
@@ -156,6 +177,7 @@ export default function SistemaComunicador() {
                         placeholder="Descrição opcional"
                         value={c.descricao || ""}
                         onChange={(e) => updateField(c.id, "descricao", e.target.value)}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -166,19 +188,23 @@ export default function SistemaComunicador() {
                       placeholder="https://n8n.seudominio.com/webhook/..."
                       value={c.webhook_url}
                       onChange={(e) => updateField(c.id, "webhook_url", e.target.value)}
+                      disabled={!isEditing}
                     />
                     <p className="text-xs text-muted-foreground">
                       Cole aqui a URL do webhook que conecta ao n8n/Evolution API para envio de mensagens WhatsApp
                     </p>
                   </div>
 
-                  <div className="flex justify-end">
-                    <Button size="sm" onClick={() => handleSave(c)}>
-                      <Save className="h-4 w-4 mr-1" /> Salvar
-                    </Button>
-                  </div>
+                  {isEditing && (
+                    <div className="flex justify-end">
+                      <Button size="sm" onClick={() => handleSave(c)}>
+                        <Save className="h-4 w-4 mr-1" /> Salvar
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
