@@ -12,8 +12,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2, Download } from "lucide-react";
+import { Eye, Trash2, Download, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ComunicarDialog from "@/components/ComunicarDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { generateReservaPdf } from "@/lib/generateReservaPdf";
@@ -38,6 +39,7 @@ export default function TransferReservas() {
   const [reservas, setReservas] = useState<ReservaRow[]>([]);
   const [selected, setSelected] = useState<ReservaRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [comunicando, setComunicando] = useState<ReservaRow | null>(null);
   const { toast } = useToast();
   const { projectName, logoUrl, mapProvider, mapApiKey } = useGlobalConfig();
 
@@ -124,6 +126,10 @@ export default function TransferReservas() {
                         <Button variant="ghost" size="icon" onClick={() => setSelected(res)} title="Ver detalhes">
                           <Eye className="h-4 w-4" />
                         </Button>
+                        <Button variant="outline" size="sm" onClick={() => setComunicando(res)} title="Comunicar ao cliente">
+                          <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                          Comunicar
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="ghost" size="icon" title="Excluir">
@@ -150,6 +156,31 @@ export default function TransferReservas() {
           )}
         </CardContent>
       </Card>
+
+      {/* Comunicar Dialog */}
+      <ComunicarDialog
+        open={!!comunicando}
+        onClose={() => setComunicando(null)}
+        titulo={comunicando ? `Comunicar sobre reserva de ${comunicando.cliente_nome || "Cliente"}` : undefined}
+        payload={comunicando ? {
+          tipo: "reserva_transfer",
+          id: comunicando.id,
+          tipo_viagem: comunicando.tipo_viagem,
+          cliente_nome: comunicando.cliente_nome,
+          cliente_telefone: comunicando.cliente_telefone,
+          cliente_email: comunicando.cliente_email,
+          embarque: getEmbarque(comunicando),
+          destino: getDesembarque(comunicando),
+          data_hora: getDataHora(comunicando),
+          passageiros: getPax(comunicando),
+          status: comunicando.status,
+          motorista_nome: comunicando.motorista_nome,
+          motorista_telefone: comunicando.motorista_telefone,
+          veiculo: comunicando.veiculo,
+          valor_total: comunicando.valor_total,
+          metodo_pagamento: comunicando.metodo_pagamento,
+        } : {}}
+      />
 
       {/* Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
