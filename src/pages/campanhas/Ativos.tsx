@@ -369,18 +369,8 @@ export default function CampanhasAtivos() {
                   </Button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Como usar</label>
-                <div className="bg-muted p-4 rounded text-sm">
-                  <p className="mb-2">Faça um POST para a URL do webhook com os seguintes campos:</p>
-                  <pre className="bg-background p-3 rounded text-xs overflow-auto">{`{
-  "name": "Nome do Lead",
-  "phone": "(11) 98765-4321",
-  "email": "lead@email.com",
-  "notes": "Observações"
-}`}</pre>
-                  <p className="mt-2 text-muted-foreground text-xs">O lead será automaticamente criado e associado a esta campanha.</p>
-                </div>
+              <div className="bg-muted p-4 rounded text-sm">
+                <p className="text-muted-foreground text-xs">As variáveis do webhook são configuradas em <strong>Sistema &gt; Automações</strong>. A automação correspondente a esta campanha é criada automaticamente.</p>
               </div>
             </div>
           )}
