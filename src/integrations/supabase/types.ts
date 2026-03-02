@@ -178,6 +178,137 @@ export type Database = {
         }
         Relationships: []
       }
+      parceiro_veiculos: {
+        Row: {
+          ano: number | null
+          combustivel: string | null
+          cor: string | null
+          created_at: string
+          crlv_url: string | null
+          id: string
+          marca: string
+          modelo: string
+          parceiro_id: string
+          placa: string
+          renavam: string | null
+          seguro_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ano?: number | null
+          combustivel?: string | null
+          cor?: string | null
+          created_at?: string
+          crlv_url?: string | null
+          id?: string
+          marca: string
+          modelo: string
+          parceiro_id: string
+          placa: string
+          renavam?: string | null
+          seguro_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ano?: number | null
+          combustivel?: string | null
+          cor?: string | null
+          created_at?: string
+          crlv_url?: string | null
+          id?: string
+          marca?: string
+          modelo?: string
+          parceiro_id?: string
+          placa?: string
+          renavam?: string | null
+          seguro_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parceiro_veiculos_parceiro_id_fkey"
+            columns: ["parceiro_id"]
+            isOneToOne: false
+            referencedRelation: "parceiros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parceiros: {
+        Row: {
+          cep: string | null
+          cidade: string | null
+          cnpj: string
+          contrato_url: string | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          estado: string | null
+          id: string
+          inscricao_estadual: string | null
+          logo_url: string | null
+          nome_fantasia: string | null
+          observacoes: string | null
+          razao_social: string
+          responsavel_email: string | null
+          responsavel_nome: string | null
+          responsavel_telefone: string | null
+          status: string
+          telefone: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          cep?: string | null
+          cidade?: string | null
+          cnpj: string
+          contrato_url?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
+          nome_fantasia?: string | null
+          observacoes?: string | null
+          razao_social: string
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          cep?: string | null
+          cidade?: string | null
+          cnpj?: string
+          contrato_url?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
+          nome_fantasia?: string | null
+          observacoes?: string | null
+          razao_social?: string
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       reservas_transfer: {
         Row: {
           cliente_cpf_cnpj: string | null
@@ -419,6 +550,53 @@ export type Database = {
           volta_passageiros?: number | null
         }
         Relationships: []
+      }
+      subparceiros: {
+        Row: {
+          cpf_cnpj: string | null
+          created_at: string
+          email: string | null
+          funcao: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          parceiro_id: string
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          funcao?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          parceiro_id: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          funcao?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          parceiro_id?: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subparceiros_parceiro_id_fkey"
+            columns: ["parceiro_id"]
+            isOneToOne: false
+            referencedRelation: "parceiros"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       system_settings: {
         Row: {
