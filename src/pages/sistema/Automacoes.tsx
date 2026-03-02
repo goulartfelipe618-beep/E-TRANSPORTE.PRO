@@ -36,6 +36,11 @@ const TIPOS_AUTOMACAO: Record<string, string> = {
   solicitacao_motorista: "Solicitação Motorista",
 };
 
+const getTipoLabel = (tipo: string) => {
+  if (tipo.startsWith("leads_campanha:")) return "Leads Campanha";
+  return TIPOS_AUTOMACAO[tipo] || tipo;
+};
+
 interface WebhookTest {
   id: string;
   label: string;
@@ -108,6 +113,13 @@ const motoristaFieldGroups = [
   { key: "mensagem", label: "Mensagem / Observações" },
 ];
 
+const leadsFieldGroups = [
+  { key: "nome", label: "Nome do Lead" },
+  { key: "email", label: "E-mail" },
+  { key: "telefone", label: "Telefone / WhatsApp" },
+  { key: "observacoes", label: "Observações / Mensagem" },
+];
+
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
   const keys: string[] = [];
   for (const [k, v] of Object.entries(obj)) {
@@ -138,7 +150,15 @@ export default function AutomacoesPage() {
   const [newName, setNewName] = useState("");
   const [newTipo, setNewTipo] = useState("");
   const [creating, setCreating] = useState(false);
+  const [campanhaOptions, setCampanhaOptions] = useState<{ id: string; nome: string }[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("campanhas").select("id, nome").order("nome");
+      if (data) setCampanhaOptions(data);
+    })();
+  }, []);
 
   const fetchAutomacoes = async () => {
     const { data } = await supabase
@@ -242,7 +262,7 @@ export default function AutomacoesPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
-                        {TIPOS_AUTOMACAO[a.tipo] || a.tipo}
+                        {getTipoLabel(a.tipo)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -311,8 +331,21 @@ export default function AutomacoesPage() {
                   <SelectValue placeholder="Selecione o tipo..." />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem disabled value="__header_master__">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
+                  </SelectItem>
                   <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
                   <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
+                  {campanhaOptions.length > 0 && (
+                    <>
+                      <SelectItem disabled value="__header_campanhas__">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Campanhas (auto-criadas)</span>
+                      </SelectItem>
+                      {campanhaOptions.map((c) => (
+                        <SelectItem key={c.id} value={`leads_campanha:${c.id}`}>{c.nome}</SelectItem>
+                      ))}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -350,6 +383,7 @@ function AutomacaoDetail({
   const { toast } = useToast();
 
   const isMotorista = automacao.tipo === "solicitacao_motorista";
+  const isLeadsCampanha = automacao.tipo.startsWith("leads_campanha:");
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
   const availableVars = useMemo(() => {
@@ -475,9 +509,11 @@ function AutomacaoDetail({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {automacao.webhook_enabled
-                    ? isMotorista
-                      ? "Envios criam solicitações de motorista com o mapeamento configurado."
-                      : "Envios criam solicitações de transfer com o mapeamento configurado."
+                    ? isLeadsCampanha
+                      ? "Envios criam leads na campanha associada com o mapeamento configurado."
+                      : isMotorista
+                        ? "Envios criam solicitações de motorista com o mapeamento configurado."
+                        : "Envios criam solicitações de transfer com o mapeamento configurado."
                     : "Envios são salvos como testes para configurar o mapeamento."}
                 </p>
               </div>
@@ -610,10 +646,15 @@ function AutomacaoDetail({
             </div>
           </CardHeader>
           <CardContent>
-            {!selectedTest ? (
+             {!selectedTest ? (
               <p className="text-muted-foreground text-sm">
                 Selecione um teste recebido para visualizar as variáveis disponíveis e configurar o mapeamento.
               </p>
+            ) : isLeadsCampanha ? (
+              /* ── Leads Campanha mapping ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {leadsFieldGroups.map(renderVarSelect)}
+              </div>
             ) : isMotorista ? (
               /* ── Motorista mapping: single list ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
