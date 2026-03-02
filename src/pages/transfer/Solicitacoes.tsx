@@ -7,11 +7,16 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Copy, Check, Link } from "lucide-react";
+import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
+import ConvertForm from "./ConvertForm";
 
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
@@ -30,6 +35,8 @@ const tipoMap: Record<string, string> = {
 export default function TransferSolicitacoes() {
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoRow[]>([]);
   const [selected, setSelected] = useState<SolicitacaoRow | null>(null);
+  const [converting, setConverting] = useState<SolicitacaoRow | null>(null);
+  const [convertLoading, setConvertLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -45,9 +52,7 @@ export default function TransferSolicitacoes() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchSolicitacoes();
-  }, []);
+  useEffect(() => { fetchSolicitacoes(); }, []);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(webhookUrl);
@@ -56,27 +61,55 @@ export default function TransferSolicitacoes() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleConverter = async (sol: SolicitacaoRow) => {
-    const { error } = await supabase
-      .from("solicitacoes_transfer")
-      .update({ status: "convertida" })
-      .eq("id", sol.id);
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("solicitacoes_transfer").delete().eq("id", id);
     if (!error) {
-      toast({ title: "Solicitação convertida", description: `${sol.cliente_nome || "Cliente"} foi convertida em reserva.` });
+      toast({ title: "Solicitação excluída" });
       fetchSolicitacoes();
       setSelected(null);
     }
   };
 
-  // Helper to get display data based on tipo_viagem
-  const getEmbarque = (s: SolicitacaoRow) => {
-    if (s.tipo_viagem === "por_hora") return s.por_hora_endereco_inicio || "—";
-    return s.ida_embarque || "—";
+  const handleConvertConfirm = async (formData: Record<string, any>) => {
+    if (!converting) return;
+    setConvertLoading(true);
+
+    // Build reserva insert payload
+    const { tipo_viagem, cliente_nome, cliente_telefone, cliente_email, cliente_origem, ...rest } = formData;
+    const reserva: Record<string, any> = {
+      solicitacao_id: converting.id,
+      tipo_viagem,
+      cliente_nome: cliente_nome || null,
+      cliente_telefone: cliente_telefone || null,
+      cliente_email: cliente_email || null,
+      cliente_origem: cliente_origem || null,
+      status: "confirmada",
+    };
+
+    // Copy travel fields, converting empty strings to null and numbers
+    const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas"];
+    for (const [k, v] of Object.entries(rest)) {
+      if (k === "tipo_viagem") continue;
+      reserva[k] = numFields.includes(k) ? (v !== "" ? Number(v) : null) : (v || null);
+    }
+
+    const { error: insertErr } = await supabase.from("reservas_transfer").insert(reserva as any);
+    if (insertErr) {
+      toast({ title: "Erro ao criar reserva", description: insertErr.message, variant: "destructive" });
+      setConvertLoading(false);
+      return;
+    }
+
+    // Mark solicitacao as converted
+    await supabase.from("solicitacoes_transfer").update({ status: "convertida" }).eq("id", converting.id);
+    toast({ title: "Reserva criada!", description: `${cliente_nome || "Cliente"} convertida em reserva.` });
+    setConverting(null);
+    setConvertLoading(false);
+    fetchSolicitacoes();
   };
-  const getDesembarque = (s: SolicitacaoRow) => {
-    if (s.tipo_viagem === "por_hora") return s.por_hora_ponto_encerramento || "—";
-    return s.ida_destino || "—";
-  };
+
+  const getEmbarque = (s: SolicitacaoRow) => s.tipo_viagem === "por_hora" ? s.por_hora_endereco_inicio || "—" : s.ida_embarque || "—";
+  const getDesembarque = (s: SolicitacaoRow) => s.tipo_viagem === "por_hora" ? s.por_hora_ponto_encerramento || "—" : s.ida_destino || "—";
   const getDataHora = (s: SolicitacaoRow) => {
     if (s.tipo_viagem === "por_hora") return `${s.por_hora_data || ""} ${s.por_hora_hora || ""}`.trim() || "—";
     return `${s.ida_data || ""} ${s.ida_hora || ""}`.trim() || "—";
@@ -90,9 +123,7 @@ export default function TransferSolicitacoes() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Solicitações de Transfer</h1>
-        <p className="text-muted-foreground">
-          Registros recebidos via webhook do site. Converta em reserva para confirmar.
-        </p>
+        <p className="text-muted-foreground">Registros recebidos via webhook do site. Converta em reserva para confirmar.</p>
       </div>
 
       {/* Webhook URL */}
@@ -110,7 +141,7 @@ export default function TransferSolicitacoes() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Método: <strong>POST</strong> · Content-Type: <strong>application/json</strong> · Envie o campo <code className="bg-muted px-1 rounded">tipo_viagem</code> como <code className="bg-muted px-1 rounded">somente_ida</code>, <code className="bg-muted px-1 rounded">ida_e_volta</code> ou <code className="bg-muted px-1 rounded">por_hora</code>.
+            Método: <strong>POST</strong> · Content-Type: <strong>application/json</strong>
           </p>
         </CardContent>
       </Card>
@@ -147,12 +178,8 @@ export default function TransferSolicitacoes() {
                     </TableCell>
                     <TableCell className="font-medium">{sol.cliente_nome || "—"}</TableCell>
                     <TableCell>{tipoMap[sol.tipo_viagem] || sol.tipo_viagem}</TableCell>
-                    <TableCell className="max-w-[160px] truncate" title={getEmbarque(sol)}>
-                      {getEmbarque(sol)}
-                    </TableCell>
-                    <TableCell className="max-w-[160px] truncate" title={getDesembarque(sol)}>
-                      {getDesembarque(sol)}
-                    </TableCell>
+                    <TableCell className="max-w-[160px] truncate" title={getEmbarque(sol)}>{getEmbarque(sol)}</TableCell>
+                    <TableCell className="max-w-[160px] truncate" title={getDesembarque(sol)}>{getDesembarque(sol)}</TableCell>
                     <TableCell className="whitespace-nowrap">{getDataHora(sol)}</TableCell>
                     <TableCell className="text-center">{getPax(sol)}</TableCell>
                     <TableCell>
@@ -166,11 +193,28 @@ export default function TransferSolicitacoes() {
                           <Eye className="h-4 w-4" />
                         </Button>
                         {sol.status === "pendente" && (
-                          <Button variant="default" size="sm" onClick={() => handleConverter(sol)}>
+                          <Button variant="default" size="sm" onClick={() => setConverting(sol)}>
                             <ArrowRightLeft className="h-3.5 w-3.5 mr-1" />
                             Converter
                           </Button>
                         )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" title="Excluir">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir solicitação?</AlertDialogTitle>
+                              <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(sol.id)}>Excluir</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -194,14 +238,11 @@ export default function TransferSolicitacoes() {
               <Detail label="Cliente" value={selected.cliente_nome || "—"} />
               <Detail label="Telefone / WhatsApp" value={selected.cliente_telefone || "—"} />
               <Detail label="E-mail" value={selected.cliente_email || "—"} />
-              <Detail label="Como nos encontrou" value={(selected as any).cliente_origem || "—"} />
+              <Detail label="Como nos encontrou" value={selected.cliente_origem || "—"} />
 
-              {/* Ida fields */}
               {(selected.tipo_viagem === "somente_ida" || selected.tipo_viagem === "ida_e_volta") && (
                 <>
-                  <div className="border-t pt-2 mt-2">
-                    <p className="font-semibold text-foreground mb-1">→ Ida</p>
-                  </div>
+                  <div className="border-t pt-2 mt-2"><p className="font-semibold text-foreground mb-1">→ Ida</p></div>
                   <Detail label="Passageiros" value={String(selected.ida_passageiros ?? "—")} />
                   <Detail label="Embarque" value={selected.ida_embarque || "—"} />
                   <Detail label="Destino" value={selected.ida_destino || "—"} />
@@ -212,12 +253,9 @@ export default function TransferSolicitacoes() {
                 </>
               )}
 
-              {/* Volta fields */}
               {selected.tipo_viagem === "ida_e_volta" && (
                 <>
-                  <div className="border-t pt-2 mt-2">
-                    <p className="font-semibold text-foreground mb-1">⇆ Volta</p>
-                  </div>
+                  <div className="border-t pt-2 mt-2"><p className="font-semibold text-foreground mb-1">⇆ Volta</p></div>
                   <Detail label="Passageiros" value={String(selected.volta_passageiros ?? "—")} />
                   <Detail label="Embarque" value={selected.volta_embarque || "—"} />
                   <Detail label="Destino" value={selected.volta_destino || "—"} />
@@ -228,19 +266,16 @@ export default function TransferSolicitacoes() {
                 </>
               )}
 
-              {/* Por Hora fields */}
               {selected.tipo_viagem === "por_hora" && (
                 <>
-                  <div className="border-t pt-2 mt-2">
-                    <p className="font-semibold text-foreground mb-1">⏱ Por Hora</p>
-                  </div>
+                  <div className="border-t pt-2 mt-2"><p className="font-semibold text-foreground mb-1">⏱ Por Hora</p></div>
                   <Detail label="Passageiros" value={String(selected.por_hora_passageiros ?? "—")} />
                   <Detail label="Endereço de Início" value={selected.por_hora_endereco_inicio || "—"} />
                   <Detail label="Data" value={selected.por_hora_data || "—"} />
                   <Detail label="Hora" value={selected.por_hora_hora || "—"} />
                   <Detail label="Qtd. Horas" value={String(selected.por_hora_qtd_horas ?? "—")} />
                   <Detail label="Ponto de Encerramento" value={selected.por_hora_ponto_encerramento || "—"} />
-                  <Detail label="Itinerário / Observações" value={selected.por_hora_itinerario || "—"} />
+                  <Detail label="Itinerário" value={selected.por_hora_itinerario || "—"} />
                   <Detail label="Cupom" value={selected.por_hora_cupom || "—"} />
                 </>
               )}
@@ -249,7 +284,7 @@ export default function TransferSolicitacoes() {
               <Detail label="Recebido em" value={new Date(selected.created_at).toLocaleString("pt-BR")} />
 
               {selected.status === "pendente" && (
-                <Button className="w-full mt-2" onClick={() => handleConverter(selected)}>
+                <Button className="w-full mt-2" onClick={() => { setSelected(null); setConverting(selected); }}>
                   <ArrowRightLeft className="h-4 w-4 mr-2" />
                   Converter em Reserva
                 </Button>
@@ -258,6 +293,15 @@ export default function TransferSolicitacoes() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Conversion Form */}
+      <ConvertForm
+        solicitacao={converting}
+        open={!!converting}
+        onClose={() => setConverting(null)}
+        onConfirm={handleConvertConfirm}
+        loading={convertLoading}
+      />
     </div>
   );
 }
