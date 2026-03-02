@@ -86,12 +86,6 @@ export default function CampanhasAtivos() {
       return;
     }
 
-    // 2. Auto-create automação of type leads_campanha
-    await supabase.from("automacoes").insert({
-      nome: `Leads — ${nome.trim()}`,
-      tipo: `leads_campanha:${campanha.id}`,
-    });
-
     toast({ title: "Campanha criada com sucesso!" });
     resetForm();
     setCreateOpen(false);
@@ -118,14 +112,7 @@ export default function CampanhasAtivos() {
   };
 
   const handleDelete = async (id: string) => {
-    // Delete associated automação
-    const { data: autos } = await supabase.from("automacoes").select("id").like("tipo", `leads_campanha:${id}`);
-    if (autos) {
-      for (const a of autos) {
-        await supabase.from("webhook_tests").delete().eq("automacao_id", a.id);
-        await supabase.from("automacoes").delete().eq("id", a.id);
-      }
-    }
+    await supabase.from("leads").delete().eq("campanha_id", id);
     await supabase.from("campanhas").delete().eq("id", id);
     toast({ title: "Campanha excluída" });
     fetchCampanhas();
