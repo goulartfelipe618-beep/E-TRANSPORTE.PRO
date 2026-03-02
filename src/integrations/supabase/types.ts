@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      automacoes: {
+        Row: {
+          created_at: string
+          id: string
+          mapping: Json
+          nome: string
+          updated_at: string
+          webhook_enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mapping?: Json
+          nome: string
+          updated_at?: string
+          webhook_enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mapping?: Json
+          nome?: string
+          updated_at?: string
+          webhook_enabled?: boolean
+        }
+        Relationships: []
+      }
       motorista_veiculos: {
         Row: {
           ano: number
@@ -451,6 +478,7 @@ export type Database = {
       }
       solicitacoes_transfer: {
         Row: {
+          automacao_id: string | null
           cliente_email: string | null
           cliente_nome: string | null
           cliente_origem: string | null
@@ -484,6 +512,7 @@ export type Database = {
           volta_passageiros: number | null
         }
         Insert: {
+          automacao_id?: string | null
           cliente_email?: string | null
           cliente_nome?: string | null
           cliente_origem?: string | null
@@ -517,6 +546,7 @@ export type Database = {
           volta_passageiros?: number | null
         }
         Update: {
+          automacao_id?: string | null
           cliente_email?: string | null
           cliente_nome?: string | null
           cliente_origem?: string | null
@@ -549,7 +579,15 @@ export type Database = {
           volta_mensagem?: string | null
           volta_passageiros?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_transfer_automacao_id_fkey"
+            columns: ["automacao_id"]
+            isOneToOne: false
+            referencedRelation: "automacoes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subparceiros: {
         Row: {
@@ -624,24 +662,35 @@ export type Database = {
       }
       webhook_tests: {
         Row: {
+          automacao_id: string | null
           created_at: string
           id: string
           label: string
           payload: Json
         }
         Insert: {
+          automacao_id?: string | null
           created_at?: string
           id?: string
           label?: string
           payload?: Json
         }
         Update: {
+          automacao_id?: string | null
           created_at?: string
           id?: string
           label?: string
           payload?: Json
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "webhook_tests_automacao_id_fkey"
+            columns: ["automacao_id"]
+            isOneToOne: false
+            referencedRelation: "automacoes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

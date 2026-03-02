@@ -34,28 +34,42 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Check if this is a test request via header
-    const isTestHeader = req.headers.get("x-webhook-test") === "true";
+    // Get automacao_id from query params
+    const url = new URL(req.url);
+    const automacaoId = url.searchParams.get("automacao_id");
 
-    // Check if webhook is enabled
-    const { data: enabledSetting } = await supabase
-      .from("system_settings")
-      .select("value")
-      .eq("key", "webhook_enabled")
+    if (!automacaoId) {
+      return new Response(
+        JSON.stringify({ error: "Missing automacao_id query parameter" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Fetch the automation config
+    const { data: automacao, error: autoErr } = await supabase
+      .from("automacoes")
+      .select("*")
+      .eq("id", automacaoId)
       .single();
 
-    const webhookEnabled = enabledSetting?.value === "true";
+    if (autoErr || !automacao) {
+      return new Response(
+        JSON.stringify({ error: "Automação não encontrada" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    // If webhook is disabled OR test header is set, save as test
-    if (isTestHeader || !webhookEnabled) {
+    // If webhook is disabled, save as test
+    if (!automacao.webhook_enabled) {
       const { count } = await supabase
         .from("webhook_tests")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .eq("automacao_id", automacaoId);
       const label = `Teste ${(count ?? 0) + 1}`;
 
       const { data, error } = await supabase
         .from("webhook_tests")
-        .insert({ label, payload: body })
+        .insert({ label, payload: body, automacao_id: automacaoId })
         .select()
         .single();
 
@@ -72,17 +86,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --- Normal flow: webhook is enabled, use mapping ---
-    const { data: mappingSetting } = await supabase
-      .from("system_settings")
-      .select("value")
-      .eq("key", "webhook_mapping")
-      .single();
-
-    let mapping: Record<string, string> | null = null;
-    if (mappingSetting?.value) {
-      try { mapping = JSON.parse(mappingSetting.value); } catch {}
-    }
+    // --- Normal flow: webhook is enabled, use mapping from automacao ---
+    const mapping: Record<string, string> | null = automacao.mapping && Object.keys(automacao.mapping).length > 0
+      ? automacao.mapping
+      : null;
 
     const resolve = (key: string) => {
       if (!mapping || !mapping[key]) return null;
@@ -105,6 +112,7 @@ Deno.serve(async (req) => {
       cliente_telefone: clean(mapping ? resolve("cliente_telefone") : (body.cliente_telefone ?? body.clientPhone ?? body.phone)),
       cliente_email: clean(mapping ? resolve("cliente_email") : (body.cliente_email ?? body.clientEmail ?? body.email)),
       cliente_origem: clean(mapping ? resolve("cliente_origem") : (body.cliente_origem ?? body.source ?? body.origin ?? body.howDidYouFindUs)),
+      automacao_id: automacaoId,
       status: "pendente",
     };
 

@@ -1,5 +1,4 @@
 import { useActivePage, PageKey } from "@/contexts/PageContext";
-import { lazy, Suspense } from "react";
 
 // Dashboard
 import DashboardMetricas from "@/pages/dashboard/Metricas";
@@ -9,7 +8,6 @@ import TransferSolicitacoes from "@/pages/transfer/Solicitacoes";
 import TransferReservas from "@/pages/transfer/Reservas";
 import TransferContrato from "@/pages/transfer/Contrato";
 import TransferGeolocalizacao from "@/pages/transfer/Geolocalizacao";
-import TransferAutomacao from "@/pages/transfer/Automacao";
 // Motoristas
 import MotoristasCadastros from "@/pages/motoristas/Cadastros";
 import MotoristasParcerias from "@/pages/motoristas/Parcerias";
@@ -37,6 +35,7 @@ import SistemaUsuarios from "@/pages/sistema/Usuarios";
 import SistemaLogs from "@/pages/sistema/Logs";
 import SistemaAplicativo from "@/pages/sistema/Aplicativo";
 import SistemaTickets from "@/pages/sistema/Tickets";
+import SistemaAutomacoes from "@/pages/sistema/Automacoes";
 // Outros
 import Politicas from "@/pages/Politicas";
 import Anotacoes from "@/pages/Anotacoes";
@@ -49,7 +48,6 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "transfer/reservas": TransferReservas,
   "transfer/contrato": TransferContrato,
   "transfer/geolocalizacao": TransferGeolocalizacao,
-  "transfer/automacao": TransferAutomacao,
   "motoristas/cadastros": MotoristasCadastros,
   "motoristas/parcerias": MotoristasParcerias,
   "motoristas/solicitacoes": MotoristasSolicitacoes,
@@ -71,6 +69,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "sistema/logs": SistemaLogs,
   "sistema/aplicativo": SistemaAplicativo,
   "sistema/tickets": SistemaTickets,
+  "sistema/automacoes": SistemaAutomacoes,
   "politicas": Politicas,
   "anotacoes": Anotacoes,
   "documentacao": Documentacao,

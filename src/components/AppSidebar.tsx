@@ -90,7 +90,6 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck },
           { title: "Contrato", page: "transfer/contrato", icon: BookOpen },
           { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned },
-          { title: "Automação", page: "transfer/automacao", icon: Cog },
         ],
       },
       {
@@ -142,6 +141,7 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         icon: Settings,
         subItems: [
           { title: "Configurações", page: "sistema/configuracoes", icon: Cog },
+          { title: "Automações", page: "sistema/automacoes", icon: Cog },
           { title: "Usuários", page: "sistema/usuarios", icon: UsersRound },
           { title: "Logs", page: "sistema/logs", icon: ScrollText },
           { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone },
