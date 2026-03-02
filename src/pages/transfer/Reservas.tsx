@@ -12,9 +12,11 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
+import { generateReservaPdf } from "@/lib/generateReservaPdf";
 import type { Tables } from "@/integrations/supabase/types";
 
 type ReservaRow = Tables<"reservas_transfer">;
@@ -37,6 +39,7 @@ export default function TransferReservas() {
   const [selected, setSelected] = useState<ReservaRow | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { projectName, logoUrl } = useGlobalConfig();
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
@@ -155,6 +158,19 @@ export default function TransferReservas() {
             <DialogTitle>Detalhes da Reserva</DialogTitle>
             <DialogDescription>{selected?.id}</DialogDescription>
           </DialogHeader>
+          {selected && (
+            <div className="flex justify-end -mt-2 mb-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => generateReservaPdf(selected, { projectName, logoUrl })}
+              >
+                <Download className="h-4 w-4" />
+                Baixar Confirmação (PDF)
+              </Button>
+            </div>
+          )}
           {selected && (
             <div className="space-y-3 text-sm">
               <Detail label="Tipo de Viagem" value={tipoMap[selected.tipo_viagem] || selected.tipo_viagem} />
