@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Send, MessageSquare, Loader2 } from "lucide-react";
@@ -21,10 +23,95 @@ interface Comunicador {
 interface ComunicarDialogProps {
   open: boolean;
   onClose: () => void;
-  /** Data payload that will be sent to the webhook */
   payload: Record<string, unknown>;
-  /** Label shown in the dialog header */
   titulo?: string;
+}
+
+/** Pretty-print a payload key as a human-readable label */
+const LABEL_MAP: Record<string, string> = {
+  tipo: "Tipo",
+  id: "ID",
+  tipo_viagem: "Tipo de Viagem",
+  cliente_nome: "Nome do Cliente",
+  cliente_telefone: "Telefone do Cliente",
+  cliente_email: "E-mail do Cliente",
+  cliente_origem: "Origem do Cliente",
+  cliente_cpf_cnpj: "CPF/CNPJ do Cliente",
+  embarque: "Local de Embarque",
+  destino: "Local de Destino",
+  data: "Data",
+  hora: "Hora",
+  data_hora: "Data/Hora",
+  passageiros: "Passageiros",
+  status: "Status",
+  motorista_nome: "Nome do Motorista",
+  motorista_telefone: "Telefone do Motorista",
+  veiculo: "Veículo",
+  valor_total: "Valor Total",
+  valor_base: "Valor Base",
+  desconto_percentual: "Desconto (%)",
+  metodo_pagamento: "Método de Pagamento",
+  observacoes: "Observações",
+  nome: "Nome Completo",
+  nome_completo: "Nome Completo",
+  cpf: "CPF",
+  telefone: "Telefone",
+  email: "E-mail",
+  cidade: "Cidade",
+  estado: "Estado",
+  cnh_categoria: "Categoria CNH",
+  cnh_numero: "Número CNH",
+  possui_veiculo: "Possui Veículo",
+  experiencia: "Experiência",
+  mensagem: "Mensagem",
+  razao_social: "Razão Social",
+  nome_fantasia: "Nome Fantasia",
+  cnpj: "CNPJ",
+  whatsapp: "WhatsApp",
+  responsavel_nome: "Nome do Responsável",
+  responsavel_telefone: "Telefone do Responsável",
+  campanha: "Campanha",
+  valor_venda: "Valor da Venda",
+  data_conversao: "Data de Conversão",
+  endereco: "Endereço",
+  cep: "CEP",
+  rg: "RG",
+  ida_embarque: "Embarque (Ida)",
+  ida_destino: "Destino (Ida)",
+  ida_data: "Data (Ida)",
+  ida_hora: "Hora (Ida)",
+  ida_passageiros: "Passageiros (Ida)",
+  ida_mensagem: "Mensagem (Ida)",
+  ida_cupom: "Cupom (Ida)",
+  volta_embarque: "Embarque (Volta)",
+  volta_destino: "Destino (Volta)",
+  volta_data: "Data (Volta)",
+  volta_hora: "Hora (Volta)",
+  volta_passageiros: "Passageiros (Volta)",
+  volta_mensagem: "Mensagem (Volta)",
+  volta_cupom: "Cupom (Volta)",
+  por_hora_endereco_inicio: "Endereço Início (Por Hora)",
+  por_hora_hora: "Hora (Por Hora)",
+  por_hora_data: "Data (Por Hora)",
+  por_hora_ponto_encerramento: "Ponto de Encerramento",
+  por_hora_itinerario: "Itinerário",
+  por_hora_qtd_horas: "Qtd. Horas",
+  por_hora_passageiros: "Passageiros (Por Hora)",
+  por_hora_cupom: "Cupom (Por Hora)",
+};
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "—";
+  if (typeof value === "boolean") return value ? "Sim" : "Não";
+  if (typeof value === "number") return String(value);
+  return String(value);
+}
+
+function getLabel(key: string): string {
+  if (LABEL_MAP[key]) return LABEL_MAP[key];
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function ComunicarDialog({ open, onClose, payload, titulo }: ComunicarDialogProps) {
@@ -34,10 +121,25 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Build entries from payload (excluding internal keys)
+  const payloadEntries = useMemo(() => {
+    return Object.entries(payload)
+      .filter(([, v]) => v !== null && v !== undefined && v !== "")
+      .map(([key, value]) => ({
+        key,
+        label: getLabel(key),
+        value: formatValue(value),
+      }));
+  }, [payload]);
+
+  // Track which fields are selected (all selected by default)
+  const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     if (!open) return;
     setSelectedId(null);
     setMensagem("");
+    setSelectedFields(new Set(payloadEntries.map((e) => e.key)));
     setLoading(true);
     supabase
       .from("comunicadores")
@@ -48,7 +150,32 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
         setComunicadores(data || []);
         setLoading(false);
       });
-  }, [open]);
+  }, [open, payloadEntries]);
+
+  const toggleField = (key: string) => {
+    setSelectedFields((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selectedFields.size === payloadEntries.length) {
+      setSelectedFields(new Set());
+    } else {
+      setSelectedFields(new Set(payloadEntries.map((e) => e.key)));
+    }
+  };
+
+  // Build the formatted message from selected fields
+  const formattedMessage = useMemo(() => {
+    const lines = payloadEntries
+      .filter((e) => selectedFields.has(e.key))
+      .map((e) => `*${e.label}:* ${e.value}`);
+    return lines.join("\n");
+  }, [payloadEntries, selectedFields]);
 
   const handleSend = async () => {
     if (!selectedId) {
@@ -60,8 +187,15 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
 
     setSending(true);
     try {
+      // Build payload with only selected fields
+      const selectedPayload: Record<string, unknown> = {};
+      payloadEntries
+        .filter((e) => selectedFields.has(e.key))
+        .forEach((e) => { selectedPayload[e.key] = payload[e.key]; });
+
       const body = {
-        ...payload,
+        ...selectedPayload,
+        mensagem_formatada: formattedMessage,
         mensagem_adicional: mensagem || null,
         comunicador_nome: comunicador.nome,
       };
@@ -84,7 +218,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
@@ -130,6 +264,52 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
               </div>
             )}
           </div>
+
+          {/* Data fields with checkboxes */}
+          {payloadEntries.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Dados a enviar</Label>
+                <button
+                  type="button"
+                  onClick={toggleAll}
+                  className="text-xs text-primary hover:underline"
+                >
+                  {selectedFields.size === payloadEntries.length ? "Desmarcar todos" : "Selecionar todos"}
+                </button>
+              </div>
+              <ScrollArea className="max-h-48 border border-border rounded-lg p-3">
+                <div className="space-y-2">
+                  {payloadEntries.map((entry) => (
+                    <label
+                      key={entry.key}
+                      className="flex items-start gap-2 cursor-pointer text-sm"
+                    >
+                      <Checkbox
+                        checked={selectedFields.has(entry.key)}
+                        onCheckedChange={() => toggleField(entry.key)}
+                        className="mt-0.5"
+                      />
+                      <span className="flex-1">
+                        <span className="font-semibold text-foreground">{entry.label}:</span>{" "}
+                        <span className="text-muted-foreground">{entry.value}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+
+          {/* Preview */}
+          {selectedFields.size > 0 && (
+            <div className="space-y-2">
+              <Label>Pré-visualização da Mensagem</Label>
+              <div className="border border-border rounded-lg p-3 bg-muted/30 text-xs whitespace-pre-wrap font-mono max-h-32 overflow-y-auto text-foreground">
+                {formattedMessage}
+              </div>
+            </div>
+          )}
 
           {/* Additional message */}
           <div className="space-y-2">
