@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,7 @@ const emptyForm = {
 };
 
 export default function MotoristasAgendamentos() {
+  const tenantId = useTenantId();
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -96,6 +98,7 @@ export default function MotoristasAgendamentos() {
       local_origem: form.local_origem || null,
       local_destino: form.local_destino || null,
       observacoes: form.observacoes || null,
+      tenant_id: tenantId,
     });
     if (error) toast.error("Erro ao criar agendamento");
     else { toast.success("Agendamento criado"); setDialogOpen(false); setForm(emptyForm); fetchAgendamentos(); }

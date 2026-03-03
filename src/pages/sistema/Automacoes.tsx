@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -162,6 +163,7 @@ function resolveValue(obj: Record<string, unknown>, path: string): unknown {
 }
 
 export default function AutomacoesPage() {
+  const tenantId = useTenantId();
   const [automacoes, setAutomacoes] = useState<Automacao[]>([]);
   const [selected, setSelected] = useState<Automacao | null>(null);
   const [loading, setLoading] = useState(true);
@@ -193,7 +195,7 @@ export default function AutomacoesPage() {
   const handleCreate = async () => {
     if (!newName.trim() || !newTipo) return;
     setCreating(true);
-    const { error } = await supabase.from("automacoes").insert({ nome: newName.trim(), tipo: newTipo });
+    const { error } = await supabase.from("automacoes").insert({ nome: newName.trim(), tipo: newTipo, tenant_id: tenantId });
     if (error) {
       toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
     } else {
