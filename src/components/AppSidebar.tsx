@@ -217,16 +217,22 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {menuSections.map((section) => (
+        {menuSections.map((section) => {
+          const visibleItems = section.items.filter((item) => isMenuEnabled(item.menuKey));
+          if (visibleItems.length === 0) return null;
+          return (
           <SidebarGroup key={section.label}>
             <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {section.items.map((item) =>
-                  item.subItems ? (
+                {visibleItems.map((item) => {
+                  if (item.subItems) {
+                    const visibleSubs = item.subItems.filter((sub) => isMenuEnabled(sub.menuKey));
+                    if (visibleSubs.length === 0) return null;
+                    return (
                     <Collapsible
                       key={item.title}
-                      defaultOpen={isSubActive(item.subItems)}
+                      defaultOpen={isSubActive(visibleSubs)}
                       className="group/collapsible"
                     >
                       <SidebarMenuItem>
@@ -244,7 +250,7 @@ export function AppSidebar() {
                         {!collapsed && (
                           <CollapsibleContent>
                             <SidebarMenu className="ml-4 border-l border-sidebar-border pl-2 mt-1">
-                              {item.subItems.map((sub) => (
+                              {visibleSubs.map((sub) => (
                                 <SidebarMenuItem key={sub.page}>
                                   <SidebarMenuButton
                                     onClick={() => setActivePage(sub.page)}
@@ -263,7 +269,9 @@ export function AppSidebar() {
                         )}
                       </SidebarMenuItem>
                     </Collapsible>
-                  ) : (
+                    );
+                  }
+                  return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         onClick={() => setActivePage(item.page!)}
@@ -276,12 +284,13 @@ export function AppSidebar() {
                         {!collapsed && <span>{item.title}</span>}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  )
-                )}
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        ))}
+          );
+        })}
       </SidebarContent>
       <div className="mt-auto p-3 border-t border-sidebar-accent">
         <button
