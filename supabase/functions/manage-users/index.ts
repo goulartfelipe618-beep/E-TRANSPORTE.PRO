@@ -85,6 +85,11 @@ Deno.serve(async (req) => {
       if (user_id === caller.id) {
         return new Response(JSON.stringify({ error: "Cannot delete yourself" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
+      // Don't allow deleting any master_admin
+      const { data: targetRole } = await adminClient.from("user_roles").select("role").eq("user_id", user_id).maybeSingle();
+      if (targetRole?.role === "master_admin") {
+        return new Response(JSON.stringify({ error: "Master Admin não pode ser excluído" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
       await adminClient.from("user_roles").delete().eq("user_id", user_id);
       await adminClient.auth.admin.deleteUser(user_id);
       return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
