@@ -187,6 +187,7 @@ export function AppSidebar() {
   const { activePage, setActivePage } = useActivePage();
   const { projectName, logoUrl } = useGlobalConfig();
   const { isMenuEnabled } = useTenantMenus();
+  const { isDark, toggle: toggleTheme } = usePanelTheme("admin-theme");
 
   const isSubActive = (subItems?: SubItem[]) =>
     subItems?.some((s) => s.page === activePage) ?? false;
