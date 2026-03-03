@@ -221,6 +221,9 @@ export default function MasterCategories() {
                       <div className="flex items-center gap-3">
                         <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{c.key}</code>
                         <span className="text-sm">{c.label}</span>
+                        <Badge variant={c.type === "image" ? "default" : "secondary"} className="text-xs">
+                          {c.type === "image" ? "📷 Imagem" : "Texto"}
+                        </Badge>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => removeCampo(i)}>
                         <X className="h-3 w-3" />
@@ -234,15 +237,24 @@ export default function MasterCategories() {
                 <Input
                   value={newCampoKey}
                   onChange={(e) => setNewCampoKey(e.target.value.replace(/[^a-z0-9_]/g, ""))}
-                  placeholder="chave (ex: cliente_nome)"
+                  placeholder="chave (ex: foto_documento)"
                   className="flex-1"
                 />
                 <Input
                   value={newCampoLabel}
                   onChange={(e) => setNewCampoLabel(e.target.value)}
-                  placeholder="Label (ex: Nome do Cliente)"
+                  placeholder="Label (ex: Foto do Documento)"
                   className="flex-1"
                 />
+                <Select value={newCampoType} onValueChange={(v) => setNewCampoType(v as "text" | "image")}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text">Texto</SelectItem>
+                    <SelectItem value="image">Imagem</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button variant="outline" onClick={addCampo} disabled={!newCampoKey.trim() || !newCampoLabel.trim()}>
                   <Plus className="h-4 w-4" />
                 </Button>
