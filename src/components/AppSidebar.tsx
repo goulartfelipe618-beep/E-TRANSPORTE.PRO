@@ -59,17 +59,20 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
+import { useTenantMenus } from "@/hooks/useTenantMenus";
 
 interface SubItem {
   title: string;
   page: PageKey;
   icon: React.ElementType;
+  menuKey: string;
 }
 
 interface MenuItem {
   title: string;
   icon: React.ElementType;
   page?: PageKey;
+  menuKey: string;
   subItems?: SubItem[];
 }
 
@@ -80,41 +83,45 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
+        menuKey: "dashboard",
         subItems: [
-          { title: "Métricas", page: "dashboard/metricas", icon: Activity },
-          { title: "Abrangência", page: "dashboard/abrangencia", icon: MapPin },
+          { title: "Métricas", page: "dashboard/metricas", icon: Activity, menuKey: "dashboard.metricas" },
+          { title: "Abrangência", page: "dashboard/abrangencia", icon: MapPin, menuKey: "dashboard.abrangencia" },
         ],
       },
       {
         title: "Transfer",
         icon: ArrowRightLeft,
+        menuKey: "transfer",
         subItems: [
-          { title: "Solicitações", page: "transfer/solicitacoes", icon: ClipboardList },
-          { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck },
-          { title: "Contrato", page: "transfer/contrato", icon: BookOpen },
-          { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned },
+          { title: "Solicitações", page: "transfer/solicitacoes", icon: ClipboardList, menuKey: "transfer.solicitacoes" },
+          { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck, menuKey: "transfer.reservas" },
+          { title: "Contrato", page: "transfer/contrato", icon: BookOpen, menuKey: "transfer.contrato" },
+          { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned, menuKey: "transfer.geolocalizacao" },
         ],
       },
       {
         title: "Grupos",
         icon: Bus,
+        menuKey: "grupos",
         subItems: [
-          { title: "Solicitações", page: "grupos/solicitacoes" as PageKey, icon: ClipboardList },
-          { title: "Reservas", page: "grupos/reservas" as PageKey, icon: CalendarCheck },
-          { title: "Contrato", page: "grupos/contrato" as PageKey, icon: BookOpen },
+          { title: "Solicitações", page: "grupos/solicitacoes" as PageKey, icon: ClipboardList, menuKey: "grupos.solicitacoes" },
+          { title: "Reservas", page: "grupos/reservas" as PageKey, icon: CalendarCheck, menuKey: "grupos.reservas" },
+          { title: "Contrato", page: "grupos/contrato" as PageKey, icon: BookOpen, menuKey: "grupos.contrato" },
         ],
       },
       {
         title: "Motoristas",
         icon: Users,
+        menuKey: "motoristas",
         subItems: [
-          { title: "Cadastros", page: "motoristas/cadastros", icon: UserPlus },
-          { title: "Parcerias", page: "motoristas/parcerias", icon: Handshake },
-          { title: "Solicitações", page: "motoristas/solicitacoes", icon: ClipboardList },
-          { title: "Agendamentos", page: "motoristas/agendamentos", icon: Calendar },
+          { title: "Cadastros", page: "motoristas/cadastros", icon: UserPlus, menuKey: "motoristas.cadastros" },
+          { title: "Parcerias", page: "motoristas/parcerias", icon: Handshake, menuKey: "motoristas.parcerias" },
+          { title: "Solicitações", page: "motoristas/solicitacoes", icon: ClipboardList, menuKey: "motoristas.solicitacoes" },
+          { title: "Agendamentos", page: "motoristas/agendamentos", icon: Calendar, menuKey: "motoristas.agendamentos" },
         ],
       },
-      { title: "Veículos", icon: Car, page: "veiculos" },
+      { title: "Veículos", icon: Car, page: "veiculos", menuKey: "veiculos" },
     ],
   },
   {
@@ -123,24 +130,26 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
       {
         title: "Campanhas",
         icon: Megaphone,
+        menuKey: "campanhas",
         subItems: [
-          { title: "Ativos", page: "campanhas/ativos", icon: Target },
-          { title: "Leads", page: "campanhas/leads", icon: UserCheck },
+          { title: "Ativos", page: "campanhas/ativos", icon: Target, menuKey: "campanhas.ativos" },
+          { title: "Leads", page: "campanhas/leads", icon: UserCheck, menuKey: "campanhas.leads" },
         ],
       },
-      { title: "Marketing", icon: BarChart3, page: "marketing" },
+      { title: "Marketing", icon: BarChart3, page: "marketing", menuKey: "marketing" },
       {
         title: "Network",
         icon: Globe,
+        menuKey: "network",
         subItems: [
-          { title: "Hotéis e Resorts", page: "network/hoteis", icon: Hotel },
-          { title: "Agências de Viagens", page: "network/agencias", icon: Plane },
-          { title: "Clínicas e Hospitais", page: "network/clinicas", icon: Building2 },
-          { title: "Laboratórios e Farmácias", page: "network/laboratorios", icon: FlaskConical },
-          { title: "Produtores de Shows", page: "network/shows", icon: Music },
-          { title: "Empresas de Casamento", page: "network/casamentos", icon: Heart },
-          { title: "Embaixadas e Consulados", page: "network/embaixadas", icon: Landmark },
-          { title: "Órgãos Governamentais", page: "network/governo", icon: Building },
+          { title: "Hotéis e Resorts", page: "network/hoteis", icon: Hotel, menuKey: "network.hoteis" },
+          { title: "Agências de Viagens", page: "network/agencias", icon: Plane, menuKey: "network.agencias" },
+          { title: "Clínicas e Hospitais", page: "network/clinicas", icon: Building2, menuKey: "network.clinicas" },
+          { title: "Laboratórios e Farmácias", page: "network/laboratorios", icon: FlaskConical, menuKey: "network.laboratorios" },
+          { title: "Produtores de Shows", page: "network/shows", icon: Music, menuKey: "network.shows" },
+          { title: "Empresas de Casamento", page: "network/casamentos", icon: Heart, menuKey: "network.casamentos" },
+          { title: "Embaixadas e Consulados", page: "network/embaixadas", icon: Landmark, menuKey: "network.embaixadas" },
+          { title: "Órgãos Governamentais", page: "network/governo", icon: Building, menuKey: "network.governo" },
         ],
       },
     ],
@@ -151,19 +160,20 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
       {
         title: "Sistema",
         icon: Settings,
+        menuKey: "sistema",
         subItems: [
-          { title: "Configurações", page: "sistema/configuracoes", icon: Cog },
-          { title: "Automações", page: "sistema/automacoes", icon: Cog },
-          { title: "Comunicador", page: "sistema/comunicador", icon: MessageSquare },
-          { title: "Usuários", page: "sistema/usuarios", icon: UsersRound },
-          { title: "Logs", page: "sistema/logs", icon: ScrollText },
-          { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone },
-          { title: "Tickets", page: "sistema/tickets", icon: Ticket },
+          { title: "Configurações", page: "sistema/configuracoes", icon: Cog, menuKey: "sistema.configuracoes" },
+          { title: "Automações", page: "sistema/automacoes", icon: Cog, menuKey: "sistema.automacoes" },
+          { title: "Comunicador", page: "sistema/comunicador", icon: MessageSquare, menuKey: "sistema.comunicador" },
+          { title: "Usuários", page: "sistema/usuarios", icon: UsersRound, menuKey: "sistema.usuarios" },
+          { title: "Logs", page: "sistema/logs", icon: ScrollText, menuKey: "sistema.logs" },
+          { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone, menuKey: "sistema.aplicativo" },
+          { title: "Tickets", page: "sistema/tickets", icon: Ticket, menuKey: "sistema.tickets" },
         ],
       },
-      { title: "Políticas", icon: Shield, page: "politicas" },
-      { title: "Anotações", icon: StickyNote, page: "anotacoes" },
-      { title: "Documentação", icon: FileText, page: "documentacao" },
+      { title: "Políticas", icon: Shield, page: "politicas", menuKey: "politicas" },
+      { title: "Anotações", icon: StickyNote, page: "anotacoes", menuKey: "anotacoes" },
+      { title: "Documentação", icon: FileText, page: "documentacao", menuKey: "documentacao" },
     ],
   },
 ];
@@ -173,6 +183,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const { activePage, setActivePage } = useActivePage();
   const { projectName, logoUrl } = useGlobalConfig();
+  const { isMenuEnabled } = useTenantMenus();
 
   const isSubActive = (subItems?: SubItem[]) =>
     subItems?.some((s) => s.page === activePage) ?? false;
@@ -206,16 +217,22 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {menuSections.map((section) => (
+        {menuSections.map((section) => {
+          const visibleItems = section.items.filter((item) => isMenuEnabled(item.menuKey));
+          if (visibleItems.length === 0) return null;
+          return (
           <SidebarGroup key={section.label}>
             <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {section.items.map((item) =>
-                  item.subItems ? (
+                {visibleItems.map((item) => {
+                  if (item.subItems) {
+                    const visibleSubs = item.subItems.filter((sub) => isMenuEnabled(sub.menuKey));
+                    if (visibleSubs.length === 0) return null;
+                    return (
                     <Collapsible
                       key={item.title}
-                      defaultOpen={isSubActive(item.subItems)}
+                      defaultOpen={isSubActive(visibleSubs)}
                       className="group/collapsible"
                     >
                       <SidebarMenuItem>
@@ -233,7 +250,7 @@ export function AppSidebar() {
                         {!collapsed && (
                           <CollapsibleContent>
                             <SidebarMenu className="ml-4 border-l border-sidebar-border pl-2 mt-1">
-                              {item.subItems.map((sub) => (
+                              {visibleSubs.map((sub) => (
                                 <SidebarMenuItem key={sub.page}>
                                   <SidebarMenuButton
                                     onClick={() => setActivePage(sub.page)}
@@ -252,7 +269,9 @@ export function AppSidebar() {
                         )}
                       </SidebarMenuItem>
                     </Collapsible>
-                  ) : (
+                    );
+                  }
+                  return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         onClick={() => setActivePage(item.page!)}
@@ -265,12 +284,13 @@ export function AppSidebar() {
                         {!collapsed && <span>{item.title}</span>}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  )
-                )}
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        ))}
+          );
+        })}
       </SidebarContent>
       <div className="mt-auto p-3 border-t border-sidebar-accent">
         <button
