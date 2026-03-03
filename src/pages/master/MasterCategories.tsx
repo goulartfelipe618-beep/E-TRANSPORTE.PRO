@@ -41,6 +41,7 @@ export default function MasterCategories() {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [newCampoKey, setNewCampoKey] = useState("");
   const [newCampoLabel, setNewCampoLabel] = useState("");
+  const [newCampoType, setNewCampoType] = useState<"text" | "image">("text");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
