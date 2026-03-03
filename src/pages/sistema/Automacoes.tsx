@@ -369,12 +369,26 @@ export default function AutomacoesPage() {
                   <SelectValue placeholder="Selecione o tipo..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem disabled value="__header_master__">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
-                  </SelectItem>
-                  <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
-                  <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
-                  <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
+                  {categories.length > 0 && (
+                    <>
+                      <SelectItem disabled value="__header_categories__">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias</span>
+                      </SelectItem>
+                      {categories.map((c) => (
+                        <SelectItem key={c.slug} value={c.slug}>{c.nome}</SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {categories.length === 0 && (
+                    <>
+                      <SelectItem disabled value="__header_master__">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
+                      </SelectItem>
+                      <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
+                      <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
+                      <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
+                    </>
+                  )}
                   {campanhaOptions.length > 0 && (
                     <>
                       <SelectItem disabled value="__header_campanhas__">
