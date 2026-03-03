@@ -184,12 +184,17 @@ export default function AutomacoesPage() {
   const [newTipo, setNewTipo] = useState("");
   const [creating, setCreating] = useState(false);
   const [campanhaOptions, setCampanhaOptions] = useState<{ id: string; nome: string }[]>([]);
+  const [categories, setCategories] = useState<AutomationCategory[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("campanhas").select("id, nome").order("nome");
-      if (data) setCampanhaOptions(data);
+      const [campRes, catRes] = await Promise.all([
+        supabase.from("campanhas").select("id, nome").order("nome"),
+        supabase.from("automation_categories").select("*").eq("ativo", true).order("nome"),
+      ]);
+      if (campRes.data) setCampanhaOptions(campRes.data);
+      if (catRes.data) setCategories(catRes.data.map((c: any) => ({ ...c, campos: Array.isArray(c.campos) ? c.campos : [] })));
     })();
   }, []);
 
