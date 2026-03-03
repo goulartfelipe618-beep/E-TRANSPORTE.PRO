@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
-  ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3,
+  ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import MasterMenus from "./MasterMenus";
 import MasterCategories from "./MasterCategories";
 import MasterLogs from "./MasterLogs";
 import MasterApiConfig from "./MasterApiConfig";
+import MasterSecurity from "./MasterSecurity";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -22,6 +23,7 @@ const MENU_ITEMS = [
   { key: "categories", label: "Categorias de Automação", icon: Layers3 },
   { key: "logs", label: "Logs", icon: ScrollText },
   { key: "apis", label: "APIs & Configurações", icon: KeyRound },
+  { key: "security", label: "Segurança", icon: Shield },
 ];
 
 export default function MasterLayout() {
