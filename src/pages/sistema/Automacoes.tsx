@@ -32,15 +32,27 @@ interface Automacao {
   created_at: string;
 }
 
-const TIPOS_AUTOMACAO: Record<string, string> = {
+// Built-in types that have hardcoded field groups
+const BUILTIN_TIPOS: Record<string, string> = {
   transfer_executivo: "Transfer Executivo",
   solicitacao_motorista: "Solicitação Motorista",
   solicitacao_grupo: "Solicitação de Grupo",
 };
 
-const getTipoLabel = (tipo: string) => {
+interface AutomationCategory {
+  id: string;
+  slug: string;
+  nome: string;
+  descricao: string | null;
+  campos: { key: string; label: string }[];
+  ativo: boolean;
+}
+
+const getTipoLabel = (tipo: string, categories: AutomationCategory[]) => {
   if (tipo.startsWith("leads_campanha:")) return "Leads Campanha";
-  return TIPOS_AUTOMACAO[tipo] || tipo;
+  const cat = categories.find((c) => c.slug === tipo);
+  if (cat) return cat.nome;
+  return BUILTIN_TIPOS[tipo] || tipo;
 };
 
 interface WebhookTest {
