@@ -122,8 +122,7 @@ export default function MasterUsers() {
 
   const roleLabel = (r: string) => {
     if (r === "master_admin") return "Master Admin";
-    if (r === "admin") return "Admin";
-    return "Usuário";
+    return "Administrador";
   };
 
   const roleColor = (r: string) => {
@@ -217,8 +216,7 @@ export default function MasterUsers() {
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin (Gestor do tenant)</SelectItem>
-                  <SelectItem value="user">Usuário (Acesso limitado)</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
                   <SelectItem value="master_admin">Master Admin</SelectItem>
                 </SelectContent>
               </Select>
