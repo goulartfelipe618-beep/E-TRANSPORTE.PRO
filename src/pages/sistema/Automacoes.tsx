@@ -244,6 +244,7 @@ export default function AutomacoesPage() {
     return (
       <AutomacaoDetail
         automacao={selected}
+        categories={categories}
         onBack={() => { setSelected(null); fetchAutomacoes(); }}
         onToggle={(enabled) => handleToggle(selected, enabled)}
       />
