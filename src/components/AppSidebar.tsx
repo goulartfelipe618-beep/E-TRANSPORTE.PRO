@@ -64,7 +64,6 @@ import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { useTenantMenus } from "@/hooks/useTenantMenus";
 import { usePanelTheme } from "@/hooks/usePanelTheme";
 import { NotificationBell } from "@/components/NotificationBell";
-import { usePanelTheme } from "@/hooks/usePanelTheme";
 
 interface SubItem {
   title: string;
