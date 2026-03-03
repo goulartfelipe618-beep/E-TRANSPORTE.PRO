@@ -28,6 +28,7 @@ import {
   Music,
   Heart,
   Landmark,
+  LogOut,
   Building,
   Cog,
   UsersRound,
@@ -261,6 +262,18 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <div className="mt-auto p-3 border-t border-sidebar-accent">
+        <button
+          onClick={async () => {
+            const { supabase } = await import("@/integrations/supabase/client");
+            await supabase.auth.signOut();
+          }}
+          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+          {!collapsed && <span>Sair</span>}
+        </button>
+      </div>
     </Sidebar>
   );
 }
