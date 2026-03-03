@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +68,7 @@ const statusColor: Record<string, string> = {
 };
 
 export default function MotoristasCadastros() {
+  const tenantId = useTenantId();
   const [motoristas, setMotoristas] = useState<MotoristaDB[]>([]);
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -104,6 +106,7 @@ export default function MotoristasCadastros() {
     try {
       // Insert motorista
       const { data: motorista, error } = await (supabase as any).from("motoristas").insert({
+        tenant_id: tenantId,
         nome_completo: form.nome_completo,
         cpf: form.cpf,
         rg: form.rg || null,

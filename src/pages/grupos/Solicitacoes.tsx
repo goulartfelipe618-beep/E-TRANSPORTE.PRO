@@ -68,7 +68,7 @@ export default function GruposSolicitacoes() {
     if (!converting) return;
     setConvertLoading(true);
     const numFields = ["numero_passageiros", "valor_base", "desconto_percentual", "valor_total"];
-    const reserva: Record<string, any> = { solicitacao_id: converting.id, status: "confirmada" };
+    const reserva: Record<string, any> = { solicitacao_id: converting.id, status: "confirmada", tenant_id: tenantId };
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
@@ -88,7 +88,7 @@ export default function GruposSolicitacoes() {
   const handleCreateReserva = async (formData: Record<string, any>) => {
     setCreateLoading(true);
     const numFields = ["numero_passageiros", "valor_base", "desconto_percentual", "valor_total"];
-    const reserva: Record<string, any> = { status: "confirmada" };
+    const reserva: Record<string, any> = { status: "confirmada", tenant_id: tenantId };
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
