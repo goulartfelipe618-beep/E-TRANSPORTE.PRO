@@ -160,7 +160,26 @@ export default function MotoristasSolicitacoes() {
       const { data: motorista, error } = await (supabase as any).from("motoristas").insert({
         tenant_id: tenantId,
         nome_completo: form.nome_completo,
-...
+        cpf: form.cpf,
+        rg: form.rg || null,
+        data_nascimento: form.data_nascimento || null,
+        telefone: form.telefone,
+        email: form.email || null,
+        endereco: form.endereco || null,
+        cidade: form.cidade || null,
+        estado: form.estado || null,
+        cep: form.cep || null,
+        cnh_numero: form.cnh_numero || null,
+        cnh_categoria: form.cnh_categoria || null,
+        cnh_validade: form.cnh_validade || null,
+        status: form.status,
+        observacoes: form.observacoes || null,
+        tipo_pagamento: form.tipo_pagamento || null,
+        banco: form.banco || null,
+        agencia: form.agencia || null,
+        conta: form.conta || null,
+        tipo_conta: form.tipo_conta || null,
+        chave_pix: form.chave_pix || null,
         possui_veiculo: form.possui_veiculo,
       }).select().single();
 
