@@ -176,9 +176,7 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Tickets", page: "sistema/tickets", icon: Ticket, menuKey: "sistema.tickets" },
         ],
       },
-      { title: "Políticas", icon: Shield, page: "politicas", menuKey: "politicas" },
       { title: "Anotações", icon: StickyNote, page: "anotacoes", menuKey: "anotacoes" },
-      { title: "Documentação", icon: FileText, page: "documentacao", menuKey: "documentacao" },
     ],
   },
 ];
