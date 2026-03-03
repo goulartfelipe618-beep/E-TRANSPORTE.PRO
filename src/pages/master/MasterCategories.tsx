@@ -17,6 +17,8 @@ interface Campo {
   label: string;
 }
 
+const BUILTIN_SLUGS = ["transfer_executivo", "solicitacao_motorista", "solicitacao_grupo", "leads"];
+
 interface Category {
   id: string;
   slug: string;
