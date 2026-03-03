@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,6 +70,7 @@ const emptyForm = {
 };
 
 export default function MotoristasSolicitacoes() {
+  const tenantId = useTenantId();
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoMotorista[]>([]);
   const [selected, setSelected] = useState<SolicitacaoMotorista | null>(null);
   const [loading, setLoading] = useState(true);
@@ -156,6 +158,7 @@ export default function MotoristasSolicitacoes() {
     setSaving(true);
     try {
       const { data: motorista, error } = await (supabase as any).from("motoristas").insert({
+        tenant_id: tenantId,
         nome_completo: form.nome_completo,
         cpf: form.cpf,
         rg: form.rg || null,
@@ -195,6 +198,7 @@ export default function MotoristasSolicitacoes() {
 
       if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
         const vehicleData: any = {
+          tenant_id: tenantId,
           motorista_id: mid,
           marca: form.v_marca,
           modelo: form.v_modelo,
