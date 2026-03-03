@@ -37,6 +37,7 @@ import {
   Ticket,
   MapPinned,
   MessageSquare,
+  Bus,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -92,6 +93,15 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Reservas", page: "transfer/reservas", icon: CalendarCheck },
           { title: "Contrato", page: "transfer/contrato", icon: BookOpen },
           { title: "Geolocalização", page: "transfer/geolocalizacao", icon: MapPinned },
+        ],
+      },
+      {
+        title: "Grupos",
+        icon: Bus,
+        subItems: [
+          { title: "Solicitações", page: "grupos/solicitacoes" as PageKey, icon: ClipboardList },
+          { title: "Reservas", page: "grupos/reservas" as PageKey, icon: CalendarCheck },
+          { title: "Contrato", page: "grupos/contrato" as PageKey, icon: BookOpen },
         ],
       },
       {
