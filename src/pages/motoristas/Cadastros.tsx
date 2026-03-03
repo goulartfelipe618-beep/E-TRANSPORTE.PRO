@@ -159,6 +159,7 @@ export default function MotoristasCadastros() {
           chassi: form.v_chassi || null,
           status: form.v_status,
           observacoes: form.v_observacoes || null,
+          tenant_id: tenantId,
         };
 
         if (files.crlv) vehicleData.crlv_url = await uploadFile(files.crlv, "crlv", mid);
