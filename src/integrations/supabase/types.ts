@@ -757,6 +757,8 @@ export type Database = {
           data_retorno: string | null
           desconto_percentual: number | null
           destino: string | null
+          embarque_lat: number | null
+          embarque_lng: number | null
           endereco_embarque: string | null
           hora_ida: string | null
           hora_retorno: string | null
@@ -787,6 +789,8 @@ export type Database = {
           data_retorno?: string | null
           desconto_percentual?: number | null
           destino?: string | null
+          embarque_lat?: number | null
+          embarque_lng?: number | null
           endereco_embarque?: string | null
           hora_ida?: string | null
           hora_retorno?: string | null
@@ -817,6 +821,8 @@ export type Database = {
           data_retorno?: string | null
           desconto_percentual?: number | null
           destino?: string | null
+          embarque_lat?: number | null
+          embarque_lng?: number | null
           endereco_embarque?: string | null
           hora_ida?: string | null
           hora_retorno?: string | null
@@ -866,6 +872,8 @@ export type Database = {
           ida_data: string | null
           ida_destino: string | null
           ida_embarque: string | null
+          ida_embarque_lat: number | null
+          ida_embarque_lng: number | null
           ida_hora: string | null
           ida_mensagem: string | null
           ida_passageiros: number | null
@@ -893,6 +901,8 @@ export type Database = {
           volta_data: string | null
           volta_destino: string | null
           volta_embarque: string | null
+          volta_embarque_lat: number | null
+          volta_embarque_lng: number | null
           volta_hora: string | null
           volta_mensagem: string | null
           volta_passageiros: number | null
@@ -910,6 +920,8 @@ export type Database = {
           ida_data?: string | null
           ida_destino?: string | null
           ida_embarque?: string | null
+          ida_embarque_lat?: number | null
+          ida_embarque_lng?: number | null
           ida_hora?: string | null
           ida_mensagem?: string | null
           ida_passageiros?: number | null
@@ -937,6 +949,8 @@ export type Database = {
           volta_data?: string | null
           volta_destino?: string | null
           volta_embarque?: string | null
+          volta_embarque_lat?: number | null
+          volta_embarque_lng?: number | null
           volta_hora?: string | null
           volta_mensagem?: string | null
           volta_passageiros?: number | null
@@ -954,6 +968,8 @@ export type Database = {
           ida_data?: string | null
           ida_destino?: string | null
           ida_embarque?: string | null
+          ida_embarque_lat?: number | null
+          ida_embarque_lng?: number | null
           ida_hora?: string | null
           ida_mensagem?: string | null
           ida_passageiros?: number | null
@@ -981,6 +997,8 @@ export type Database = {
           volta_data?: string | null
           volta_destino?: string | null
           volta_embarque?: string | null
+          volta_embarque_lat?: number | null
+          volta_embarque_lng?: number | null
           volta_hora?: string | null
           volta_mensagem?: string | null
           volta_passageiros?: number | null
