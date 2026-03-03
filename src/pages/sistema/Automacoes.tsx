@@ -400,10 +400,11 @@ function AutomacaoDetail({
   const [saving, setSaving] = useState(false);
   const [loadingTests, setLoadingTests] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState(automacao.tipo === "solicitacao_motorista" ? "motorista" : "somente_ida");
+  const [activeTab, setActiveTab] = useState(automacao.tipo === "solicitacao_motorista" || automacao.tipo === "solicitacao_grupo" ? "motorista" : "somente_ida");
   const { toast } = useToast();
 
   const isMotorista = automacao.tipo === "solicitacao_motorista";
+  const isGrupo = automacao.tipo === "solicitacao_grupo";
   const isLeadsCampanha = automacao.tipo.startsWith("leads_campanha:");
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
