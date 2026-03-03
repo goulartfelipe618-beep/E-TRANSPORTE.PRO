@@ -548,6 +548,83 @@ export type Database = {
           },
         ]
       }
+      network_contacts: {
+        Row: {
+          categoria: string
+          cidade: string | null
+          cnpj: string | null
+          contato_cargo: string | null
+          contato_email: string | null
+          contato_nome: string | null
+          contato_telefone: string | null
+          created_at: string
+          endereco: string | null
+          estado: string | null
+          id: string
+          nome_empresa: string
+          observacoes: string | null
+          potencial_negocio: string | null
+          responsavel: string | null
+          status_contato: string
+          tenant_id: string | null
+          tipo_estabelecimento: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          categoria: string
+          cidade?: string | null
+          cnpj?: string | null
+          contato_cargo?: string | null
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome_empresa: string
+          observacoes?: string | null
+          potencial_negocio?: string | null
+          responsavel?: string | null
+          status_contato?: string
+          tenant_id?: string | null
+          tipo_estabelecimento?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          categoria?: string
+          cidade?: string | null
+          cnpj?: string | null
+          contato_cargo?: string | null
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome_empresa?: string
+          observacoes?: string | null
+          potencial_negocio?: string | null
+          responsavel?: string | null
+          status_contato?: string
+          tenant_id?: string | null
+          tipo_estabelecimento?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "network_contacts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
