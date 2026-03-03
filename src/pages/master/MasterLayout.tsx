@@ -43,6 +43,7 @@ export default function MasterLayout() {
       case "categories": return <MasterCategories />;
       case "logs": return <MasterLogs />;
       case "apis": return <MasterApiConfig />;
+      case "security": return <MasterSecurity />;
       default: return <MasterDashboard />;
     }
   };
