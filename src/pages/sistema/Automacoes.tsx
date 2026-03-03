@@ -441,6 +441,9 @@ function AutomacaoDetail({
   const isMotorista = automacao.tipo === "solicitacao_motorista";
   const isGrupo = automacao.tipo === "solicitacao_grupo";
   const isLeadsCampanha = automacao.tipo.startsWith("leads_campanha:");
+  const isTransfer = automacao.tipo === "transfer_executivo";
+  const dynamicCategory = categories.find((c) => c.slug === automacao.tipo);
+  const isDynamic = !!dynamicCategory && !isMotorista && !isGrupo && !isTransfer && !isLeadsCampanha;
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
   const availableVars = useMemo(() => {
