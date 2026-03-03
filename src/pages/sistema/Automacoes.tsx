@@ -712,6 +712,17 @@ function AutomacaoDetail({
               <p className="text-muted-foreground text-sm">
                 Selecione um teste recebido para visualizar as variáveis disponíveis e configurar o mapeamento.
               </p>
+            ) : isDynamic ? (
+              /* ── Dynamic category mapping from master config ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {dynamicCategory.campos.length > 0 ? (
+                  dynamicCategory.campos.map(renderVarSelect)
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    Nenhum campo configurado para esta categoria. Configure os campos no painel master.
+                  </p>
+                )}
+              </div>
             ) : isLeadsCampanha ? (
               /* ── Leads Campanha mapping ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
