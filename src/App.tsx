@@ -9,6 +9,7 @@ import { TransferProvider } from "@/contexts/TransferContext";
 import { GlobalConfigProvider } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import Login from "@/pages/Login";
+import MasterLayout from "@/pages/master/MasterLayout";
 import type { Session } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
@@ -16,6 +17,8 @@ const queryClient = new QueryClient();
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMaster, setIsMaster] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -31,7 +34,26 @@ const App = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
+  // Check role when session changes
+  useEffect(() => {
+    if (!session?.user) {
+      setIsMaster(false);
+      setRoleLoading(false);
+      return;
+    }
+    setRoleLoading(true);
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsMaster(data?.role === "master_admin");
+        setRoleLoading(false);
+      });
+  }, [session?.user?.id]);
+
+  if (loading || (session && roleLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -45,13 +67,17 @@ const App = () => {
         <Toaster />
         <Sonner />
         {session ? (
-          <GlobalConfigProvider>
-            <PageProvider>
-              <TransferProvider>
-                <DashboardLayout />
-              </TransferProvider>
-            </PageProvider>
-          </GlobalConfigProvider>
+          isMaster ? (
+            <MasterLayout />
+          ) : (
+            <GlobalConfigProvider>
+              <PageProvider>
+                <TransferProvider>
+                  <DashboardLayout />
+                </TransferProvider>
+              </PageProvider>
+            </GlobalConfigProvider>
+          )
         ) : (
           <Login />
         )}
