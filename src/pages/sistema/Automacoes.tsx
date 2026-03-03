@@ -34,6 +34,7 @@ interface Automacao {
 const TIPOS_AUTOMACAO: Record<string, string> = {
   transfer_executivo: "Transfer Executivo",
   solicitacao_motorista: "Solicitação Motorista",
+  solicitacao_grupo: "Solicitação de Grupo",
 };
 
 const getTipoLabel = (tipo: string) => {
@@ -118,6 +119,24 @@ const leadsFieldGroups = [
   { key: "email", label: "E-mail" },
   { key: "telefone", label: "Telefone / WhatsApp" },
   { key: "observacoes", label: "Observações / Mensagem" },
+];
+
+/* ── Field groups for Grupos ── */
+const gruposFieldGroups = [
+  { key: "tipo_veiculo", label: "Tipo de Veículo" },
+  { key: "numero_passageiros", label: "Número de Passageiros" },
+  { key: "endereco_embarque", label: "Endereço de Embarque" },
+  { key: "destino", label: "Destino" },
+  { key: "data_ida", label: "Data de Ida" },
+  { key: "hora_ida", label: "Hora de Ida" },
+  { key: "data_retorno", label: "Data de Retorno" },
+  { key: "hora_retorno", label: "Hora de Retorno" },
+  { key: "observacoes", label: "Observações" },
+  { key: "cupom", label: "Cupom de Desconto" },
+  { key: "cliente_nome", label: "Nome do Cliente" },
+  { key: "cliente_email", label: "E-mail do Cliente" },
+  { key: "cliente_whatsapp", label: "WhatsApp do Cliente" },
+  { key: "cliente_origem", label: "Como nos encontrou" },
 ];
 
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
@@ -336,6 +355,7 @@ export default function AutomacoesPage() {
                   </SelectItem>
                   <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
                   <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
+                  <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
                   {campanhaOptions.length > 0 && (
                     <>
                       <SelectItem disabled value="__header_campanhas__">
@@ -379,10 +399,11 @@ function AutomacaoDetail({
   const [saving, setSaving] = useState(false);
   const [loadingTests, setLoadingTests] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState(automacao.tipo === "solicitacao_motorista" ? "motorista" : "somente_ida");
+  const [activeTab, setActiveTab] = useState(automacao.tipo === "solicitacao_motorista" || automacao.tipo === "solicitacao_grupo" ? "motorista" : "somente_ida");
   const { toast } = useToast();
 
   const isMotorista = automacao.tipo === "solicitacao_motorista";
+  const isGrupo = automacao.tipo === "solicitacao_grupo";
   const isLeadsCampanha = automacao.tipo.startsWith("leads_campanha:");
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
@@ -513,7 +534,9 @@ function AutomacaoDetail({
                       ? "Envios criam leads na campanha associada com o mapeamento configurado."
                       : isMotorista
                         ? "Envios criam solicitações de motorista com o mapeamento configurado."
-                        : "Envios criam solicitações de transfer com o mapeamento configurado."
+                        : isGrupo
+                          ? "Envios criam solicitações de grupo com o mapeamento configurado."
+                          : "Envios criam solicitações de transfer com o mapeamento configurado."
                     : "Envios são salvos como testes para configurar o mapeamento."}
                 </p>
               </div>
@@ -659,6 +682,11 @@ function AutomacaoDetail({
               /* ── Motorista mapping: single list ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
                 {motoristaFieldGroups.map(renderVarSelect)}
+              </div>
+            ) : isGrupo ? (
+              /* ── Grupo mapping: single list ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {gruposFieldGroups.map(renderVarSelect)}
               </div>
             ) : (
               /* ── Transfer mapping: tabbed ── */

@@ -533,6 +533,104 @@ export type Database = {
         }
         Relationships: []
       }
+      reservas_grupos: {
+        Row: {
+          cliente_cpf_cnpj: string | null
+          cliente_email: string | null
+          cliente_nome: string | null
+          cliente_origem: string | null
+          cliente_whatsapp: string | null
+          created_at: string
+          cupom: string | null
+          data_ida: string | null
+          data_retorno: string | null
+          desconto_percentual: number | null
+          destino: string | null
+          endereco_embarque: string | null
+          hora_ida: string | null
+          hora_retorno: string | null
+          id: string
+          metodo_pagamento: string | null
+          motorista_nome: string | null
+          motorista_telefone: string | null
+          numero_passageiros: number | null
+          observacoes: string | null
+          solicitacao_id: string | null
+          status: string
+          tipo_veiculo: string | null
+          updated_at: string
+          valor_base: number | null
+          valor_total: number | null
+          veiculo: string | null
+        }
+        Insert: {
+          cliente_cpf_cnpj?: string | null
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_whatsapp?: string | null
+          created_at?: string
+          cupom?: string | null
+          data_ida?: string | null
+          data_retorno?: string | null
+          desconto_percentual?: number | null
+          destino?: string | null
+          endereco_embarque?: string | null
+          hora_ida?: string | null
+          hora_retorno?: string | null
+          id?: string
+          metodo_pagamento?: string | null
+          motorista_nome?: string | null
+          motorista_telefone?: string | null
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          solicitacao_id?: string | null
+          status?: string
+          tipo_veiculo?: string | null
+          updated_at?: string
+          valor_base?: number | null
+          valor_total?: number | null
+          veiculo?: string | null
+        }
+        Update: {
+          cliente_cpf_cnpj?: string | null
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_whatsapp?: string | null
+          created_at?: string
+          cupom?: string | null
+          data_ida?: string | null
+          data_retorno?: string | null
+          desconto_percentual?: number | null
+          destino?: string | null
+          endereco_embarque?: string | null
+          hora_ida?: string | null
+          hora_retorno?: string | null
+          id?: string
+          metodo_pagamento?: string | null
+          motorista_nome?: string | null
+          motorista_telefone?: string | null
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          solicitacao_id?: string | null
+          status?: string
+          tipo_veiculo?: string | null
+          updated_at?: string
+          valor_base?: number | null
+          valor_total?: number | null
+          veiculo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_grupos_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes_grupos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reservas_transfer: {
         Row: {
           cliente_cpf_cnpj: string | null
@@ -669,6 +767,80 @@ export type Database = {
             columns: ["solicitacao_id"]
             isOneToOne: false
             referencedRelation: "solicitacoes_transfer"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitacoes_grupos: {
+        Row: {
+          automacao_id: string | null
+          cliente_email: string | null
+          cliente_nome: string | null
+          cliente_origem: string | null
+          cliente_whatsapp: string | null
+          created_at: string
+          cupom: string | null
+          data_ida: string | null
+          data_retorno: string | null
+          destino: string | null
+          endereco_embarque: string | null
+          hora_ida: string | null
+          hora_retorno: string | null
+          id: string
+          numero_passageiros: number | null
+          observacoes: string | null
+          status: string
+          tipo_veiculo: string | null
+          updated_at: string
+        }
+        Insert: {
+          automacao_id?: string | null
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_whatsapp?: string | null
+          created_at?: string
+          cupom?: string | null
+          data_ida?: string | null
+          data_retorno?: string | null
+          destino?: string | null
+          endereco_embarque?: string | null
+          hora_ida?: string | null
+          hora_retorno?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tipo_veiculo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          automacao_id?: string | null
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_whatsapp?: string | null
+          created_at?: string
+          cupom?: string | null
+          data_ida?: string | null
+          data_retorno?: string | null
+          destino?: string | null
+          endereco_embarque?: string | null
+          hora_ida?: string | null
+          hora_retorno?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tipo_veiculo?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_grupos_automacao_id_fkey"
+            columns: ["automacao_id"]
+            isOneToOne: false
+            referencedRelation: "automacoes"
             referencedColumns: ["id"]
           },
         ]

@@ -8,6 +8,10 @@ import TransferSolicitacoes from "@/pages/transfer/Solicitacoes";
 import TransferReservas from "@/pages/transfer/Reservas";
 import TransferContrato from "@/pages/transfer/Contrato";
 import TransferGeolocalizacao from "@/pages/transfer/Geolocalizacao";
+// Grupos
+import GruposSolicitacoes from "@/pages/grupos/Solicitacoes";
+import GruposReservas from "@/pages/grupos/Reservas";
+import GruposContrato from "@/pages/grupos/Contrato";
 // Motoristas
 import MotoristasCadastros from "@/pages/motoristas/Cadastros";
 import MotoristasParcerias from "@/pages/motoristas/Parcerias";
@@ -49,6 +53,9 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "transfer/reservas": TransferReservas,
   "transfer/contrato": TransferContrato,
   "transfer/geolocalizacao": TransferGeolocalizacao,
+  "grupos/solicitacoes": GruposSolicitacoes,
+  "grupos/reservas": GruposReservas,
+  "grupos/contrato": GruposContrato,
   "motoristas/cadastros": MotoristasCadastros,
   "motoristas/parcerias": MotoristasParcerias,
   "motoristas/solicitacoes": MotoristasSolicitacoes,
