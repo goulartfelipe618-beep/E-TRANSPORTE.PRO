@@ -148,7 +148,12 @@ export default function MasterCategories() {
               <TableBody>
                 {categories.map((c) => (
                   <TableRow key={c.id}>
-                    <TableCell className="font-medium">{c.nome}</TableCell>
+                    <TableCell className="font-medium">
+                      {c.nome}
+                      {BUILTIN_SLUGS.includes(c.slug) && (
+                        <Badge variant="outline" className="ml-2 text-xs">Sistema</Badge>
+                      )}
+                    </TableCell>
                     <TableCell><code className="text-xs bg-muted px-1.5 py-0.5 rounded">{c.slug}</code></TableCell>
                     <TableCell><Badge variant="outline">{c.campos.length} campos</Badge></TableCell>
                     <TableCell><Badge variant={c.ativo ? "default" : "secondary"}>{c.ativo ? "Ativo" : "Inativo"}</Badge></TableCell>
