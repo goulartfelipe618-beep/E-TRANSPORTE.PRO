@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { LogIn, Loader2, ShieldCheck, Car, Clock, Route, CalendarCheck } from "lucide-react";
 import loginDriverImage from "@/assets/login-driver.jpg";
 
-const RECAPTCHA_SITE_KEY = "6Lf11n4sAAAAAKldDzFzrmHL4WG28CkkDhwcUCSO";
+const RECAPTCHA_V3_SITE_KEY = "6Lf11n4sAAAAAKldDzFzrmHL4WG28CkkDhwcUCSO";
 
 declare global {
   interface Window {
     grecaptcha: any;
-    onRecaptchaLoad: () => void;
   }
 }
 
@@ -21,52 +20,34 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [recaptchaReady, setRecaptchaReady] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load reCAPTCHA script
     if (document.querySelector('script[src*="recaptcha"]')) {
-      if (window.grecaptcha?.render) {
-        renderCaptcha();
+      if (window.grecaptcha?.ready) {
+        window.grecaptcha.ready(() => setRecaptchaReady(true));
       }
       return;
     }
 
-    window.onRecaptchaLoad = () => {
-      setRecaptchaReady(true);
-    };
-
     const script = document.createElement("script");
-    script.src = `https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit`;
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_V3_SITE_KEY}`;
     script.async = true;
     script.defer = true;
-    document.head.appendChild(script);
-
-    return () => {
-      delete (window as any).onRecaptchaLoad;
+    script.onload = () => {
+      window.grecaptcha.ready(() => setRecaptchaReady(true));
     };
+    document.head.appendChild(script);
   }, []);
 
-  const renderCaptcha = useCallback(() => {
-    if (recaptchaRef.current && window.grecaptcha?.render) {
-      try {
-        recaptchaRef.current.innerHTML = "";
-        window.grecaptcha.render(recaptchaRef.current, {
-          sitekey: RECAPTCHA_SITE_KEY,
-          callback: (token: string) => setRecaptchaToken(token),
-          "expired-callback": () => setRecaptchaToken(null),
-        });
-      } catch {}
+  const getRecaptchaToken = async (): Promise<string | null> => {
+    try {
+      const token = await window.grecaptcha.execute(RECAPTCHA_V3_SITE_KEY, { action: "login" });
+      return token;
+    } catch {
+      return null;
     }
-  }, []);
-
-  useEffect(() => {
-    if (recaptchaReady) {
-      renderCaptcha();
-    }
-  }, [recaptchaReady, renderCaptcha]);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,12 +55,16 @@ export default function Login() {
       toast({ title: "Preencha todos os campos", variant: "destructive" });
       return;
     }
-    if (!recaptchaToken) {
-      toast({ title: "Complete o reCAPTCHA", variant: "destructive" });
-      return;
-    }
 
     setLoading(true);
+
+    // Get reCAPTCHA v3 token
+    const recaptchaToken = await getRecaptchaToken();
+    if (!recaptchaToken) {
+      toast({ title: "Erro na verificação de segurança", description: "Tente novamente.", variant: "destructive" });
+      setLoading(false);
+      return;
+    }
 
     // Verify reCAPTCHA on backend
     try {
@@ -88,9 +73,7 @@ export default function Login() {
       });
 
       if (verifyError || !verifyData?.success) {
-        toast({ title: "Verificação reCAPTCHA falhou", description: "Tente novamente.", variant: "destructive" });
-        setRecaptchaToken(null);
-        if (window.grecaptcha) window.grecaptcha.reset();
+        toast({ title: "Verificação de segurança falhou", description: "Tente novamente.", variant: "destructive" });
         setLoading(false);
         return;
       }
@@ -104,8 +87,6 @@ export default function Login() {
     setLoading(false);
     if (error) {
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
-      setRecaptchaToken(null);
-      if (window.grecaptcha) window.grecaptcha.reset();
     }
   };
 
@@ -194,12 +175,7 @@ export default function Login() {
               />
             </div>
 
-            {/* reCAPTCHA */}
-            <div className="flex justify-center">
-              <div ref={recaptchaRef} />
-            </div>
-
-            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || !recaptchaToken}>
+            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || !recaptchaReady}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
               Iniciar Sessão
             </Button>
