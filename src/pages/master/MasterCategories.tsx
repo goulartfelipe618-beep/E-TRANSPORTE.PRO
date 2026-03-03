@@ -101,6 +101,7 @@ export default function MasterCategories() {
     setCampos([]);
     setNewCampoKey("");
     setNewCampoLabel("");
+    setNewCampoType("text");
   };
 
   const addCampo = () => {
