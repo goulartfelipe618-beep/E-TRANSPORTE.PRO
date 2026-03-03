@@ -258,6 +258,31 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, id: data.id }), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── GRUPO flow ──
+    if (automacao.tipo === "solicitacao_grupo") {
+      const record: Record<string, unknown> = {
+        tipo_veiculo: cleanStr(mapping ? resolve("tipo_veiculo") : (body.tipo_veiculo ?? body.vehicleType), 100),
+        numero_passageiros: cleanInt(mapping ? resolve("numero_passageiros") : (body.numero_passageiros ?? body.passengers ?? body.passageiros)),
+        endereco_embarque: cleanStr(mapping ? resolve("endereco_embarque") : (body.endereco_embarque ?? body.pickupAddress ?? body.embarque), 500),
+        destino: cleanStr(mapping ? resolve("destino") : (body.destino ?? body.destination), 500),
+        data_ida: (() => { const v = clean(mapping ? resolve("data_ida") : (body.data_ida ?? body.date)); return v ? String(v).substring(0, 10) : null; })(),
+        hora_ida: cleanStr(mapping ? resolve("hora_ida") : (body.hora_ida ?? body.time), 10),
+        data_retorno: (() => { const v = clean(mapping ? resolve("data_retorno") : (body.data_retorno ?? body.returnDate)); return v ? String(v).substring(0, 10) : null; })(),
+        hora_retorno: cleanStr(mapping ? resolve("hora_retorno") : (body.hora_retorno ?? body.returnTime), 10),
+        observacoes: cleanStr(mapping ? resolve("observacoes") : (body.observacoes ?? body.notes ?? body.message), 2000),
+        cupom: cleanStr(mapping ? resolve("cupom") : (body.cupom ?? body.coupon), 50),
+        cliente_nome: cleanStr(mapping ? resolve("cliente_nome") : (body.cliente_nome ?? body.name ?? body.nome), 300),
+        cliente_email: cleanStr(mapping ? resolve("cliente_email") : (body.cliente_email ?? body.email), 255),
+        cliente_whatsapp: cleanStr(mapping ? resolve("cliente_whatsapp") : (body.cliente_whatsapp ?? body.whatsapp ?? body.phone ?? body.telefone), 30),
+        cliente_origem: cleanStr(mapping ? resolve("cliente_origem") : (body.cliente_origem ?? body.source ?? body.origin), 200),
+        automacao_id: automacaoId,
+        status: "pendente",
+      };
+      const { data, error } = await supabase.from("solicitacoes_grupos").insert(record).select().single();
+      if (error) return new Response(JSON.stringify({ error: "Erro ao salvar solicitação de grupo" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ success: true, id: data.id }), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── TRANSFER flow ──
     const tipoFromMapping = mapping ? resolve("tipo_viagem") : null;
     const tipo = cleanStr(tipoFromMapping ?? body.tipo_viagem, 50) as string;
