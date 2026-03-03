@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -12,9 +11,9 @@ import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Upload, Type, Shield, Key, RefreshCw,
-  Save, Loader2, Image as ImageIcon, Lock, Smartphone, MapPin
+  Save, Loader2, Image as ImageIcon, Lock, Smartphone
 } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const FONTS = [
   "Poppins", "Inter", "Roboto", "Open Sans", "Montserrat",
@@ -31,16 +30,29 @@ export default function SistemaConfiguracoes() {
   const [font, setFont] = useState("Poppins");
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [mapProvider, setMapProvider] = useState("");
-  const [mapApiKey, setMapApiKey] = useState("");
+
+  // Password change
+  const [pwdDialogOpen, setPwdDialogOpen] = useState(false);
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [pwdSaving, setPwdSaving] = useState(false);
+
+  // 2FA
+  const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
+  const [mfaFactors, setMfaFactors] = useState<any[]>([]);
+  const [mfaEnrolling, setMfaEnrolling] = useState(false);
+  const [mfaQr, setMfaQr] = useState("");
+  const [mfaSecret, setMfaSecret] = useState("");
+  const [mfaFactorId, setMfaFactorId] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaVerifying, setMfaVerifying] = useState(false);
 
   useEffect(() => {
     if (!isLoading) {
       setProjectName(settings["project_name"] || "TransExec");
       setFont(settings["global_font"] || "Poppins");
       setLogoUrl(settings["logo_url"] || "");
-      setMapProvider(settings["map_provider"] || "");
-      setMapApiKey(settings["map_api_key"] || "");
     }
   }, [isLoading, settings]);
 
@@ -63,7 +75,6 @@ export default function SistemaConfiguracoes() {
     try {
       const ext = file.name.split(".").pop();
       const path = `logo.${ext}`;
-      // Remove old
       await supabase.storage.from("logos").remove([path]);
       const { error } = await supabase.storage.from("logos").upload(path, file, { upsert: true });
       if (error) throw error;
@@ -80,6 +91,99 @@ export default function SistemaConfiguracoes() {
     }
   };
 
+  const handlePasswordChange = async () => {
+    if (newPwd !== confirmPwd) {
+      toast({ title: "Erro", description: "As senhas não coincidem.", variant: "destructive" });
+      return;
+    }
+    if (newPwd.length < 6) {
+      toast({ title: "Erro", description: "A nova senha deve ter pelo menos 6 caracteres.", variant: "destructive" });
+      return;
+    }
+    setPwdSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPwd });
+      if (error) throw error;
+      toast({ title: "Senha alterada", description: "Sua senha foi atualizada com sucesso." });
+      setPwdDialogOpen(false);
+      setCurrentPwd("");
+      setNewPwd("");
+      setConfirmPwd("");
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao alterar senha.", variant: "destructive" });
+    } finally {
+      setPwdSaving(false);
+    }
+  };
+
+  // MFA functions
+  const fetchMfaFactors = async () => {
+    const { data } = await supabase.auth.mfa.listFactors();
+    if (data) {
+      setMfaFactors(data.totp || []);
+    }
+  };
+
+  const handleOpenMfa = async () => {
+    await fetchMfaFactors();
+    setMfaDialogOpen(true);
+    setMfaEnrolling(false);
+    setMfaQr("");
+    setMfaSecret("");
+    setMfaCode("");
+  };
+
+  const handleEnrollMfa = async () => {
+    setMfaEnrolling(true);
+    try {
+      const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+      if (error) throw error;
+      if (data) {
+        setMfaQr(data.totp.qr_code);
+        setMfaSecret(data.totp.secret);
+        setMfaFactorId(data.id);
+      }
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao configurar 2FA.", variant: "destructive" });
+      setMfaEnrolling(false);
+    }
+  };
+
+  const handleVerifyMfa = async () => {
+    if (!mfaCode || mfaCode.length !== 6) {
+      toast({ title: "Erro", description: "Insira o código de 6 dígitos.", variant: "destructive" });
+      return;
+    }
+    setMfaVerifying(true);
+    try {
+      const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+      if (challengeError) throw challengeError;
+      const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: mfaFactorId, challengeId: challenge.id, code: mfaCode });
+      if (verifyError) throw verifyError;
+      toast({ title: "2FA ativado", description: "Autenticação em dois fatores configurada com sucesso." });
+      setMfaEnrolling(false);
+      setMfaQr("");
+      setMfaSecret("");
+      setMfaCode("");
+      await fetchMfaFactors();
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Código inválido.", variant: "destructive" });
+    } finally {
+      setMfaVerifying(false);
+    }
+  };
+
+  const handleUnenrollMfa = async (factorId: string) => {
+    try {
+      const { error } = await supabase.auth.mfa.unenroll({ factorId });
+      if (error) throw error;
+      toast({ title: "2FA removido", description: "Autenticação em dois fatores desativada." });
+      await fetchMfaFactors();
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao remover 2FA.", variant: "destructive" });
+    }
+  };
+
   const handleHardRefresh = () => {
     window.location.reload();
   };
@@ -91,6 +195,8 @@ export default function SistemaConfiguracoes() {
       </div>
     );
   }
+
+  const hasVerifiedFactor = mfaFactors.some((f) => f.status === "verified");
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -157,121 +263,33 @@ export default function SistemaConfiguracoes() {
         </CardContent>
       </Card>
 
-      {/* API de Mapas */}
-      <Card className="border-none shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg"><MapPin className="h-5 w-5" /> API de Mapas</CardTitle>
-          <CardDescription>Configure a API de mapas para autocomplete de endereços e mapas no PDF de confirmação</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Provedor de Mapas *</Label>
-            <RadioGroup value={mapProvider} onValueChange={setMapProvider} className="flex gap-6">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="mapbox" id="mapbox" />
-                <Label htmlFor="mapbox" className="cursor-pointer">Mapbox</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="google" id="google" />
-                <Label htmlFor="google" className="cursor-pointer">Google Maps</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          {mapProvider && (
-            <div className="space-y-2">
-              <Label className="text-sm">
-                Chave de API ({mapProvider === "mapbox" ? "Mapbox Access Token" : "Google Maps API Key"}) *
-              </Label>
-              <Input
-                type="password"
-                value={mapApiKey}
-                onChange={(e) => setMapApiKey(e.target.value)}
-                placeholder={mapProvider === "mapbox" ? "pk.eyJ1Ijo..." : "AIzaSy..."}
-              />
-              <p className="text-xs text-muted-foreground">
-                {mapProvider === "mapbox"
-                  ? "Obtenha em mapbox.com → Account → Tokens"
-                  : "Obtenha em console.cloud.google.com → APIs & Services → Credentials"}
-              </p>
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              disabled={!mapProvider || !mapApiKey || saving}
-              onClick={async () => {
-                await upsert.mutateAsync({ key: "map_provider", value: mapProvider });
-                await upsert.mutateAsync({ key: "map_api_key", value: mapApiKey });
-                refetchGlobal();
-                toast({ title: "Salvo", description: "Configuração de mapas atualizada." });
-              }}
-            >
-              <Save className="h-4 w-4 mr-2" /> Salvar
-            </Button>
-            {mapProvider && mapApiKey && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={async () => {
-                  setMapProvider("");
-                  setMapApiKey("");
-                  await upsert.mutateAsync({ key: "map_provider", value: "" });
-                  await upsert.mutateAsync({ key: "map_api_key", value: "" });
-                  refetchGlobal();
-                  toast({ title: "Removido", description: "Configuração de mapas removida." });
-                }}
-              >
-                Remover
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       <Separator />
 
-      {/* Perfil do Administrador */}
+      {/* Segurança */}
       <Card className="border-none shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg"><Shield className="h-5 w-5" /> Perfil do Administrador</CardTitle>
-          <CardDescription>Segurança e controle de acesso</CardDescription>
+          <CardTitle className="flex items-center gap-2 text-lg"><Shield className="h-5 w-5" /> Segurança</CardTitle>
+          <CardDescription>Altere sua senha e configure autenticação em dois fatores</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-sm font-medium">Alteração de Senha</Label>
-              <p className="text-xs text-muted-foreground">Alterar a senha de acesso do administrador</p>
+              <p className="text-xs text-muted-foreground">Alterar a senha de acesso</p>
             </div>
-            <Button variant="outline" size="sm" disabled>
+            <Button variant="outline" size="sm" onClick={() => setPwdDialogOpen(true)}>
               <Key className="h-4 w-4 mr-2" /> Alterar
             </Button>
           </div>
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-sm font-medium">Autenticação em 2 Fatores (2FA)</Label>
-              <p className="text-xs text-muted-foreground">Camada extra de segurança no login</p>
+              <p className="text-xs text-muted-foreground">Camada extra de segurança via app autenticador (TOTP)</p>
             </div>
-            <Switch disabled />
-          </div>
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-medium">Sessões Ativas</Label>
-              <p className="text-xs text-muted-foreground">Gerencie dispositivos conectados</p>
-            </div>
-            <Button variant="outline" size="sm" disabled>
-              <Smartphone className="h-4 w-4 mr-2" /> Ver
+            <Button variant="outline" size="sm" onClick={handleOpenMfa}>
+              <Lock className="h-4 w-4 mr-2" /> Configurar
             </Button>
           </div>
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-medium">Log de Acessos</Label>
-              <p className="text-xs text-muted-foreground">Histórico de logins e atividades</p>
-            </div>
-            <Button variant="outline" size="sm" disabled>
-              <Lock className="h-4 w-4 mr-2" /> Ver Log
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground italic">⚠ Funcionalidades de segurança serão ativadas após implementação do sistema de autenticação.</p>
         </CardContent>
       </Card>
 
@@ -289,6 +307,90 @@ export default function SistemaConfiguracoes() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Password Dialog */}
+      <Dialog open={pwdDialogOpen} onOpenChange={setPwdDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Alterar Senha</DialogTitle>
+            <DialogDescription>Digite sua nova senha abaixo.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nova Senha</Label>
+              <Input type="password" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="Mínimo 6 caracteres" />
+            </div>
+            <div className="space-y-2">
+              <Label>Confirmar Nova Senha</Label>
+              <Input type="password" value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} placeholder="Repita a nova senha" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPwdDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={handlePasswordChange} disabled={pwdSaving}>
+              {pwdSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* MFA Dialog */}
+      <Dialog open={mfaDialogOpen} onOpenChange={setMfaDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Autenticação em 2 Fatores (2FA)</DialogTitle>
+            <DialogDescription>Configure usando um app autenticador como Google Authenticator ou Authy.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Existing factors */}
+            {mfaFactors.filter(f => f.status === "verified").length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-green-600">✓ 2FA Ativo</Label>
+                {mfaFactors.filter(f => f.status === "verified").map((f) => (
+                  <div key={f.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <span className="text-sm">TOTP configurado</span>
+                    <Button variant="destructive" size="sm" onClick={() => handleUnenrollMfa(f.id)}>Remover</Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Enroll flow */}
+            {!hasVerifiedFactor && !mfaEnrolling && (
+              <Button onClick={handleEnrollMfa} className="w-full">
+                <Shield className="h-4 w-4 mr-2" /> Ativar 2FA
+              </Button>
+            )}
+
+            {mfaEnrolling && mfaQr && (
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  <img src={mfaQr} alt="QR Code 2FA" className="w-48 h-48 rounded-lg border" />
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">Ou insira manualmente:</p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">{mfaSecret}</code>
+                </div>
+                <div className="space-y-2">
+                  <Label>Código de verificação (6 dígitos)</Label>
+                  <Input
+                    value={mfaCode}
+                    onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="000000"
+                    maxLength={6}
+                    className="text-center text-lg tracking-widest"
+                  />
+                </div>
+                <Button onClick={handleVerifyMfa} disabled={mfaVerifying} className="w-full">
+                  {mfaVerifying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                  Verificar e Ativar
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
