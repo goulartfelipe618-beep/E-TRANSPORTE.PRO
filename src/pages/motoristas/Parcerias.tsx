@@ -143,6 +143,7 @@ export default function MotoristasParcerias() {
           parceiro_id: pid, marca: v.marca, modelo: v.modelo,
           ano: parseInt(v.ano) || null, placa: v.placa, cor: v.cor || null,
           combustivel: v.combustivel || null, renavam: v.renavam || null, status: v.status,
+          tenant_id: tenantId,
         };
         if (v.crlv) vData.crlv_url = await uploadFile(v.crlv, `veiculo-crlv-${v.placa}`, pid);
         if (v.seguro) vData.seguro_url = await uploadFile(v.seguro, `veiculo-seguro-${v.placa}`, pid);
@@ -156,6 +157,7 @@ export default function MotoristasParcerias() {
           parceiro_id: pid, nome: s.nome, cpf_cnpj: s.cpf_cnpj || null,
           telefone: s.telefone || null, email: s.email || null,
           funcao: s.funcao || null, observacoes: s.observacoes || null,
+          tenant_id: tenantId,
         });
       }
 
