@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ interface Comunicador {
 const MAX_COMUNICADORES = 3;
 
 export default function SistemaComunicador() {
+  const tenantId = useTenantId();
   const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
@@ -48,6 +50,7 @@ export default function SistemaComunicador() {
       webhook_url: "",
       descricao: "",
       ativo: false,
+      tenant_id: tenantId,
     }).select().single();
     if (error) toast.error("Erro ao adicionar");
     else {

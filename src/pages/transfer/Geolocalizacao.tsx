@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ const categoriaMap: Record<string, { label: string; color: string }> = {
 };
 
 export default function TransferGeolocalizacao() {
+  const tenantId = useTenantId();
   const [links, setLinks] = useState<TrackingLink[]>([]);
   const [reservas, setReservas] = useState<ReservaRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,6 +96,7 @@ export default function TransferGeolocalizacao() {
       cliente_nome: formNome || null,
       cliente_telefone: formTelefone || null,
       observacoes: formObs || null,
+      tenant_id: tenantId,
     });
 
     if (error) {

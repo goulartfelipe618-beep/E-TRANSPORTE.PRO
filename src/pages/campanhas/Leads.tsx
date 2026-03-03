@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function CampanhasLeads() {
+  const tenantId = useTenantId();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,6 +115,7 @@ export default function CampanhasLeads() {
       nome: nome.trim(), email: email || null, telefone: telefone || null,
       campanha_id: campanhaId || null, status, observacoes: observacoes || null,
       valor_venda: valorVenda ? parseFloat(valorVenda) : 0, data_conversao: dataConversao || null,
+      tenant_id: tenantId,
     });
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); }
     else { toast({ title: "Lead criado!" }); resetForm(); setCreateOpen(false); fetchData(); }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ const tipoMap: Record<string, string> = {
 };
 
 export default function TransferSolicitacoes() {
+  const tenantId = useTenantId();
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoRow[]>([]);
   const [selected, setSelected] = useState<SolicitacaoRow | null>(null);
   const [converting, setConverting] = useState<SolicitacaoRow | null>(null);
@@ -82,6 +84,7 @@ export default function TransferSolicitacoes() {
     const reserva: Record<string, any> = {
       solicitacao_id: converting.id,
       status: "confirmada",
+      tenant_id: tenantId,
     };
 
     // Copy all fields, converting empty strings to null and numbers where needed
@@ -108,7 +111,7 @@ export default function TransferSolicitacoes() {
   const handleCreateReserva = async (formData: Record<string, any>) => {
     setCreateLoading(true);
     const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas", "valor_base", "desconto_percentual", "valor_total"];
-    const reserva: Record<string, any> = { status: "confirmada" };
+    const reserva: Record<string, any> = { status: "confirmada", tenant_id: tenantId };
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }

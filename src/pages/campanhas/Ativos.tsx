@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ interface Campanha {
 const CORES = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8b5cf6", "#f97316", "#ec4899", "#06b6d4"];
 
 export default function CampanhasAtivos() {
+  const tenantId = useTenantId();
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -76,7 +78,7 @@ export default function CampanhasAtivos() {
     // 1. Create campanha
     const { data: campanha, error } = await supabase
       .from("campanhas")
-      .insert({ nome: nome.trim(), plataforma: plataforma || null, link: linkCampanha || null, cor, descricao: descricao || null, status })
+      .insert({ nome: nome.trim(), plataforma: plataforma || null, link: linkCampanha || null, cor, descricao: descricao || null, status, tenant_id: tenantId })
       .select()
       .single();
 

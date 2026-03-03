@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ interface Anotacao {
 const CORES = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8b5cf6", "#f97316", "#ec4899", "#06b6d4", "#64748b", "#84cc16"];
 
 export default function Anotacoes() {
+  const tenantId = useTenantId();
   const [anotacoes, setAnotacoes] = useState<Anotacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -85,6 +87,7 @@ export default function Anotacoes() {
       titulo: titulo.trim(),
       conteudo: getEditorContent(),
       cor,
+      tenant_id: tenantId,
     });
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); }
     else { toast({ title: "Anotação criada!" }); resetForm(); setCreateOpen(false); fetchAnotacoes(); }
