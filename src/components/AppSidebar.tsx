@@ -40,6 +40,8 @@ import {
   Bus,
   Sun,
   Moon,
+  Mail,
+  QrCode,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -146,9 +148,9 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         icon: BarChart3,
         menuKey: "marketing",
         subItems: [
-          { title: "E-mails", page: "marketing/emails" as PageKey, icon: BarChart3, menuKey: "marketing.emails" },
-          { title: "Receptivos", page: "marketing/receptivos" as PageKey, icon: BarChart3, menuKey: "marketing.receptivos" },
-          { title: "QR Code", page: "marketing/qrcode" as PageKey, icon: BarChart3, menuKey: "marketing.qrcode" },
+          { title: "E-mails", page: "marketing/emails" as PageKey, icon: Mail, menuKey: "marketing.emails" },
+          { title: "Receptivos", page: "marketing/receptivos" as PageKey, icon: MapPin, menuKey: "marketing.receptivos" },
+          { title: "QR Code", page: "marketing/qrcode" as PageKey, icon: QrCode, menuKey: "marketing.qrcode" },
         ],
       },
       {
