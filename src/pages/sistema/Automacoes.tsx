@@ -420,10 +420,12 @@ export default function AutomacoesPage() {
 
 function AutomacaoDetail({
   automacao,
+  categories,
   onBack,
   onToggle,
 }: {
   automacao: Automacao;
+  categories: AutomationCategory[];
   onBack: () => void;
   onToggle: (enabled: boolean) => void;
 }) {
