@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 interface Campo {
   key: string;
   label: string;
+  type?: "text" | "image";
 }
 
 const BUILTIN_SLUGS = ["transfer_executivo", "solicitacao_motorista", "solicitacao_grupo", "leads"];
@@ -103,9 +104,10 @@ export default function MasterCategories() {
 
   const addCampo = () => {
     if (!newCampoKey.trim() || !newCampoLabel.trim()) return;
-    setCampos(prev => [...prev, { key: newCampoKey.trim(), label: newCampoLabel.trim() }]);
+    setCampos(prev => [...prev, { key: newCampoKey.trim(), label: newCampoLabel.trim(), type: newCampoType }]);
     setNewCampoKey("");
     setNewCampoLabel("");
+    setNewCampoType("text");
   };
 
   const removeCampo = (idx: number) => {
