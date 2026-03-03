@@ -356,7 +356,6 @@ export default function AutomacoesPage() {
                   <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
                   <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
                   <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
-                  <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
                   {campanhaOptions.length > 0 && (
                     <>
                       <SelectItem disabled value="__header_campanhas__">
