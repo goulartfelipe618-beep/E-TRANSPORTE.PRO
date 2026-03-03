@@ -63,6 +63,7 @@ import { cn } from "@/lib/utils";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { useTenantMenus } from "@/hooks/useTenantMenus";
 import { usePanelTheme } from "@/hooks/usePanelTheme";
+import { NotificationBell } from "@/components/NotificationBell";
 
 interface SubItem {
   title: string;
@@ -297,6 +298,7 @@ export function AppSidebar() {
         })}
       </SidebarContent>
       <div className="mt-auto p-3 border-t border-sidebar-accent space-y-1">
+        <NotificationBell collapsed={collapsed} />
         <button
           onClick={toggleTheme}
           className="flex items-center gap-2 w-full px-3 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors"
