@@ -34,6 +34,7 @@ interface Automacao {
 const TIPOS_AUTOMACAO: Record<string, string> = {
   transfer_executivo: "Transfer Executivo",
   solicitacao_motorista: "Solicitação Motorista",
+  solicitacao_grupo: "Solicitação de Grupo",
 };
 
 const getTipoLabel = (tipo: string) => {
@@ -118,6 +119,24 @@ const leadsFieldGroups = [
   { key: "email", label: "E-mail" },
   { key: "telefone", label: "Telefone / WhatsApp" },
   { key: "observacoes", label: "Observações / Mensagem" },
+];
+
+/* ── Field groups for Grupos ── */
+const gruposFieldGroups = [
+  { key: "tipo_veiculo", label: "Tipo de Veículo" },
+  { key: "numero_passageiros", label: "Número de Passageiros" },
+  { key: "endereco_embarque", label: "Endereço de Embarque" },
+  { key: "destino", label: "Destino" },
+  { key: "data_ida", label: "Data de Ida" },
+  { key: "hora_ida", label: "Hora de Ida" },
+  { key: "data_retorno", label: "Data de Retorno" },
+  { key: "hora_retorno", label: "Hora de Retorno" },
+  { key: "observacoes", label: "Observações" },
+  { key: "cupom", label: "Cupom de Desconto" },
+  { key: "cliente_nome", label: "Nome do Cliente" },
+  { key: "cliente_email", label: "E-mail do Cliente" },
+  { key: "cliente_whatsapp", label: "WhatsApp do Cliente" },
+  { key: "cliente_origem", label: "Como nos encontrou" },
 ];
 
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
@@ -335,6 +354,8 @@ export default function AutomacoesPage() {
                     <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
                   </SelectItem>
                   <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
+                  <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
+                  <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
                   <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
                   {campanhaOptions.length > 0 && (
                     <>
