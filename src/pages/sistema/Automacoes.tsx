@@ -44,7 +44,7 @@ interface AutomationCategory {
   slug: string;
   nome: string;
   descricao: string | null;
-  campos: { key: string; label: string }[];
+  campos: { key: string; label: string; type?: "text" | "image" }[];
   ativo: boolean;
 }
 
@@ -493,46 +493,66 @@ function AutomacaoDetail({
     setSaving(false);
   };
 
-  const renderVarSelect = (field: { key: string; label: string }) => (
-    <div key={field.key} className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-foreground">{field.label}</label>
-      <Select
-        value={mapping[field.key] || ""}
-        onValueChange={(v) => handleSetVar(field.key, v)}
-      >
-        <SelectTrigger className="h-9">
-          <SelectValue placeholder="Selecione a variável..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__clear__">
-            <span className="text-muted-foreground">— Nenhuma —</span>
-          </SelectItem>
-          {availableVars
-            .filter((v) => {
-              const val = resolveValue(selectedTest!.payload, v);
-              return typeof val !== "object" || val === null;
-            })
-            .map((v) => (
-              <SelectItem key={v} value={v}>
-                <span className="font-mono text-xs">{v}</span>
-                <span className="ml-2 text-muted-foreground text-xs">
-                  = {String(resolveValue(selectedTest!.payload, v) ?? "")}
+  const renderVarSelect = (field: { key: string; label: string; type?: "text" | "image" }) => {
+    const isImageField = field.type === "image";
+    const mappedValue = mapping[field.key] && selectedTest
+      ? String(resolveValue(selectedTest.payload, mapping[field.key]) ?? "")
+      : "";
+    const isImageUrl = mappedValue && (mappedValue.startsWith("http://") || mappedValue.startsWith("https://"));
+
+    return (
+      <div key={field.key} className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-foreground">
+          {field.label}
+          {isImageField && <span className="ml-1 text-xs text-muted-foreground">(📷 Imagem)</span>}
+        </label>
+        <Select
+          value={mapping[field.key] || ""}
+          onValueChange={(v) => handleSetVar(field.key, v)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Selecione a variável..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__clear__">
+              <span className="text-muted-foreground">— Nenhuma —</span>
+            </SelectItem>
+            {availableVars
+              .filter((v) => {
+                const val = resolveValue(selectedTest!.payload, v);
+                return typeof val !== "object" || val === null;
+              })
+              .map((v) => (
+                <SelectItem key={v} value={v}>
+                  <span className="font-mono text-xs">{v}</span>
+                  <span className="ml-2 text-muted-foreground text-xs">
+                    = {String(resolveValue(selectedTest!.payload, v) ?? "")}
+                  </span>
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+        {mapping[field.key] && (
+          <p className="text-xs text-muted-foreground">
+            Mapeado para: <code className="bg-muted px-1 rounded">{mapping[field.key]}</code>
+            {!isImageField && (
+              <>
+                {" → "}
+                <span className="text-foreground font-medium">
+                  {String(resolveValue(selectedTest!.payload, mapping[field.key]) ?? "—")}
                 </span>
-              </SelectItem>
-            ))}
-        </SelectContent>
-      </Select>
-      {mapping[field.key] && (
-        <p className="text-xs text-muted-foreground">
-          Mapeado para: <code className="bg-muted px-1 rounded">{mapping[field.key]}</code>
-          {" → "}
-          <span className="text-foreground font-medium">
-            {String(resolveValue(selectedTest!.payload, mapping[field.key]) ?? "—")}
-          </span>
-        </p>
-      )}
-    </div>
-  );
+              </>
+            )}
+          </p>
+        )}
+        {isImageField && isImageUrl && (
+          <a href={mappedValue} target="_blank" rel="noopener noreferrer">
+            <img src={mappedValue} alt={field.label} className="h-20 w-auto rounded border object-cover mt-1 hover:opacity-80 transition-opacity" />
+          </a>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
