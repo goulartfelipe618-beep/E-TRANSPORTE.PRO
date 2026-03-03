@@ -2,10 +2,12 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
+  Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { usePanelTheme } from "@/hooks/usePanelTheme";
 import MasterDashboard from "./MasterDashboard";
 import MasterTenants from "./MasterTenants";
 import MasterUsers from "./MasterUsers";
@@ -29,6 +31,7 @@ const MENU_ITEMS = [
 export default function MasterLayout() {
   const [active, setActive] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
+  const { isDark, toggle: toggleTheme } = usePanelTheme("master-theme");
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -79,6 +82,13 @@ export default function MasterLayout() {
         </nav>
 
         <div className="p-2 border-t space-y-1">
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {!collapsed && <span>{isDark ? "Modo Claro" : "Modo Escuro"}</span>}
+          </button>
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
