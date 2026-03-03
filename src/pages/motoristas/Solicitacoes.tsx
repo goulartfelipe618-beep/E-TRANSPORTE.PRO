@@ -198,6 +198,7 @@ export default function MotoristasSolicitacoes() {
 
       if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
         const vehicleData: any = {
+          tenant_id: tenantId,
           motorista_id: mid,
           marca: form.v_marca,
           modelo: form.v_modelo,
