@@ -1,52 +1,30 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, Loader2, ShieldCheck, Car, Clock, Route, CalendarCheck } from "lucide-react";
+import { LogIn, Loader2, ShieldCheck, Car, Clock, Route, CalendarCheck, RefreshCw } from "lucide-react";
 import loginDriverImage from "@/assets/login-driver.jpg";
 
-const RECAPTCHA_V3_SITE_KEY = "6Lf11n4sAAAAAKldDzFzrmHL4WG28CkkDhwcUCSO";
-
-declare global {
-  interface Window {
-    grecaptcha: any;
-  }
+function generateCaptcha() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let code = "";
+  for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
 }
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [captchaCode, setCaptchaCode] = useState(generateCaptcha);
+  const [captchaInput, setCaptchaInput] = useState("");
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (document.querySelector('script[src*="recaptcha"]')) {
-      if (window.grecaptcha?.ready) {
-        window.grecaptcha.ready(() => setRecaptchaReady(true));
-      }
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_V3_SITE_KEY}`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      window.grecaptcha.ready(() => setRecaptchaReady(true));
-    };
-    document.head.appendChild(script);
-  }, []);
-
-  const getRecaptchaToken = async (): Promise<string | null> => {
-    try {
-      const token = await window.grecaptcha.execute(RECAPTCHA_V3_SITE_KEY, { action: "login" });
-      return token;
-    } catch {
-      return null;
-    }
+  const refreshCaptcha = () => {
+    setCaptchaCode(generateCaptcha());
+    setCaptchaInput("");
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -55,38 +33,18 @@ export default function Login() {
       toast({ title: "Preencha todos os campos", variant: "destructive" });
       return;
     }
+    if (captchaInput.toLowerCase() !== captchaCode.toLowerCase()) {
+      toast({ title: "Código de verificação incorreto", variant: "destructive" });
+      refreshCaptcha();
+      return;
+    }
 
     setLoading(true);
-
-    // Get reCAPTCHA v3 token
-    const recaptchaToken = await getRecaptchaToken();
-    if (!recaptchaToken) {
-      toast({ title: "Erro na verificação de segurança", description: "Tente novamente.", variant: "destructive" });
-      setLoading(false);
-      return;
-    }
-
-    // Verify reCAPTCHA on backend
-    try {
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke("verify-recaptcha", {
-        body: { token: recaptchaToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast({ title: "Verificação de segurança falhou", description: "Tente novamente.", variant: "destructive" });
-        setLoading(false);
-        return;
-      }
-    } catch {
-      toast({ title: "Erro na verificação", variant: "destructive" });
-      setLoading(false);
-      return;
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+      refreshCaptcha();
     }
   };
 
@@ -175,13 +133,33 @@ export default function Login() {
               />
             </div>
 
-            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || !recaptchaReady}>
+            <div className="space-y-2">
+              <Label>Código de verificação</Label>
+              <div className="flex items-center gap-3">
+                <div className="select-none px-4 py-2.5 rounded-lg bg-muted border border-border font-mono text-lg tracking-[0.3em] text-foreground font-bold italic"
+                  style={{ letterSpacing: "0.3em", textDecoration: "line-through", textDecorationColor: "hsl(var(--muted-foreground) / 0.3)" }}>
+                  {captchaCode}
+                </div>
+                <Button type="button" variant="ghost" size="icon" onClick={refreshCaptcha} title="Gerar novo código">
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input
+                placeholder="Digite o código acima"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                className="h-12 font-mono tracking-widest"
+                maxLength={5}
+                autoComplete="off"
+              />
+            </div>
+
+            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || captchaInput.length < 5}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
               Iniciar Sessão
             </Button>
           </form>
 
-          {/* Security notice */}
           <div className="rounded-xl border border-border bg-muted/50 p-5 space-y-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-amber-500" />
