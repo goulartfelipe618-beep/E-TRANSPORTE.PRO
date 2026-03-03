@@ -9,12 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, Edit, Layers3, RefreshCw, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface Campo {
   key: string;
   label: string;
+  type?: "text" | "image";
 }
 
 const BUILTIN_SLUGS = ["transfer_executivo", "solicitacao_motorista", "solicitacao_grupo", "leads"];
@@ -40,6 +42,7 @@ export default function MasterCategories() {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [newCampoKey, setNewCampoKey] = useState("");
   const [newCampoLabel, setNewCampoLabel] = useState("");
+  const [newCampoType, setNewCampoType] = useState<"text" | "image">("text");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
@@ -99,13 +102,15 @@ export default function MasterCategories() {
     setCampos([]);
     setNewCampoKey("");
     setNewCampoLabel("");
+    setNewCampoType("text");
   };
 
   const addCampo = () => {
     if (!newCampoKey.trim() || !newCampoLabel.trim()) return;
-    setCampos(prev => [...prev, { key: newCampoKey.trim(), label: newCampoLabel.trim() }]);
+    setCampos(prev => [...prev, { key: newCampoKey.trim(), label: newCampoLabel.trim(), type: newCampoType }]);
     setNewCampoKey("");
     setNewCampoLabel("");
+    setNewCampoType("text");
   };
 
   const removeCampo = (idx: number) => {
@@ -217,6 +222,9 @@ export default function MasterCategories() {
                       <div className="flex items-center gap-3">
                         <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{c.key}</code>
                         <span className="text-sm">{c.label}</span>
+                        <Badge variant={c.type === "image" ? "default" : "secondary"} className="text-xs">
+                          {c.type === "image" ? "📷 Imagem" : "Texto"}
+                        </Badge>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => removeCampo(i)}>
                         <X className="h-3 w-3" />
@@ -230,15 +238,24 @@ export default function MasterCategories() {
                 <Input
                   value={newCampoKey}
                   onChange={(e) => setNewCampoKey(e.target.value.replace(/[^a-z0-9_]/g, ""))}
-                  placeholder="chave (ex: cliente_nome)"
+                  placeholder="chave (ex: foto_documento)"
                   className="flex-1"
                 />
                 <Input
                   value={newCampoLabel}
                   onChange={(e) => setNewCampoLabel(e.target.value)}
-                  placeholder="Label (ex: Nome do Cliente)"
+                  placeholder="Label (ex: Foto do Documento)"
                   className="flex-1"
                 />
+                <Select value={newCampoType} onValueChange={(v) => setNewCampoType(v as "text" | "image")}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text">Texto</SelectItem>
+                    <SelectItem value="image">Imagem</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button variant="outline" onClick={addCampo} disabled={!newCampoKey.trim() || !newCampoLabel.trim()}>
                   <Plus className="h-4 w-4" />
                 </Button>
