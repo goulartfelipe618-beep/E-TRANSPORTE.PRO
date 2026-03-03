@@ -20,6 +20,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha);
   const [captchaInput, setCaptchaInput] = useState("");
+  const [blocked, setBlocked] = useState(false);
+  const [blockMinutes, setBlockMinutes] = useState(0);
   const { toast } = useToast();
 
   const refreshCaptcha = () => {
@@ -40,8 +42,41 @@ export default function Login() {
     }
 
     setLoading(true);
+
+    // Check rate limit
+    try {
+      const { data: rlData } = await supabase.functions.invoke("rate-limit", {
+        body: { email: email.trim().toLowerCase(), action: "check" },
+      });
+
+      if (rlData?.blocked) {
+        setBlocked(true);
+        setBlockMinutes(rlData.window_minutes || 15);
+        toast({
+          title: "Acesso temporariamente bloqueado",
+          description: `Muitas tentativas. Tente novamente em ${rlData.window_minutes || 15} minutos.`,
+          variant: "destructive",
+        });
+        setLoading(false);
+        refreshCaptcha();
+        return;
+      }
+    } catch {
+      // If rate limit check fails, proceed with login anyway
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
+
+    // Record attempt
+    try {
+      await supabase.functions.invoke("rate-limit", {
+        body: { email: email.trim().toLowerCase(), action: "record", success: !error },
+      });
+    } catch {
+      // Non-blocking
+    }
+
     if (error) {
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       refreshCaptcha();
@@ -71,26 +106,18 @@ export default function Login() {
           </div>
 
           <div className="relative flex-1 flex items-end justify-center mt-8">
-            <img
-              src={loginDriverImage}
-              alt="Motorista executivo"
-              className="h-[420px] xl:h-[500px] object-contain object-bottom drop-shadow-2xl"
-            />
+            <img src={loginDriverImage} alt="Motorista executivo" className="h-[420px] xl:h-[500px] object-contain object-bottom drop-shadow-2xl" />
             <div className="absolute top-8 left-4 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 shadow-lg">
-              <Clock className="h-5 w-5 text-amber-400" />
-              <span className="text-white text-sm font-medium">Automação</span>
+              <Clock className="h-5 w-5 text-amber-400" /><span className="text-white text-sm font-medium">Automação</span>
             </div>
             <div className="absolute top-28 right-4 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 shadow-lg">
-              <Route className="h-5 w-5 text-amber-400" />
-              <span className="text-white text-sm font-medium">Rotas</span>
+              <Route className="h-5 w-5 text-amber-400" /><span className="text-white text-sm font-medium">Rotas</span>
             </div>
             <div className="absolute bottom-40 left-0 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 shadow-lg">
-              <Car className="h-5 w-5 text-amber-400" />
-              <span className="text-white text-sm font-medium">Frota</span>
+              <Car className="h-5 w-5 text-amber-400" /><span className="text-white text-sm font-medium">Frota</span>
             </div>
             <div className="absolute bottom-56 right-0 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 shadow-lg">
-              <CalendarCheck className="h-5 w-5 text-amber-400" />
-              <span className="text-white text-sm font-medium">Agendamentos</span>
+              <CalendarCheck className="h-5 w-5 text-amber-400" /><span className="text-white text-sm font-medium">Agendamentos</span>
             </div>
           </div>
         </div>
@@ -107,32 +134,28 @@ export default function Login() {
             <p className="text-muted-foreground text-sm">Entre com os seus dados nos campos abaixo para fazer login</p>
           </div>
 
+          {blocked && (
+            <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-center">
+              <p className="text-sm font-medium text-destructive">
+                Acesso temporariamente bloqueado por excesso de tentativas.
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Tente novamente em {blockMinutes} minutos.
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                className="h-12"
-              />
+              <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => { setEmail(e.target.value); setBlocked(false); }} autoComplete="email" className="h-12" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                className="h-12"
-              />
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" className="h-12" />
             </div>
 
+            {/* Simple captcha */}
             <div className="space-y-2">
               <Label>Código de verificação</Label>
               <div className="flex items-center gap-3">
@@ -154,7 +177,7 @@ export default function Login() {
               />
             </div>
 
-            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || captchaInput.length < 5}>
+            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading || captchaInput.length < 5 || blocked}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
               Iniciar Sessão
             </Button>
