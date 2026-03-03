@@ -183,6 +183,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const { activePage, setActivePage } = useActivePage();
   const { projectName, logoUrl } = useGlobalConfig();
+  const { isMenuEnabled } = useTenantMenus();
 
   const isSubActive = (subItems?: SubItem[]) =>
     subItems?.some((s) => s.page === activePage) ?? false;
