@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ const veiculoMap: Record<string, string> = {
 };
 
 export default function GruposSolicitacoes() {
+  const tenantId = useTenantId();
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoRow[]>([]);
   const [selected, setSelected] = useState<SolicitacaoRow | null>(null);
   const [converting, setConverting] = useState<SolicitacaoRow | null>(null);
