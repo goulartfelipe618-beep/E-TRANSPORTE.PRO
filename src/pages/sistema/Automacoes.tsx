@@ -300,7 +300,7 @@ export default function AutomacoesPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
-                        {getTipoLabel(a.tipo)}
+                        {getTipoLabel(a.tipo, categories)}
                       </Badge>
                     </TableCell>
                     <TableCell>
