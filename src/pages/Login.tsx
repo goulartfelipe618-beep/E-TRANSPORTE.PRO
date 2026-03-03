@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LogIn, Loader2, ShieldCheck, Car, Clock, Route, CalendarCheck } from "lucide-react";
 import loginDriverImage from "@/assets/login-driver.jpg";
 
-const RECAPTCHA_SITE_KEY = "6LdM1n4sAAAAAEEurMKThPckhpxdaZA6Wgx2k12i";
+const RECAPTCHA_SITE_KEY = "6Lf11n4sAAAAAKldDzFzrmHL4WG28CkkDhwcUCSO";
 
 declare global {
   interface Window {
