@@ -59,6 +59,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
+import { useTenantMenus } from "@/hooks/useTenantMenus";
 
 interface SubItem {
   title: string;
