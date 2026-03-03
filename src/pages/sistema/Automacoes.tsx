@@ -535,7 +535,9 @@ function AutomacaoDetail({
                       ? "Envios criam leads na campanha associada com o mapeamento configurado."
                       : isMotorista
                         ? "Envios criam solicitações de motorista com o mapeamento configurado."
-                        : "Envios criam solicitações de transfer com o mapeamento configurado."
+                        : isGrupo
+                          ? "Envios criam solicitações de grupo com o mapeamento configurado."
+                          : "Envios criam solicitações de transfer com o mapeamento configurado."
                     : "Envios são salvos como testes para configurar o mapeamento."}
                 </p>
               </div>
@@ -681,6 +683,11 @@ function AutomacaoDetail({
               /* ── Motorista mapping: single list ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
                 {motoristaFieldGroups.map(renderVarSelect)}
+              </div>
+            ) : isGrupo ? (
+              /* ── Grupo mapping: single list ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {gruposFieldGroups.map(renderVarSelect)}
               </div>
             ) : (
               /* ── Transfer mapping: tabbed ── */
