@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,13 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { QrCode, Download, Trash2, Plus, Copy } from "lucide-react";
 import { toast } from "sonner";
-import QRCode from "qrcode";
+import { QRCodeCanvas } from "qrcode.react";
 
 interface QrRecord {
   id: string;
   label: string;
   url: string;
-  dataUrl: string;
   createdAt: string;
 }
 
@@ -28,43 +27,34 @@ export default function MarketingQrCode() {
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
   const [size, setSize] = useState("400");
-  const [preview, setPreview] = useState<string | null>(null);
   const [qrCodes, setQrCodes] = useState<QrRecord[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [currentPreview, setCurrentPreview] = useState<string | null>(null);
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!url.trim()) {
       toast.error("Preencha a URL ou texto para o QR Code.");
       return;
     }
-    try {
-      const dataUrl = await QRCode.toDataURL(url.trim(), {
-        width: parseInt(size),
-        margin: 2,
-        color: { dark: "#000000", light: "#ffffff" },
-      });
-      setPreview(dataUrl);
-
-      const record: QrRecord = {
-        id: crypto.randomUUID(),
-        label: label.trim() || url.trim().substring(0, 40),
-        url: url.trim(),
-        dataUrl,
-        createdAt: new Date().toLocaleString("pt-BR"),
-      };
-      setQrCodes((prev) => [record, ...prev]);
-      toast.success("QR Code gerado com sucesso!");
-    } catch {
-      toast.error("Erro ao gerar QR Code.");
-    }
+    setCurrentPreview(url.trim());
+    const record: QrRecord = {
+      id: crypto.randomUUID(),
+      label: label.trim() || url.trim().substring(0, 40),
+      url: url.trim(),
+      createdAt: new Date().toLocaleString("pt-BR"),
+    };
+    setQrCodes((prev) => [record, ...prev]);
+    toast.success("QR Code gerado com sucesso!");
   };
 
-  const handleDownload = (dataUrl: string, name: string) => {
+  const downloadQr = useCallback((canvasParentId: string, name: string) => {
+    const container = document.getElementById(canvasParentId);
+    const canvas = container?.querySelector("canvas");
+    if (!canvas) return;
     const link = document.createElement("a");
     link.download = `qrcode_${name.replace(/\s+/g, "_").toLowerCase()}.png`;
-    link.href = dataUrl;
+    link.href = canvas.toDataURL("image/png");
     link.click();
-  };
+  }, []);
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard.writeText(text);
@@ -118,10 +108,12 @@ export default function MarketingQrCode() {
             <CardTitle className="text-lg">Pré-visualização</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center min-h-[200px]">
-            {preview ? (
+            {currentPreview ? (
               <>
-                <img src={preview} alt="QR Code" className="rounded-lg border border-border max-w-full" style={{ maxWidth: "200px" }} />
-                <Button variant="outline" size="sm" className="mt-4 gap-1" onClick={() => handleDownload(preview, label || "qrcode")}>
+                <div id="qr-preview">
+                  <QRCodeCanvas value={currentPreview} size={parseInt(size)} level="M" />
+                </div>
+                <Button variant="outline" size="sm" className="mt-4 gap-1" onClick={() => downloadQr("qr-preview", label || "qrcode")}>
                   <Download className="h-4 w-4" /> Baixar PNG
                 </Button>
               </>
@@ -131,7 +123,6 @@ export default function MarketingQrCode() {
                 <p className="text-sm">Gere um QR Code para visualizar</p>
               </div>
             )}
-            <canvas ref={canvasRef} className="hidden" />
           </CardContent>
         </Card>
       </div>
@@ -158,7 +149,9 @@ export default function MarketingQrCode() {
                 {qrCodes.map((qr) => (
                   <TableRow key={qr.id}>
                     <TableCell>
-                      <img src={qr.dataUrl} alt="QR" className="h-10 w-10 rounded" />
+                      <div id={`qr-${qr.id}`} className="inline-block">
+                        <QRCodeCanvas value={qr.url} size={40} level="M" />
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">{qr.label}</TableCell>
                     <TableCell className="max-w-[200px] truncate text-muted-foreground text-sm">{qr.url}</TableCell>
@@ -167,7 +160,7 @@ export default function MarketingQrCode() {
                       <Button size="icon" variant="ghost" onClick={() => handleCopy(qr.url)} title="Copiar URL">
                         <Copy className="h-4 w-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleDownload(qr.dataUrl, qr.label)} title="Baixar">
+                      <Button size="icon" variant="ghost" onClick={() => downloadQr(`qr-${qr.id}`, qr.label)} title="Baixar">
                         <Download className="h-4 w-4" />
                       </Button>
                       <Button size="icon" variant="ghost" onClick={() => setQrCodes((prev) => prev.filter((r) => r.id !== qr.id))} title="Remover">
