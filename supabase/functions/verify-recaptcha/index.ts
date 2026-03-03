@@ -33,7 +33,10 @@ Deno.serve(async (req) => {
 
     const data = await verifyRes.json();
 
-    return new Response(JSON.stringify({ success: data.success }), {
+    // reCAPTCHA v3 returns a score (0.0 - 1.0). Score >= 0.5 is considered human.
+    const isValid = data.success && (data.score === undefined || data.score >= 0.5);
+
+    return new Response(JSON.stringify({ success: isValid, score: data.score }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
