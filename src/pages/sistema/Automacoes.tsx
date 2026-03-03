@@ -32,15 +32,27 @@ interface Automacao {
   created_at: string;
 }
 
-const TIPOS_AUTOMACAO: Record<string, string> = {
+// Built-in types that have hardcoded field groups
+const BUILTIN_TIPOS: Record<string, string> = {
   transfer_executivo: "Transfer Executivo",
   solicitacao_motorista: "Solicitação Motorista",
   solicitacao_grupo: "Solicitação de Grupo",
 };
 
-const getTipoLabel = (tipo: string) => {
+interface AutomationCategory {
+  id: string;
+  slug: string;
+  nome: string;
+  descricao: string | null;
+  campos: { key: string; label: string }[];
+  ativo: boolean;
+}
+
+const getTipoLabel = (tipo: string, categories: AutomationCategory[]) => {
   if (tipo.startsWith("leads_campanha:")) return "Leads Campanha";
-  return TIPOS_AUTOMACAO[tipo] || tipo;
+  const cat = categories.find((c) => c.slug === tipo);
+  if (cat) return cat.nome;
+  return BUILTIN_TIPOS[tipo] || tipo;
 };
 
 interface WebhookTest {
@@ -172,12 +184,17 @@ export default function AutomacoesPage() {
   const [newTipo, setNewTipo] = useState("");
   const [creating, setCreating] = useState(false);
   const [campanhaOptions, setCampanhaOptions] = useState<{ id: string; nome: string }[]>([]);
+  const [categories, setCategories] = useState<AutomationCategory[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("campanhas").select("id, nome").order("nome");
-      if (data) setCampanhaOptions(data);
+      const [campRes, catRes] = await Promise.all([
+        supabase.from("campanhas").select("id, nome").order("nome"),
+        supabase.from("automation_categories").select("*").eq("ativo", true).order("nome"),
+      ]);
+      if (campRes.data) setCampanhaOptions(campRes.data);
+      if (catRes.data) setCategories(catRes.data.map((c: any) => ({ ...c, campos: Array.isArray(c.campos) ? c.campos : [] })));
     })();
   }, []);
 
@@ -227,6 +244,7 @@ export default function AutomacoesPage() {
     return (
       <AutomacaoDetail
         automacao={selected}
+        categories={categories}
         onBack={() => { setSelected(null); fetchAutomacoes(); }}
         onToggle={(enabled) => handleToggle(selected, enabled)}
       />
@@ -283,7 +301,7 @@ export default function AutomacoesPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
-                        {getTipoLabel(a.tipo)}
+                        {getTipoLabel(a.tipo, categories)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -352,12 +370,26 @@ export default function AutomacoesPage() {
                   <SelectValue placeholder="Selecione o tipo..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem disabled value="__header_master__">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
-                  </SelectItem>
-                  <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
-                  <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
-                  <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
+                  {categories.length > 0 && (
+                    <>
+                      <SelectItem disabled value="__header_categories__">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias</span>
+                      </SelectItem>
+                      {categories.map((c) => (
+                        <SelectItem key={c.slug} value={c.slug}>{c.nome}</SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {categories.length === 0 && (
+                    <>
+                      <SelectItem disabled value="__header_master__">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Categorias do Sistema</span>
+                      </SelectItem>
+                      <SelectItem value="transfer_executivo">Transfer Executivo</SelectItem>
+                      <SelectItem value="solicitacao_motorista">Solicitação Motorista</SelectItem>
+                      <SelectItem value="solicitacao_grupo">Solicitação de Grupo</SelectItem>
+                    </>
+                  )}
                   {campanhaOptions.length > 0 && (
                     <>
                       <SelectItem disabled value="__header_campanhas__">
@@ -388,10 +420,12 @@ export default function AutomacoesPage() {
 
 function AutomacaoDetail({
   automacao,
+  categories,
   onBack,
   onToggle,
 }: {
   automacao: Automacao;
+  categories: AutomationCategory[];
   onBack: () => void;
   onToggle: (enabled: boolean) => void;
 }) {
@@ -407,6 +441,9 @@ function AutomacaoDetail({
   const isMotorista = automacao.tipo === "solicitacao_motorista";
   const isGrupo = automacao.tipo === "solicitacao_grupo";
   const isLeadsCampanha = automacao.tipo.startsWith("leads_campanha:");
+  const isTransfer = automacao.tipo === "transfer_executivo";
+  const dynamicCategory = categories.find((c) => c.slug === automacao.tipo);
+  const isDynamic = !!dynamicCategory && !isMotorista && !isGrupo && !isTransfer && !isLeadsCampanha;
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-solicitacao?automacao_id=${automacao.id}`;
 
   const availableVars = useMemo(() => {
@@ -675,6 +712,17 @@ function AutomacaoDetail({
               <p className="text-muted-foreground text-sm">
                 Selecione um teste recebido para visualizar as variáveis disponíveis e configurar o mapeamento.
               </p>
+            ) : isDynamic ? (
+              /* ── Dynamic category mapping from master config ── */
+              <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                {dynamicCategory.campos.length > 0 ? (
+                  dynamicCategory.campos.map(renderVarSelect)
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    Nenhum campo configurado para esta categoria. Configure os campos no painel master.
+                  </p>
+                )}
+              </div>
             ) : isLeadsCampanha ? (
               /* ── Leads Campanha mapping ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
