@@ -23,7 +23,9 @@ import Veiculos from "@/pages/Veiculos";
 import CampanhasAtivos from "@/pages/campanhas/Ativos";
 import CampanhasLeads from "@/pages/campanhas/Leads";
 // Marketing
-import Marketing from "@/pages/Marketing";
+import MarketingEmails from "@/pages/marketing/Emails";
+import MarketingReceptivos from "@/pages/marketing/Receptivos";
+import MarketingQrCode from "@/pages/marketing/QrCode";
 // Network
 import NetworkHoteis from "@/pages/network/Hoteis";
 import NetworkAgencias from "@/pages/network/Agencias";
@@ -63,7 +65,9 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "veiculos": Veiculos,
   "campanhas/ativos": CampanhasAtivos,
   "campanhas/leads": CampanhasLeads,
-  "marketing": Marketing,
+  "marketing/emails": MarketingEmails,
+  "marketing/receptivos": MarketingReceptivos,
+  "marketing/qrcode": MarketingQrCode,
   "network/hoteis": NetworkHoteis,
   "network/agencias": NetworkAgencias,
   "network/clinicas": NetworkClinicas,
