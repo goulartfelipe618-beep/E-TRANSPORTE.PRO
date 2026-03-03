@@ -224,7 +224,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
@@ -295,7 +295,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
                   {selectedFields.size === payloadEntries.length ? "Desmarcar todos" : "Selecionar todos"}
                 </button>
               </div>
-              <ScrollArea className="max-h-48 border border-border rounded-lg p-3">
+              <ScrollArea className="max-h-64 border border-border rounded-lg p-3">
                 <div className="space-y-2">
                   {payloadEntries.map((entry) => (
                     <label
