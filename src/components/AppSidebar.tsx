@@ -141,7 +141,16 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Leads", page: "campanhas/leads", icon: UserCheck, menuKey: "campanhas.leads" },
         ],
       },
-      { title: "Marketing", icon: BarChart3, page: "marketing", menuKey: "marketing" },
+      {
+        title: "Marketing",
+        icon: BarChart3,
+        menuKey: "marketing",
+        subItems: [
+          { title: "E-mails", page: "marketing/emails" as PageKey, icon: BarChart3, menuKey: "marketing.emails" },
+          { title: "Receptivos", page: "marketing/receptivos" as PageKey, icon: BarChart3, menuKey: "marketing.receptivos" },
+          { title: "QR Code", page: "marketing/qrcode" as PageKey, icon: BarChart3, menuKey: "marketing.qrcode" },
+        ],
+      },
       {
         title: "Network",
         icon: Globe,
