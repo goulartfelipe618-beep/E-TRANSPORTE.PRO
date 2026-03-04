@@ -264,6 +264,7 @@ Deno.serve(async (req) => {
     // ── GRUPO flow ──
     if (automacao.tipo === "solicitacao_grupo") {
       const record: Record<string, unknown> = {
+        tenant_id: tenantId,
         tipo_veiculo: cleanStr(mapping ? resolve("tipo_veiculo") : (body.tipo_veiculo ?? body.vehicleType), 100),
         numero_passageiros: cleanInt(mapping ? resolve("numero_passageiros") : (body.numero_passageiros ?? body.passengers ?? body.passageiros)),
         endereco_embarque: cleanStr(mapping ? resolve("endereco_embarque") : (body.endereco_embarque ?? body.pickupAddress ?? body.embarque), 500),
@@ -291,6 +292,7 @@ Deno.serve(async (req) => {
     const tipo = cleanStr(tipoFromMapping ?? body.tipo_viagem, 50) as string;
     const validTipos = ["somente_ida", "ida_e_volta", "por_hora"];
     const record: Record<string, unknown> = {
+      tenant_id: tenantId,
       tipo_viagem: validTipos.includes(tipo) ? tipo : "somente_ida",
       cliente_nome: cleanStr(mapping ? resolve("cliente_nome") : (body.cliente_nome ?? body.clientName ?? body.name), 300),
       cliente_telefone: cleanStr(mapping ? resolve("cliente_telefone") : (body.cliente_telefone ?? body.clientPhone ?? body.phone), 30),
