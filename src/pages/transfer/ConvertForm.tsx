@@ -28,6 +28,93 @@ interface ConvertFormProps {
 
 export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loading, mode = "convert" }: ConvertFormProps) {
   const [form, setForm] = useState<Record<string, any>>({});
+  const tenantId = useTenantId();
+
+  // Driver/partner selection state
+  const [tipoResponsavel, setTipoResponsavel] = useState<"motorista" | "parceiro">("motorista");
+  const [motoristas, setMotoristas] = useState<any[]>([]);
+  const [motoristaVeiculos, setMotoristaVeiculos] = useState<any[]>([]);
+  const [parceiros, setParceiros] = useState<any[]>([]);
+  const [subparceiros, setSubparceiros] = useState<any[]>([]);
+  const [parceiroVeiculos, setParceiroVeiculos] = useState<any[]>([]);
+  const [selectedMotoristaId, setSelectedMotoristaId] = useState("");
+  const [selectedParceiroId, setSelectedParceiroId] = useState("");
+  const [selectedSubparceiroId, setSelectedSubparceiroId] = useState("");
+  const [selectedVeiculoId, setSelectedVeiculoId] = useState("");
+
+  // Fetch motoristas and parceiros
+  useEffect(() => {
+    if (!tenantId || !open) return;
+    const load = async () => {
+      const [m, p] = await Promise.all([
+        supabase.from("motoristas").select("id, nome_completo, telefone").eq("tenant_id", tenantId).eq("status", "ativo"),
+        supabase.from("parceiros").select("id, razao_social, nome_fantasia, telefone").eq("tenant_id", tenantId).eq("status", "ativo"),
+      ]);
+      setMotoristas(m.data ?? []);
+      setParceiros(p.data ?? []);
+    };
+    load();
+  }, [tenantId, open]);
+
+  // Fetch vehicles for selected motorista
+  useEffect(() => {
+    if (!selectedMotoristaId) { setMotoristaVeiculos([]); return; }
+    supabase.from("motorista_veiculos").select("id, marca, modelo, placa, ano").eq("motorista_id", selectedMotoristaId).eq("status", "ativo")
+      .then(({ data }) => setMotoristaVeiculos(data ?? []));
+  }, [selectedMotoristaId]);
+
+  // Fetch subparceiros and vehicles for selected parceiro
+  useEffect(() => {
+    if (!selectedParceiroId) { setSubparceiros([]); setParceiroVeiculos([]); return; }
+    Promise.all([
+      supabase.from("subparceiros").select("id, nome, funcao").eq("parceiro_id", selectedParceiroId),
+      supabase.from("parceiro_veiculos").select("id, marca, modelo, placa, ano").eq("parceiro_id", selectedParceiroId).eq("status", "ativo"),
+    ]).then(([s, v]) => {
+      setSubparceiros(s.data ?? []);
+      setParceiroVeiculos(v.data ?? []);
+    });
+  }, [selectedParceiroId]);
+
+  // Sync selected motorista/parceiro to form
+  useEffect(() => {
+    if (tipoResponsavel === "motorista" && selectedMotoristaId) {
+      const m = motoristas.find((x) => x.id === selectedMotoristaId);
+      if (m) set("motorista_nome", m.nome_completo), set("motorista_telefone", m.telefone || "");
+    }
+  }, [selectedMotoristaId, motoristas, tipoResponsavel]);
+
+  useEffect(() => {
+    if (tipoResponsavel === "parceiro" && selectedParceiroId) {
+      const p = parceiros.find((x) => x.id === selectedParceiroId);
+      if (p) set("motorista_nome", p.nome_fantasia || p.razao_social), set("motorista_telefone", p.telefone || "");
+    }
+  }, [selectedParceiroId, parceiros, tipoResponsavel]);
+
+  useEffect(() => {
+    if (selectedSubparceiroId) {
+      const s = subparceiros.find((x) => x.id === selectedSubparceiroId);
+      if (s) set("motorista_nome", s.nome);
+    }
+  }, [selectedSubparceiroId, subparceiros]);
+
+  // Sync selected vehicle to form
+  useEffect(() => {
+    const veiculos = tipoResponsavel === "motorista" ? motoristaVeiculos : parceiroVeiculos;
+    const v = veiculos.find((x) => x.id === selectedVeiculoId);
+    if (v) set("veiculo", `${v.marca} ${v.modelo} - ${v.placa}`);
+    else if (!selectedVeiculoId) set("veiculo", "");
+  }, [selectedVeiculoId, motoristaVeiculos, parceiroVeiculos, tipoResponsavel]);
+
+  // Reset selections when switching tipo
+  useEffect(() => {
+    setSelectedMotoristaId("");
+    setSelectedParceiroId("");
+    setSelectedSubparceiroId("");
+    setSelectedVeiculoId("");
+    set("motorista_nome", "");
+    set("motorista_telefone", "");
+    set("veiculo", "");
+  }, [tipoResponsavel]);
 
   const emptyForm = {
     tipo_viagem: "somente_ida",
