@@ -47,6 +47,8 @@ interface MotoristaDB {
   conta: string | null;
   tipo_conta: string | null;
   chave_pix: string | null;
+  nome_recebedor: string | null;
+  cpf_cnpj_recebedor: string | null;
   possui_veiculo: boolean;
   created_at: string;
 }
