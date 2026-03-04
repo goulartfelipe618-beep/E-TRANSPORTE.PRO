@@ -270,11 +270,86 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
           {/* ── Veículo e Motorista ── */}
           <fieldset className="space-y-3 border-t pt-4">
             <legend className="font-semibold text-foreground text-sm">Veículo e Motorista</legend>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field label="Veículo" value={form.veiculo} onChange={(v) => set("veiculo", v)} placeholder="Selecione um veículo" />
-              <Field label="Nome do Motorista" value={form.motorista_nome} onChange={(v) => set("motorista_nome", v)} />
-              <Field label="Telefone do Motorista" value={form.motorista_telefone} onChange={(v) => set("motorista_telefone", v)} />
+
+            {/* Tipo de Responsável */}
+            <div>
+              <Label className="text-xs text-muted-foreground">Quem fará a viagem? *</Label>
+              <Select value={tipoResponsavel} onValueChange={(v: "motorista" | "parceiro") => setTipoResponsavel(v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="motorista">Motorista</SelectItem>
+                  <SelectItem value="parceiro">Parceiro / Subparceiro</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            {tipoResponsavel === "motorista" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Seletor de Motorista */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Motorista *</Label>
+                  <Select value={selectedMotoristaId} onValueChange={(v) => { setSelectedMotoristaId(v); setSelectedVeiculoId(""); }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione um motorista" /></SelectTrigger>
+                    <SelectContent>
+                      {motoristas.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{m.nome_completo}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Veículo do Motorista */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Veículo</Label>
+                  <Select value={selectedVeiculoId} onValueChange={setSelectedVeiculoId} disabled={!selectedMotoristaId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedMotoristaId ? "Selecione um motorista primeiro" : motoristaVeiculos.length === 0 ? "Nenhum veículo cadastrado" : "Selecione um veículo"} /></SelectTrigger>
+                    <SelectContent>
+                      {motoristaVeiculos.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.marca} {v.modelo} - {v.placa} ({v.ano})</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Seletor de Parceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Parceiro *</Label>
+                  <Select value={selectedParceiroId} onValueChange={(v) => { setSelectedParceiroId(v); setSelectedSubparceiroId(""); setSelectedVeiculoId(""); }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione um parceiro" /></SelectTrigger>
+                    <SelectContent>
+                      {parceiros.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.nome_fantasia || p.razao_social}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Subparceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Subparceiro (opcional)</Label>
+                  <Select value={selectedSubparceiroId} onValueChange={setSelectedSubparceiroId} disabled={!selectedParceiroId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedParceiroId ? "Selecione um parceiro" : subparceiros.length === 0 ? "Nenhum subparceiro" : "Selecione"} /></SelectTrigger>
+                    <SelectContent>
+                      {subparceiros.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>{s.nome}{s.funcao ? ` (${s.funcao})` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Veículo do Parceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Veículo</Label>
+                  <Select value={selectedVeiculoId} onValueChange={setSelectedVeiculoId} disabled={!selectedParceiroId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedParceiroId ? "Selecione um parceiro" : parceiroVeiculos.length === 0 ? "Nenhum veículo" : "Selecione"} /></SelectTrigger>
+                    <SelectContent>
+                      {parceiroVeiculos.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.marca} {v.modelo} - {v.placa}{v.ano ? ` (${v.ano})` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
           </fieldset>
 
           {/* ── Valores e Pagamento ── */}
