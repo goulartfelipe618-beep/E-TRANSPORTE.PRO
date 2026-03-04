@@ -12,6 +12,8 @@ import {
 import { ArrowRightLeft } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { supabase } from "@/integrations/supabase/client";
+import { useTenantId } from "@/hooks/useTenantId";
 
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
@@ -26,6 +28,93 @@ interface ConvertFormProps {
 
 export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loading, mode = "convert" }: ConvertFormProps) {
   const [form, setForm] = useState<Record<string, any>>({});
+  const tenantId = useTenantId();
+
+  // Driver/partner selection state
+  const [tipoResponsavel, setTipoResponsavel] = useState<"motorista" | "parceiro">("motorista");
+  const [motoristas, setMotoristas] = useState<any[]>([]);
+  const [motoristaVeiculos, setMotoristaVeiculos] = useState<any[]>([]);
+  const [parceiros, setParceiros] = useState<any[]>([]);
+  const [subparceiros, setSubparceiros] = useState<any[]>([]);
+  const [parceiroVeiculos, setParceiroVeiculos] = useState<any[]>([]);
+  const [selectedMotoristaId, setSelectedMotoristaId] = useState("");
+  const [selectedParceiroId, setSelectedParceiroId] = useState("");
+  const [selectedSubparceiroId, setSelectedSubparceiroId] = useState("");
+  const [selectedVeiculoId, setSelectedVeiculoId] = useState("");
+
+  // Fetch motoristas and parceiros
+  useEffect(() => {
+    if (!tenantId || !open) return;
+    const load = async () => {
+      const [m, p] = await Promise.all([
+        supabase.from("motoristas").select("id, nome_completo, telefone").eq("tenant_id", tenantId).eq("status", "ativo"),
+        supabase.from("parceiros").select("id, razao_social, nome_fantasia, telefone").eq("tenant_id", tenantId).eq("status", "ativo"),
+      ]);
+      setMotoristas(m.data ?? []);
+      setParceiros(p.data ?? []);
+    };
+    load();
+  }, [tenantId, open]);
+
+  // Fetch vehicles for selected motorista
+  useEffect(() => {
+    if (!selectedMotoristaId) { setMotoristaVeiculos([]); return; }
+    supabase.from("motorista_veiculos").select("id, marca, modelo, placa, ano").eq("motorista_id", selectedMotoristaId).eq("status", "ativo")
+      .then(({ data }) => setMotoristaVeiculos(data ?? []));
+  }, [selectedMotoristaId]);
+
+  // Fetch subparceiros and vehicles for selected parceiro
+  useEffect(() => {
+    if (!selectedParceiroId) { setSubparceiros([]); setParceiroVeiculos([]); return; }
+    Promise.all([
+      supabase.from("subparceiros").select("id, nome, funcao").eq("parceiro_id", selectedParceiroId),
+      supabase.from("parceiro_veiculos").select("id, marca, modelo, placa, ano").eq("parceiro_id", selectedParceiroId).eq("status", "ativo"),
+    ]).then(([s, v]) => {
+      setSubparceiros(s.data ?? []);
+      setParceiroVeiculos(v.data ?? []);
+    });
+  }, [selectedParceiroId]);
+
+  // Sync selected motorista/parceiro to form
+  useEffect(() => {
+    if (tipoResponsavel === "motorista" && selectedMotoristaId) {
+      const m = motoristas.find((x) => x.id === selectedMotoristaId);
+      if (m) set("motorista_nome", m.nome_completo), set("motorista_telefone", m.telefone || "");
+    }
+  }, [selectedMotoristaId, motoristas, tipoResponsavel]);
+
+  useEffect(() => {
+    if (tipoResponsavel === "parceiro" && selectedParceiroId) {
+      const p = parceiros.find((x) => x.id === selectedParceiroId);
+      if (p) set("motorista_nome", p.nome_fantasia || p.razao_social), set("motorista_telefone", p.telefone || "");
+    }
+  }, [selectedParceiroId, parceiros, tipoResponsavel]);
+
+  useEffect(() => {
+    if (selectedSubparceiroId) {
+      const s = subparceiros.find((x) => x.id === selectedSubparceiroId);
+      if (s) set("motorista_nome", s.nome);
+    }
+  }, [selectedSubparceiroId, subparceiros]);
+
+  // Sync selected vehicle to form
+  useEffect(() => {
+    const veiculos = tipoResponsavel === "motorista" ? motoristaVeiculos : parceiroVeiculos;
+    const v = veiculos.find((x) => x.id === selectedVeiculoId);
+    if (v) set("veiculo", `${v.marca} ${v.modelo} - ${v.placa}`);
+    else if (!selectedVeiculoId) set("veiculo", "");
+  }, [selectedVeiculoId, motoristaVeiculos, parceiroVeiculos, tipoResponsavel]);
+
+  // Reset selections when switching tipo
+  useEffect(() => {
+    setSelectedMotoristaId("");
+    setSelectedParceiroId("");
+    setSelectedSubparceiroId("");
+    setSelectedVeiculoId("");
+    set("motorista_nome", "");
+    set("motorista_telefone", "");
+    set("veiculo", "");
+  }, [tipoResponsavel]);
 
   const emptyForm = {
     tipo_viagem: "somente_ida",
@@ -181,11 +270,86 @@ export default function ConvertForm({ solicitacao, open, onClose, onConfirm, loa
           {/* ── Veículo e Motorista ── */}
           <fieldset className="space-y-3 border-t pt-4">
             <legend className="font-semibold text-foreground text-sm">Veículo e Motorista</legend>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field label="Veículo" value={form.veiculo} onChange={(v) => set("veiculo", v)} placeholder="Selecione um veículo" />
-              <Field label="Nome do Motorista" value={form.motorista_nome} onChange={(v) => set("motorista_nome", v)} />
-              <Field label="Telefone do Motorista" value={form.motorista_telefone} onChange={(v) => set("motorista_telefone", v)} />
+
+            {/* Tipo de Responsável */}
+            <div>
+              <Label className="text-xs text-muted-foreground">Quem fará a viagem? *</Label>
+              <Select value={tipoResponsavel} onValueChange={(v: "motorista" | "parceiro") => setTipoResponsavel(v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="motorista">Motorista</SelectItem>
+                  <SelectItem value="parceiro">Parceiro / Subparceiro</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            {tipoResponsavel === "motorista" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Seletor de Motorista */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Motorista *</Label>
+                  <Select value={selectedMotoristaId} onValueChange={(v) => { setSelectedMotoristaId(v); setSelectedVeiculoId(""); }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione um motorista" /></SelectTrigger>
+                    <SelectContent>
+                      {motoristas.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{m.nome_completo}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Veículo do Motorista */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Veículo</Label>
+                  <Select value={selectedVeiculoId} onValueChange={setSelectedVeiculoId} disabled={!selectedMotoristaId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedMotoristaId ? "Selecione um motorista primeiro" : motoristaVeiculos.length === 0 ? "Nenhum veículo cadastrado" : "Selecione um veículo"} /></SelectTrigger>
+                    <SelectContent>
+                      {motoristaVeiculos.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.marca} {v.modelo} - {v.placa} ({v.ano})</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Seletor de Parceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Parceiro *</Label>
+                  <Select value={selectedParceiroId} onValueChange={(v) => { setSelectedParceiroId(v); setSelectedSubparceiroId(""); setSelectedVeiculoId(""); }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione um parceiro" /></SelectTrigger>
+                    <SelectContent>
+                      {parceiros.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.nome_fantasia || p.razao_social}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Subparceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Subparceiro (opcional)</Label>
+                  <Select value={selectedSubparceiroId} onValueChange={setSelectedSubparceiroId} disabled={!selectedParceiroId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedParceiroId ? "Selecione um parceiro" : subparceiros.length === 0 ? "Nenhum subparceiro" : "Selecione"} /></SelectTrigger>
+                    <SelectContent>
+                      {subparceiros.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>{s.nome}{s.funcao ? ` (${s.funcao})` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Seletor de Veículo do Parceiro */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Veículo</Label>
+                  <Select value={selectedVeiculoId} onValueChange={setSelectedVeiculoId} disabled={!selectedParceiroId}>
+                    <SelectTrigger><SelectValue placeholder={!selectedParceiroId ? "Selecione um parceiro" : parceiroVeiculos.length === 0 ? "Nenhum veículo" : "Selecione"} /></SelectTrigger>
+                    <SelectContent>
+                      {parceiroVeiculos.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.marca} {v.modelo} - {v.placa}{v.ano ? ` (${v.ano})` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
           </fieldset>
 
           {/* ── Valores e Pagamento ── */}
