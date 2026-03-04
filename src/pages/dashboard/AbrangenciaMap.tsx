@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -55,30 +55,53 @@ const getTypeLabel = (type: string) => {
 };
 
 export default function AbrangenciaMap({ markers }: { markers: MapMarker[] }) {
+  const mapRef = useRef<L.Map | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+
+    const map = L.map(containerRef.current).setView([-14.235, -51.9253], 4);
+    mapRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Clear existing markers
+    map.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+      }
+    });
+
+    // Add new markers
+    markers.forEach((marker) => {
+      const leafletMarker = L.marker([marker.lat, marker.lng], {
+        icon: getIcon(marker.type),
+      }).addTo(map);
+
+      leafletMarker.bindPopup(`
+        <div style="font-size:13px;">
+          <p style="font-weight:600;margin:0 0 4px">${getTypeLabel(marker.type)}</p>
+          <p style="color:#888;margin:0 0 4px">${marker.label}</p>
+          <p style="margin:0">Cliente: <strong>${marker.cliente}</strong></p>
+        </div>
+      `);
+    });
+  }, [markers]);
+
   return (
-    <div style={{ height: "550px", width: "100%" }}>
-      <MapContainer
-        center={[-14.235, -51.9253]}
-        zoom={4}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {markers.map((marker, i) => (
-          <Marker key={i} position={[marker.lat, marker.lng]} icon={getIcon(marker.type)}>
-            <Popup>
-              <div className="text-sm space-y-1">
-                <p className="font-semibold">{getTypeLabel(marker.type)}</p>
-                <p className="text-muted-foreground">{marker.label}</p>
-                <p>Cliente: <strong>{marker.cliente}</strong></p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
+    <div ref={containerRef} style={{ height: "550px", width: "100%" }} />
   );
 }
