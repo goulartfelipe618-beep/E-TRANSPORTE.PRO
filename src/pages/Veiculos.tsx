@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Car, Search, Truck, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import useTenantId from "@/hooks/useTenantId";
+import { useTenantId } from "@/hooks/useTenantId";
 
 interface UnifiedVehicle {
   id: string;
