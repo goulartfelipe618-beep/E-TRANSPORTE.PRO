@@ -138,38 +138,33 @@ export default function MotoristasCadastros() {
       if (error) throw error;
       const mid = motorista.id;
 
-      // Upload documents
-      const docUpdates: Record<string, string> = {};
-      if (files.foto_perfil) docUpdates.foto_perfil_url = await uploadFile(files.foto_perfil, "foto-perfil", mid);
-      if (files.cnh_frente) docUpdates.cnh_frente_url = await uploadFile(files.cnh_frente, "cnh-frente", mid);
-      if (files.cnh_verso) docUpdates.cnh_verso_url = await uploadFile(files.cnh_verso, "cnh-verso", mid);
-      if (files.comprovante_residencia) docUpdates.comprovante_residencia_url = await uploadFile(files.comprovante_residencia, "comprovante", mid);
+      // Upload documents in parallel
+      const docUploads: Promise<[string, string]>[] = [];
+      if (files.foto_perfil) docUploads.push(uploadFile(files.foto_perfil, "foto-perfil", mid).then(url => ["foto_perfil_url", url] as [string, string]));
+      if (files.cnh_frente) docUploads.push(uploadFile(files.cnh_frente, "cnh-frente", mid).then(url => ["cnh_frente_url", url] as [string, string]));
+      if (files.cnh_verso) docUploads.push(uploadFile(files.cnh_verso, "cnh-verso", mid).then(url => ["cnh_verso_url", url] as [string, string]));
+      if (files.comprovante_residencia) docUploads.push(uploadFile(files.comprovante_residencia, "comprovante", mid).then(url => ["comprovante_residencia_url", url] as [string, string]));
 
-      if (Object.keys(docUpdates).length > 0) {
+      if (docUploads.length > 0) {
+        const results = await Promise.all(docUploads);
+        const docUpdates = Object.fromEntries(results);
         await (supabase as any).from("motoristas").update(docUpdates).eq("id", mid);
       }
 
       // Insert vehicle if applicable
       if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
-        const vehicleData: any = {
-          motorista_id: mid,
-          marca: form.v_marca,
-          modelo: form.v_modelo,
-          ano: parseInt(form.v_ano),
-          cor: form.v_cor || null,
-          placa: form.v_placa,
-          combustivel: form.v_combustivel || null,
-          renavam: form.v_renavam || null,
-          chassi: form.v_chassi || null,
-          status: form.v_status,
-          observacoes: form.v_observacoes || null,
-          tenant_id: tenantId,
-        };
+        const [crlvUrl, seguroUrl] = await Promise.all([
+          files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
+          files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+        ]);
 
-        if (files.crlv) vehicleData.crlv_url = await uploadFile(files.crlv, "crlv", mid);
-        if (files.seguro) vehicleData.seguro_url = await uploadFile(files.seguro, "seguro", mid);
-
-        await (supabase as any).from("motorista_veiculos").insert(vehicleData);
+        await (supabase as any).from("motorista_veiculos").insert({
+          motorista_id: mid, marca: form.v_marca, modelo: form.v_modelo,
+          ano: parseInt(form.v_ano), cor: form.v_cor || null, placa: form.v_placa,
+          combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
+          chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
+          tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
+        });
       }
 
       toast.success("Motorista cadastrado com sucesso!");
