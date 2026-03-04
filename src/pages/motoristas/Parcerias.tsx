@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Building2, FileText, Car, Users, Upload, X, Phone, Mail, Trash2, Save, MessageSquare, Eye, Edit, LayoutGrid, List } from "lucide-react";
 import ComunicarDialog from "@/components/ComunicarDialog";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 

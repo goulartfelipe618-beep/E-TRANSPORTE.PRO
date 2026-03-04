@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Filter, Building2, Pencil, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 const ESTADOS_BR = [
   "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG",
