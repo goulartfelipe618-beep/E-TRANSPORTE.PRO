@@ -189,12 +189,13 @@ Deno.serve(async (req) => {
     }
 
     const body = await parseRequest(req, supabase, automacaoId);
+    const tenantId = automacao.tenant_id || null;
 
     // If webhook disabled → save as test
     if (!automacao.webhook_enabled) {
       const { count } = await supabase.from("webhook_tests").select("*", { count: "exact", head: true }).eq("automacao_id", automacaoId);
       const label = `Teste ${(count ?? 0) + 1}`;
-      const { data, error } = await supabase.from("webhook_tests").insert({ label, payload: body, automacao_id: automacaoId }).select().single();
+      const { data, error } = await supabase.from("webhook_tests").insert({ label, payload: body, automacao_id: automacaoId, tenant_id: tenantId }).select().single();
       if (error) return new Response(JSON.stringify({ error: "Erro ao salvar teste" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       return new Response(JSON.stringify({ success: true, test: true, id: data.id, label }), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -219,6 +220,7 @@ Deno.serve(async (req) => {
       }
       const leadRecord = {
         campanha_id: campId,
+        tenant_id: tenantId,
         nome: cleanStr(mapping ? resolve("nome") : (body.name ?? body.nome ?? body.nome_completo), 300) || "Sem nome",
         email: cleanStr(mapping ? resolve("email") : (body.email ?? body.e_mail), 255),
         telefone: cleanStr(mapping ? resolve("telefone") : (body.phone ?? body.telefone ?? body.whatsapp), 30),
@@ -236,6 +238,7 @@ Deno.serve(async (req) => {
       const possuiVeiculoRaw = mapping ? resolve("possui_veiculo") : (body.possui_veiculo ?? body.hasVehicle);
       const possuiVeiculo = possuiVeiculoRaw === true || possuiVeiculoRaw === "true" || possuiVeiculoRaw === "sim" || possuiVeiculoRaw === "Sim" || possuiVeiculoRaw === 1;
       const record: Record<string, unknown> = {
+        tenant_id: tenantId,
         nome_completo: cleanStr(mapping ? resolve("nome_completo") : (body.nome_completo ?? body.name ?? body.nome), 300) || "Sem nome",
         cpf: cleanStr(mapping ? resolve("cpf") : (body.cpf ?? body.document), 20),
         telefone: cleanStr(mapping ? resolve("telefone") : (body.telefone ?? body.phone), 30),
@@ -261,6 +264,7 @@ Deno.serve(async (req) => {
     // ── GRUPO flow ──
     if (automacao.tipo === "solicitacao_grupo") {
       const record: Record<string, unknown> = {
+        tenant_id: tenantId,
         tipo_veiculo: cleanStr(mapping ? resolve("tipo_veiculo") : (body.tipo_veiculo ?? body.vehicleType), 100),
         numero_passageiros: cleanInt(mapping ? resolve("numero_passageiros") : (body.numero_passageiros ?? body.passengers ?? body.passageiros)),
         endereco_embarque: cleanStr(mapping ? resolve("endereco_embarque") : (body.endereco_embarque ?? body.pickupAddress ?? body.embarque), 500),
@@ -288,6 +292,7 @@ Deno.serve(async (req) => {
     const tipo = cleanStr(tipoFromMapping ?? body.tipo_viagem, 50) as string;
     const validTipos = ["somente_ida", "ida_e_volta", "por_hora"];
     const record: Record<string, unknown> = {
+      tenant_id: tenantId,
       tipo_viagem: validTipos.includes(tipo) ? tipo : "somente_ida",
       cliente_nome: cleanStr(mapping ? resolve("cliente_nome") : (body.cliente_nome ?? body.clientName ?? body.name), 300),
       cliente_telefone: cleanStr(mapping ? resolve("cliente_telefone") : (body.cliente_telefone ?? body.clientPhone ?? body.phone), 30),
