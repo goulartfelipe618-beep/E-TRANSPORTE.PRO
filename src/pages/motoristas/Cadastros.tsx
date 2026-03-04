@@ -195,9 +195,10 @@ export default function MotoristasCadastros() {
 
         // Insert vehicle if applicable (only on create)
         if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
-          const [crlvUrl, seguroUrl] = await Promise.all([
+          const [crlvUrl, seguroUrl, fotosUrl] = await Promise.all([
             files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
             files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+            files.fotos_veiculo ? uploadFile(files.fotos_veiculo, "fotos-veiculo", mid) : Promise.resolve(null),
           ]);
           await (supabase as any).from("motorista_veiculos").insert({
             motorista_id: mid, marca: form.v_marca, modelo: form.v_modelo,
@@ -205,6 +206,7 @@ export default function MotoristasCadastros() {
             combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
             chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
             tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
+            fotos_url: fotosUrl ? [fotosUrl] : null,
           });
         }
         toast.success("Motorista cadastrado com sucesso!");
