@@ -446,43 +446,37 @@ export default function MotoristasParcerias() {
 
               {/* SUBPARCEIROS */}
               <TabsContent value="subparceiros" className="space-y-4 mt-4">
-                {editingId ? (
-                  <p className="text-sm text-muted-foreground">Subparceiros são gerenciados na tela de detalhes do parceiro.</p>
-                ) : (
-                  <>
-                    {subparceiros.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-6">Nenhum subparceiro adicionado.</p>
-                    )}
-                    {subparceiros.map((s, idx) => (
-                      <Card key={idx} className="border shadow-sm">
-                        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                          <CardTitle className="text-sm font-semibold">Subparceiro #{idx + 1}</CardTitle>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSubparceiros(prev => prev.filter((_, i) => i !== idx))}>
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="grid gap-2"><Label>Nome *</Label><Input value={s.nome} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, nome: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>CPF/CNPJ</Label><Input value={s.cpf_cnpj} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cpf_cnpj: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>Função</Label><Input value={s.funcao} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, funcao: e.target.value } : sp))} /></div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="grid gap-2"><Label>Telefone</Label><Input value={s.telefone} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, telefone: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>E-mail</Label><Input type="email" value={s.email} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, email: e.target.value } : sp))} /></div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <GenericUpload label="CNH (PDF)" file={s.cnh} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cnh: f } : sp))} />
-                            <GenericUpload label="CRLV (PDF)" file={s.crlv} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, crlv: f } : sp))} />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={() => setSubparceiros(prev => [...prev, emptySubparceiro()])}>
-                      <Plus className="h-4 w-4 mr-2" /> Adicionar Subparceiro
-                    </Button>
-                  </>
+                {subparceiros.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-6">Nenhum subparceiro adicionado.</p>
                 )}
+                {subparceiros.map((s, idx) => (
+                  <Card key={idx} className="border shadow-sm">
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                      <CardTitle className="text-sm font-semibold">Subparceiro #{idx + 1}</CardTitle>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSubparceiros(prev => prev.filter((_, i) => i !== idx))}>
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="grid gap-2"><Label>Nome *</Label><Input value={s.nome} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, nome: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>CPF/CNPJ</Label><Input value={s.cpf_cnpj} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cpf_cnpj: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>Função</Label><Input value={s.funcao} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, funcao: e.target.value } : sp))} /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2"><Label>Telefone</Label><Input value={s.telefone} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, telefone: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>E-mail</Label><Input type="email" value={s.email} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, email: e.target.value } : sp))} /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <GenericUpload label="CNH (PDF)" file={s.cnh} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cnh: f } : sp))} />
+                        <GenericUpload label="CRLV (PDF)" file={s.crlv} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, crlv: f } : sp))} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button variant="outline" className="w-full" onClick={() => setSubparceiros(prev => [...prev, emptySubparceiro()])}>
+                  <Plus className="h-4 w-4 mr-2" /> Adicionar Subparceiro
+                </Button>
               </TabsContent>
             </Tabs>
 
