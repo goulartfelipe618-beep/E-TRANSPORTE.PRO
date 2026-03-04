@@ -532,7 +532,7 @@ export default function MotoristasCadastros() {
                   <Label>Este motorista possui veículo próprio</Label>
                 </div>
 
-                {form.possui_veiculo && !editingId && (
+                {form.possui_veiculo && (
                   <div className="space-y-4">
                     <p className="text-sm font-semibold text-muted-foreground">Dados do Veículo</p>
                     <div className="grid gap-3">
@@ -594,14 +594,11 @@ export default function MotoristasCadastros() {
                     <p className="text-sm font-semibold text-muted-foreground pt-2">Documentos do Veículo</p>
                     <FileUploadField label="CRLV" fileKey="crlv" />
                     <FileUploadField label="Seguro" fileKey="seguro" />
+                    <FileUploadField label="Fotos do Veículo" fileKey="fotos_veiculo" />
 
                     <p className="text-sm font-semibold text-muted-foreground pt-2">Observações do Veículo</p>
                     <Textarea value={form.v_observacoes} onChange={(e) => setField("v_observacoes", e.target.value)} placeholder="Anotações sobre o veículo..." rows={3} />
                   </div>
-                )}
-
-                {form.possui_veiculo && editingId && (
-                  <p className="text-sm text-muted-foreground">Veículos são gerenciados na tela de detalhes do motorista.</p>
                 )}
 
                 <div className="flex justify-between pt-4">
