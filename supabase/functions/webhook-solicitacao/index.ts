@@ -238,6 +238,7 @@ Deno.serve(async (req) => {
       const possuiVeiculoRaw = mapping ? resolve("possui_veiculo") : (body.possui_veiculo ?? body.hasVehicle);
       const possuiVeiculo = possuiVeiculoRaw === true || possuiVeiculoRaw === "true" || possuiVeiculoRaw === "sim" || possuiVeiculoRaw === "Sim" || possuiVeiculoRaw === 1;
       const record: Record<string, unknown> = {
+        tenant_id: tenantId,
         nome_completo: cleanStr(mapping ? resolve("nome_completo") : (body.nome_completo ?? body.name ?? body.nome), 300) || "Sem nome",
         cpf: cleanStr(mapping ? resolve("cpf") : (body.cpf ?? body.document), 20),
         telefone: cleanStr(mapping ? resolve("telefone") : (body.telefone ?? body.phone), 30),
