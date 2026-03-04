@@ -189,12 +189,13 @@ Deno.serve(async (req) => {
     }
 
     const body = await parseRequest(req, supabase, automacaoId);
+    const tenantId = automacao.tenant_id || null;
 
     // If webhook disabled → save as test
     if (!automacao.webhook_enabled) {
       const { count } = await supabase.from("webhook_tests").select("*", { count: "exact", head: true }).eq("automacao_id", automacaoId);
       const label = `Teste ${(count ?? 0) + 1}`;
-      const { data, error } = await supabase.from("webhook_tests").insert({ label, payload: body, automacao_id: automacaoId }).select().single();
+      const { data, error } = await supabase.from("webhook_tests").insert({ label, payload: body, automacao_id: automacaoId, tenant_id: tenantId }).select().single();
       if (error) return new Response(JSON.stringify({ error: "Erro ao salvar teste" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       return new Response(JSON.stringify({ success: true, test: true, id: data.id, label }), { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
