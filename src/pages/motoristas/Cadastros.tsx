@@ -96,6 +96,7 @@ export default function MotoristasCadastros() {
   const [detailMotorista, setDetailMotorista] = useState<MotoristaDB | null>(null);
   const [detailVeiculos, setDetailVeiculos] = useState<VeiculoDB[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingVeiculos, setEditingVeiculos] = useState<VeiculoDB[]>([]);
   const [files, setFiles] = useState<Record<string, File | null>>({
     foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null,
     crlv: null, seguro: null, fotos_veiculo: null,
@@ -132,9 +133,24 @@ export default function MotoristasCadastros() {
     });
   };
 
-  const handleEdit = (m: MotoristaDB) => {
+  const handleEdit = async (m: MotoristaDB) => {
     setEditingId(m.id);
     populateFormFromMotorista(m);
+    // Load existing vehicles for editing
+    const { data: veiculos } = await (supabase as any).from("motorista_veiculos").select("*").eq("motorista_id", m.id);
+    const vList = veiculos || [];
+    setEditingVeiculos(vList);
+    if (vList.length > 0) {
+      const v = vList[0];
+      setForm(prev => ({
+        ...prev,
+        possui_veiculo: true,
+        v_marca: v.marca || "", v_modelo: v.modelo || "", v_ano: String(v.ano || ""),
+        v_cor: v.cor || "", v_placa: v.placa || "", v_combustivel: v.combustivel || "",
+        v_renavam: v.renavam || "", v_chassi: v.chassi || "",
+        v_status: v.status || "ativo", v_observacoes: v.observacoes || "",
+      }));
+    }
     setActiveTab("pessoal");
     setDialogOpen(true);
   };
@@ -171,6 +187,32 @@ export default function MotoristasCadastros() {
         const { error } = await (supabase as any).from("motoristas").update(payload).eq("id", editingId);
         if (error) throw error;
         mid = editingId;
+
+        // Update or insert vehicle when editing
+        if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
+          const [crlvUrl, seguroUrl, fotosUrl] = await Promise.all([
+            files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
+            files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+            files.fotos_veiculo ? uploadFile(files.fotos_veiculo, "fotos-veiculo", mid) : Promise.resolve(null),
+          ]);
+          const veiculoPayload: any = {
+            marca: form.v_marca, modelo: form.v_modelo,
+            ano: parseInt(form.v_ano), cor: form.v_cor || null, placa: form.v_placa,
+            combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
+            chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
+          };
+          if (crlvUrl) veiculoPayload.crlv_url = crlvUrl;
+          if (seguroUrl) veiculoPayload.seguro_url = seguroUrl;
+          if (fotosUrl) veiculoPayload.fotos_url = [fotosUrl];
+
+          if (editingVeiculos.length > 0) {
+            await (supabase as any).from("motorista_veiculos").update(veiculoPayload).eq("id", editingVeiculos[0].id);
+          } else {
+            await (supabase as any).from("motorista_veiculos").insert({
+              ...veiculoPayload, motorista_id: mid, tenant_id: tenantId,
+            });
+          }
+        }
         toast.success("Motorista atualizado com sucesso!");
       } else {
         const { data: motorista, error } = await (supabase as any).from("motoristas").insert(payload).select().single();
@@ -179,9 +221,10 @@ export default function MotoristasCadastros() {
 
         // Insert vehicle if applicable (only on create)
         if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
-          const [crlvUrl, seguroUrl] = await Promise.all([
+          const [crlvUrl, seguroUrl, fotosUrl] = await Promise.all([
             files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
             files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+            files.fotos_veiculo ? uploadFile(files.fotos_veiculo, "fotos-veiculo", mid) : Promise.resolve(null),
           ]);
           await (supabase as any).from("motorista_veiculos").insert({
             motorista_id: mid, marca: form.v_marca, modelo: form.v_modelo,
@@ -189,6 +232,7 @@ export default function MotoristasCadastros() {
             combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
             chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
             tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
+            fotos_url: fotosUrl ? [fotosUrl] : null,
           });
         }
         toast.success("Motorista cadastrado com sucesso!");
@@ -283,7 +327,7 @@ export default function MotoristasCadastros() {
           <h1 className="text-2xl font-bold text-foreground">Cadastros de Motoristas</h1>
           <p className="text-muted-foreground">Gerenciamento completo de motoristas</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); setEditingId(null); } }}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); setEditingId(null); setEditingVeiculos([]); } }}>
           <DialogTrigger asChild>
             <Button><Plus className="h-4 w-4 mr-2" /> Novo Motorista</Button>
           </DialogTrigger>
@@ -488,7 +532,7 @@ export default function MotoristasCadastros() {
                   <Label>Este motorista possui veículo próprio</Label>
                 </div>
 
-                {form.possui_veiculo && !editingId && (
+                {form.possui_veiculo && (
                   <div className="space-y-4">
                     <p className="text-sm font-semibold text-muted-foreground">Dados do Veículo</p>
                     <div className="grid gap-3">
@@ -550,14 +594,11 @@ export default function MotoristasCadastros() {
                     <p className="text-sm font-semibold text-muted-foreground pt-2">Documentos do Veículo</p>
                     <FileUploadField label="CRLV" fileKey="crlv" />
                     <FileUploadField label="Seguro" fileKey="seguro" />
+                    <FileUploadField label="Fotos do Veículo" fileKey="fotos_veiculo" />
 
                     <p className="text-sm font-semibold text-muted-foreground pt-2">Observações do Veículo</p>
                     <Textarea value={form.v_observacoes} onChange={(e) => setField("v_observacoes", e.target.value)} placeholder="Anotações sobre o veículo..." rows={3} />
                   </div>
-                )}
-
-                {form.possui_veiculo && editingId && (
-                  <p className="text-sm text-muted-foreground">Veículos são gerenciados na tela de detalhes do motorista.</p>
                 )}
 
                 <div className="flex justify-between pt-4">
