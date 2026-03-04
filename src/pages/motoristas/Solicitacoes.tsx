@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Trash2, UserCheck, UserX, ArrowRightLeft, User, FileText, CreditCard, Car, Upload, X, RefreshCw, MessageSquare } from "lucide-react";
+import { Eye, Trash2, UserCheck, UserX, ArrowRightLeft, User, FileText, CreditCard, Car, Upload, X, RefreshCw, MessageSquare, Download } from "lucide-react";
 import ComunicarDialog from "@/components/ComunicarDialog";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
@@ -265,6 +265,27 @@ export default function MotoristasSolicitacoes() {
     </div>
   );
 
+  const handleExportCSV = () => {
+    const headers = ["Data", "Nome", "CPF", "Telefone", "E-mail", "Cidade", "Estado", "CNH Cat.", "Veículo Próprio", "Status"];
+    const rows = solicitacoes.map((s) => [
+      new Date(s.created_at).toLocaleString("pt-BR"),
+      s.nome_completo,
+      s.cpf || "",
+      s.telefone || "",
+      s.email || "",
+      s.cidade || "",
+      s.estado || "",
+      s.cnh_categoria || "",
+      s.possui_veiculo ? "Sim" : "Não",
+      statusMap[s.status]?.label || s.status,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "solicitacoes-motoristas.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -272,9 +293,14 @@ export default function MotoristasSolicitacoes() {
           <h1 className="text-2xl font-bold text-foreground">Solicitações de Motoristas</h1>
           <p className="text-muted-foreground">Solicitações recebidas de pessoas que desejam ser motoristas parceiros.</p>
         </div>
-        <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchSolicitacoes(); }} title="Recarregar">
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchSolicitacoes(); }} title="Recarregar">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button variant="outline" onClick={handleExportCSV} disabled={solicitacoes.length === 0}>
+            <Download className="h-4 w-4 mr-2" /> Exportar CSV
+          </Button>
+        </div>
       </div>
 
       <Card className="border-none shadow-sm">

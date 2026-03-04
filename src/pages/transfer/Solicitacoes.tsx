@@ -13,7 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus, RefreshCw, MessageSquare } from "lucide-react";
+import { Eye, ArrowRightLeft, Copy, Check, Link, Trash2, Plus, RefreshCw, MessageSquare, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -136,6 +136,27 @@ export default function TransferSolicitacoes() {
     return s.ida_passageiros ?? "—";
   };
 
+  const handleExportCSV = () => {
+    const headers = ["Data", "Cliente", "Telefone", "E-mail", "Tipo", "Embarque", "Desembarque", "Data/Hora", "Pax", "Status"];
+    const rows = solicitacoes.map((s) => [
+      new Date(s.created_at).toLocaleString("pt-BR"),
+      s.cliente_nome || "",
+      s.cliente_telefone || "",
+      s.cliente_email || "",
+      tipoMap[s.tipo_viagem] || s.tipo_viagem,
+      getEmbarque(s),
+      getDesembarque(s),
+      getDataHora(s),
+      String(getPax(s)),
+      statusMap[s.status]?.label || s.status,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "solicitacoes-transfer.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -146,6 +167,9 @@ export default function TransferSolicitacoes() {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchSolicitacoes(); }} title="Recarregar">
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button variant="outline" onClick={handleExportCSV} disabled={solicitacoes.length === 0}>
+            <Download className="h-4 w-4 mr-2" /> Exportar CSV
           </Button>
           <Button onClick={() => setCreatingManual(true)}>
             <Plus className="h-4 w-4 mr-2" /> Criar Reserva
