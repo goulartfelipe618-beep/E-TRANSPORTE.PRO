@@ -133,9 +133,24 @@ export default function MotoristasCadastros() {
     });
   };
 
-  const handleEdit = (m: MotoristaDB) => {
+  const handleEdit = async (m: MotoristaDB) => {
     setEditingId(m.id);
     populateFormFromMotorista(m);
+    // Load existing vehicles for editing
+    const { data: veiculos } = await (supabase as any).from("motorista_veiculos").select("*").eq("motorista_id", m.id);
+    const vList = veiculos || [];
+    setEditingVeiculos(vList);
+    if (vList.length > 0) {
+      const v = vList[0];
+      setForm(prev => ({
+        ...prev,
+        possui_veiculo: true,
+        v_marca: v.marca || "", v_modelo: v.modelo || "", v_ano: String(v.ano || ""),
+        v_cor: v.cor || "", v_placa: v.placa || "", v_combustivel: v.combustivel || "",
+        v_renavam: v.renavam || "", v_chassi: v.chassi || "",
+        v_status: v.status || "ativo", v_observacoes: v.observacoes || "",
+      }));
+    }
     setActiveTab("pessoal");
     setDialogOpen(true);
   };
