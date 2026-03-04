@@ -13,7 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ArrowRightLeft, Trash2, Plus, RefreshCw, MessageSquare } from "lucide-react";
+import { Eye, ArrowRightLeft, Trash2, Plus, RefreshCw, MessageSquare, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -104,6 +104,27 @@ export default function GruposSolicitacoes() {
     setCreateLoading(false);
   };
 
+  const handleExportCSV = () => {
+    const headers = ["Data", "Cliente", "WhatsApp", "E-mail", "Veículo", "Embarque", "Destino", "Data/Hora", "Pax", "Status"];
+    const rows = solicitacoes.map((s) => [
+      new Date(s.created_at).toLocaleString("pt-BR"),
+      s.cliente_nome || "",
+      s.cliente_whatsapp || "",
+      s.cliente_email || "",
+      veiculoMap[s.tipo_veiculo || ""] || s.tipo_veiculo || "",
+      s.endereco_embarque || "",
+      s.destino || "",
+      `${s.data_ida || ""} ${s.hora_ida || ""}`.trim(),
+      String(s.numero_passageiros ?? ""),
+      statusMap[s.status]?.label || s.status,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "solicitacoes-grupos.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -114,6 +135,9 @@ export default function GruposSolicitacoes() {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => { setLoading(true); fetchSolicitacoes(); }} title="Recarregar">
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button variant="outline" onClick={handleExportCSV} disabled={solicitacoes.length === 0}>
+            <Download className="h-4 w-4 mr-2" /> Exportar CSV
           </Button>
           <Button onClick={() => setCreatingManual(true)}>
             <Plus className="h-4 w-4 mr-2" /> Criar Reserva
