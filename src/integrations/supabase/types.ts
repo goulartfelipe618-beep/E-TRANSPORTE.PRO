@@ -480,6 +480,7 @@ export type Database = {
           comprovante_residencia_url: string | null
           conta: string | null
           cpf: string
+          cpf_cnpj_recebedor: string | null
           created_at: string
           data_nascimento: string | null
           email: string | null
@@ -488,6 +489,7 @@ export type Database = {
           foto_perfil_url: string | null
           id: string
           nome_completo: string
+          nome_recebedor: string | null
           observacoes: string | null
           possui_veiculo: boolean
           rg: string | null
@@ -512,6 +514,7 @@ export type Database = {
           comprovante_residencia_url?: string | null
           conta?: string | null
           cpf: string
+          cpf_cnpj_recebedor?: string | null
           created_at?: string
           data_nascimento?: string | null
           email?: string | null
@@ -520,6 +523,7 @@ export type Database = {
           foto_perfil_url?: string | null
           id?: string
           nome_completo: string
+          nome_recebedor?: string | null
           observacoes?: string | null
           possui_veiculo?: boolean
           rg?: string | null
@@ -544,6 +548,7 @@ export type Database = {
           comprovante_residencia_url?: string | null
           conta?: string | null
           cpf?: string
+          cpf_cnpj_recebedor?: string | null
           created_at?: string
           data_nascimento?: string | null
           email?: string | null
@@ -552,6 +557,7 @@ export type Database = {
           foto_perfil_url?: string | null
           id?: string
           nome_completo?: string
+          nome_recebedor?: string | null
           observacoes?: string | null
           possui_veiculo?: boolean
           rg?: string | null
