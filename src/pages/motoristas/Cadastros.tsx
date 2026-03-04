@@ -9,7 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Search, User, FileText, CreditCard, Car, Upload, X, Phone, Mail, Edit, Trash2, MessageSquare } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Plus, Search, User, FileText, CreditCard, Car, Upload, X, Phone, Mail, Edit, Trash2, MessageSquare, Eye, LayoutGrid, List } from "lucide-react";
 import ComunicarDialog from "@/components/ComunicarDialog";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,13 +54,26 @@ interface MotoristaDB {
   created_at: string;
 }
 
+interface VeiculoDB {
+  id: string;
+  marca: string;
+  modelo: string;
+  ano: number;
+  cor: string | null;
+  placa: string;
+  combustivel: string | null;
+  renavam: string | null;
+  chassi: string | null;
+  status: string;
+  observacoes: string | null;
+}
+
 const emptyForm = {
   nome_completo: "", cpf: "", rg: "", data_nascimento: "", telefone: "", email: "",
   endereco: "", cidade: "", estado: "", cep: "",
   cnh_numero: "", cnh_categoria: "", cnh_validade: "", status: "ativo", observacoes: "",
   tipo_pagamento: "", banco: "", agencia: "", conta: "", tipo_conta: "", chave_pix: "", nome_recebedor: "", cpf_cnpj_recebedor: "",
   possui_veiculo: false,
-  // vehicle
   v_marca: "", v_modelo: "", v_ano: "", v_cor: "", v_placa: "", v_combustivel: "",
   v_renavam: "", v_chassi: "", v_status: "ativo", v_observacoes: "",
 };
@@ -78,6 +92,10 @@ export default function MotoristasCadastros() {
   const [form, setForm] = useState({ ...emptyForm });
   const [loading, setLoading] = useState(false);
   const [comunicando, setComunicando] = useState<MotoristaDB | null>(null);
+  const [viewMode, setViewMode] = useState<"card" | "table">("card");
+  const [detailMotorista, setDetailMotorista] = useState<MotoristaDB | null>(null);
+  const [detailVeiculos, setDetailVeiculos] = useState<VeiculoDB[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [files, setFiles] = useState<Record<string, File | null>>({
     foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null,
     crlv: null, seguro: null, fotos_veiculo: null,
@@ -99,6 +117,34 @@ export default function MotoristasCadastros() {
     return data.publicUrl;
   };
 
+  const populateFormFromMotorista = (m: MotoristaDB) => {
+    setForm({
+      nome_completo: m.nome_completo, cpf: m.cpf, rg: m.rg || "", data_nascimento: m.data_nascimento || "",
+      telefone: m.telefone, email: m.email || "", endereco: m.endereco || "", cidade: m.cidade || "",
+      estado: m.estado || "", cep: m.cep || "", cnh_numero: m.cnh_numero || "", cnh_categoria: m.cnh_categoria || "",
+      cnh_validade: m.cnh_validade || "", status: m.status, observacoes: m.observacoes || "",
+      tipo_pagamento: m.tipo_pagamento || "", banco: m.banco || "", agencia: m.agencia || "",
+      conta: m.conta || "", tipo_conta: m.tipo_conta || "", chave_pix: m.chave_pix || "",
+      nome_recebedor: m.nome_recebedor || "", cpf_cnpj_recebedor: m.cpf_cnpj_recebedor || "",
+      possui_veiculo: m.possui_veiculo,
+      v_marca: "", v_modelo: "", v_ano: "", v_cor: "", v_placa: "", v_combustivel: "",
+      v_renavam: "", v_chassi: "", v_status: "ativo", v_observacoes: "",
+    });
+  };
+
+  const handleEdit = (m: MotoristaDB) => {
+    setEditingId(m.id);
+    populateFormFromMotorista(m);
+    setActiveTab("pessoal");
+    setDialogOpen(true);
+  };
+
+  const handleViewDetails = async (m: MotoristaDB) => {
+    setDetailMotorista(m);
+    const { data } = await (supabase as any).from("motorista_veiculos").select("*").eq("motorista_id", m.id);
+    setDetailVeiculos(data || []);
+  };
+
   const handleSave = async () => {
     if (!form.nome_completo || !form.cpf || !form.telefone) {
       toast.error("Preencha os campos obrigatórios: Nome, CPF e Telefone.");
@@ -106,37 +152,47 @@ export default function MotoristasCadastros() {
     }
     setLoading(true);
     try {
-      // Insert motorista
-      const { data: motorista, error } = await (supabase as any).from("motoristas").insert({
+      const payload = {
         tenant_id: tenantId,
-        nome_completo: form.nome_completo,
-        cpf: form.cpf,
-        rg: form.rg || null,
-        data_nascimento: form.data_nascimento || null,
-        telefone: form.telefone,
-        email: form.email || null,
-        endereco: form.endereco || null,
-        cidade: form.cidade || null,
-        estado: form.estado || null,
-        cep: form.cep || null,
-        cnh_numero: form.cnh_numero || null,
-        cnh_categoria: form.cnh_categoria || null,
-        cnh_validade: form.cnh_validade || null,
-        status: form.status,
-        observacoes: form.observacoes || null,
-        tipo_pagamento: form.tipo_pagamento || null,
-        banco: form.banco || null,
-        agencia: form.agencia || null,
-        conta: form.conta || null,
-        tipo_conta: form.tipo_conta || null,
-        chave_pix: form.chave_pix || null,
-        nome_recebedor: form.nome_recebedor || null,
-        cpf_cnpj_recebedor: form.cpf_cnpj_recebedor || null,
+        nome_completo: form.nome_completo, cpf: form.cpf, rg: form.rg || null,
+        data_nascimento: form.data_nascimento || null, telefone: form.telefone, email: form.email || null,
+        endereco: form.endereco || null, cidade: form.cidade || null, estado: form.estado || null,
+        cep: form.cep || null, cnh_numero: form.cnh_numero || null, cnh_categoria: form.cnh_categoria || null,
+        cnh_validade: form.cnh_validade || null, status: form.status, observacoes: form.observacoes || null,
+        tipo_pagamento: form.tipo_pagamento || null, banco: form.banco || null, agencia: form.agencia || null,
+        conta: form.conta || null, tipo_conta: form.tipo_conta || null, chave_pix: form.chave_pix || null,
+        nome_recebedor: form.nome_recebedor || null, cpf_cnpj_recebedor: form.cpf_cnpj_recebedor || null,
         possui_veiculo: form.possui_veiculo,
-      }).select().single();
+      };
 
-      if (error) throw error;
-      const mid = motorista.id;
+      let mid: string;
+
+      if (editingId) {
+        const { error } = await (supabase as any).from("motoristas").update(payload).eq("id", editingId);
+        if (error) throw error;
+        mid = editingId;
+        toast.success("Motorista atualizado com sucesso!");
+      } else {
+        const { data: motorista, error } = await (supabase as any).from("motoristas").insert(payload).select().single();
+        if (error) throw error;
+        mid = motorista.id;
+
+        // Insert vehicle if applicable (only on create)
+        if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
+          const [crlvUrl, seguroUrl] = await Promise.all([
+            files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
+            files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+          ]);
+          await (supabase as any).from("motorista_veiculos").insert({
+            motorista_id: mid, marca: form.v_marca, modelo: form.v_modelo,
+            ano: parseInt(form.v_ano), cor: form.v_cor || null, placa: form.v_placa,
+            combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
+            chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
+            tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
+          });
+        }
+        toast.success("Motorista cadastrado com sucesso!");
+      }
 
       // Upload documents in parallel
       const docUploads: Promise<[string, string]>[] = [];
@@ -151,30 +207,14 @@ export default function MotoristasCadastros() {
         await (supabase as any).from("motoristas").update(docUpdates).eq("id", mid);
       }
 
-      // Insert vehicle if applicable
-      if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
-        const [crlvUrl, seguroUrl] = await Promise.all([
-          files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
-          files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
-        ]);
-
-        await (supabase as any).from("motorista_veiculos").insert({
-          motorista_id: mid, marca: form.v_marca, modelo: form.v_modelo,
-          ano: parseInt(form.v_ano), cor: form.v_cor || null, placa: form.v_placa,
-          combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
-          chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
-          tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
-        });
-      }
-
-      toast.success("Motorista cadastrado com sucesso!");
       setForm({ ...emptyForm });
       setFiles({ foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null, crlv: null, seguro: null, fotos_veiculo: null });
       setActiveTab("pessoal");
+      setEditingId(null);
       setDialogOpen(false);
       fetchMotoristas();
     } catch (err: any) {
-      toast.error(err.message || "Erro ao cadastrar motorista.");
+      toast.error(err.message || "Erro ao salvar motorista.");
     } finally {
       setLoading(false);
     }
@@ -227,6 +267,15 @@ export default function MotoristasCadastros() {
     </div>
   );
 
+  const DetailRow = ({ label, value }: { label: string; value: string | null | undefined }) => (
+    value ? (
+      <div className="grid grid-cols-3 gap-2 py-1.5 border-b border-border/50">
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        <span className="text-sm col-span-2">{value}</span>
+      </div>
+    ) : null
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -234,13 +283,13 @@ export default function MotoristasCadastros() {
           <h1 className="text-2xl font-bold text-foreground">Cadastros de Motoristas</h1>
           <p className="text-muted-foreground">Gerenciamento completo de motoristas</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); } }}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); setEditingId(null); } }}>
           <DialogTrigger asChild>
             <Button><Plus className="h-4 w-4 mr-2" /> Novo Motorista</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Cadastrar Motorista</DialogTitle>
+              <DialogTitle>{editingId ? "Editar Motorista" : "Cadastrar Motorista"}</DialogTitle>
             </DialogHeader>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-4">
@@ -439,7 +488,7 @@ export default function MotoristasCadastros() {
                   <Label>Este motorista possui veículo próprio</Label>
                 </div>
 
-                {form.possui_veiculo && (
+                {form.possui_veiculo && !editingId && (
                   <div className="space-y-4">
                     <p className="text-sm font-semibold text-muted-foreground">Dados do Veículo</p>
                     <div className="grid gap-3">
@@ -507,10 +556,14 @@ export default function MotoristasCadastros() {
                   </div>
                 )}
 
+                {form.possui_veiculo && editingId && (
+                  <p className="text-sm text-muted-foreground">Veículos são gerenciados na tela de detalhes do motorista.</p>
+                )}
+
                 <div className="flex justify-between pt-4">
                   <Button variant="outline" onClick={() => setActiveTab("pagamento")}>← Anterior</Button>
                   <Button onClick={handleSave} disabled={loading}>
-                    {loading ? "Salvando..." : "Salvar Motorista"}
+                    {loading ? "Salvando..." : editingId ? "Salvar Alterações" : "Salvar Motorista"}
                   </Button>
                 </div>
               </TabsContent>
@@ -519,65 +572,252 @@ export default function MotoristasCadastros() {
         </Dialog>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Buscar por nome ou CPF..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+      {/* Search + View Toggle */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Buscar por nome ou CPF..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        </div>
+        <div className="flex items-center gap-1 border rounded-md p-0.5">
+          <Button variant={viewMode === "card" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("card")} className="h-8">
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button variant={viewMode === "table" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("table")} className="h-8">
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* List */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {filtered.map((m) => (
-          <Card key={m.id} className="border-none shadow-sm">
-            <CardHeader className="flex flex-row items-start justify-between pb-3">
-              <div className="flex items-center gap-3">
-                {m.foto_perfil_url ? (
-                  <img src={m.foto_perfil_url} alt="" className="h-10 w-10 rounded-full object-cover" />
-                ) : (
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                    <User className="h-5 w-5 text-muted-foreground" />
+      {/* CARD VIEW */}
+      {viewMode === "card" && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((m) => (
+            <Card key={m.id} className="border-none shadow-sm">
+              <CardHeader className="flex flex-row items-start justify-between pb-3">
+                <div className="flex items-center gap-3">
+                  {m.foto_perfil_url ? (
+                    <img src={m.foto_perfil_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                      <User className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div>
+                    <CardTitle className="text-base">{m.nome_completo}</CardTitle>
+                    <p className="text-xs text-muted-foreground font-mono">{m.cpf} · CNH {m.cnh_categoria || "—"}</p>
                   </div>
-                )}
-                <div>
-                  <CardTitle className="text-base">{m.nome_completo}</CardTitle>
-                  <p className="text-xs text-muted-foreground font-mono">{m.cpf} · CNH {m.cnh_categoria || "—"}</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor[m.status] || "bg-muted text-muted-foreground"}`}>
                   {m.status}
                 </span>
-                <Button variant="outline" size="sm" onClick={() => setComunicando(m)} title="Comunicar" className="h-7 text-xs">
-                  <MessageSquare className="h-3 w-3 mr-1" /> Comunicar
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(m.id)} className="h-7 w-7">
-                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-3.5 w-3.5" /> {m.telefone}
-              </div>
-              {m.email && (
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Mail className="h-3.5 w-3.5" /> {m.email}
+                  <Phone className="h-3.5 w-3.5" /> {m.telefone}
                 </div>
-              )}
-              {m.possui_veiculo && (
-                <div className="pt-2 border-t text-xs text-muted-foreground flex items-center gap-1">
-                  <Car className="h-3.5 w-3.5" /> Possui veículo próprio
+                {m.email && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="h-3.5 w-3.5" /> {m.email}
+                  </div>
+                )}
+                {m.possui_veiculo && (
+                  <div className="pt-2 border-t text-xs text-muted-foreground flex items-center gap-1">
+                    <Car className="h-3.5 w-3.5" /> Possui veículo próprio
+                  </div>
+                )}
+                <div className="flex items-center gap-1 pt-2 border-t">
+                  <Button variant="ghost" size="sm" onClick={() => handleViewDetails(m)} className="h-7 text-xs">
+                    <Eye className="h-3 w-3 mr-1" /> Detalhes
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleEdit(m)} className="h-7 text-xs">
+                    <Edit className="h-3 w-3 mr-1" /> Editar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setComunicando(m)} className="h-7 text-xs">
+                    <MessageSquare className="h-3 w-3 mr-1" /> Comunicar
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(m.id)} className="h-7 w-7 ml-auto">
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
                 </div>
+              </CardContent>
+            </Card>
+          ))}
+          {filtered.length === 0 && (
+            <div className="col-span-full text-center py-12 text-muted-foreground">
+              Nenhum motorista cadastrado.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TABLE VIEW */}
+      {viewMode === "table" && (
+        <Card className="border-none shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>CPF</TableHead>
+                <TableHead>Telefone</TableHead>
+                <TableHead>CNH</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((m) => (
+                <TableRow key={m.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {m.foto_perfil_url ? (
+                        <img src={m.foto_perfil_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                          <User className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{m.nome_completo}</p>
+                        {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">{m.cpf}</TableCell>
+                  <TableCell className="text-sm">{m.telefone}</TableCell>
+                  <TableCell className="text-sm">{m.cnh_categoria || "—"}</TableCell>
+                  <TableCell>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor[m.status] || "bg-muted text-muted-foreground"}`}>
+                      {m.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => handleViewDetails(m)} className="h-7 w-7" title="Detalhes">
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(m)} className="h-7 w-7" title="Editar">
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setComunicando(m)} className="h-7 w-7" title="Comunicar">
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(m.id)} className="h-7 w-7" title="Excluir">
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                    Nenhum motorista cadastrado.
+                  </TableCell>
+                </TableRow>
               )}
-            </CardContent>
-          </Card>
-        ))}
-        {filtered.length === 0 && (
-          <div className="col-span-full text-center py-12 text-muted-foreground">
-            Nenhum motorista cadastrado.
-          </div>
-        )}
-      </div>
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* DETAIL DIALOG */}
+      <Dialog open={!!detailMotorista} onOpenChange={(open) => { if (!open) { setDetailMotorista(null); setDetailVeiculos([]); } }}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          {detailMotorista && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3">
+                  {detailMotorista.foto_perfil_url ? (
+                    <img src={detailMotorista.foto_perfil_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                      <User className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div>
+                    <span>{detailMotorista.nome_completo}</span>
+                    <p className="text-xs font-normal text-muted-foreground mt-0.5">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusColor[detailMotorista.status] || "bg-muted text-muted-foreground"}`}>
+                        {detailMotorista.status}
+                      </span>
+                    </p>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4 mt-4">
+                <p className="text-sm font-semibold text-muted-foreground">Dados Pessoais</p>
+                <div className="space-y-0">
+                  <DetailRow label="CPF" value={detailMotorista.cpf} />
+                  <DetailRow label="RG" value={detailMotorista.rg} />
+                  <DetailRow label="Data de Nascimento" value={detailMotorista.data_nascimento} />
+                  <DetailRow label="Telefone" value={detailMotorista.telefone} />
+                  <DetailRow label="E-mail" value={detailMotorista.email} />
+                  <DetailRow label="Endereço" value={detailMotorista.endereco} />
+                  <DetailRow label="Cidade" value={detailMotorista.cidade} />
+                  <DetailRow label="Estado" value={detailMotorista.estado} />
+                  <DetailRow label="CEP" value={detailMotorista.cep} />
+                </div>
+
+                <p className="text-sm font-semibold text-muted-foreground pt-2">CNH</p>
+                <div className="space-y-0">
+                  <DetailRow label="Número" value={detailMotorista.cnh_numero} />
+                  <DetailRow label="Categoria" value={detailMotorista.cnh_categoria} />
+                  <DetailRow label="Validade" value={detailMotorista.cnh_validade} />
+                </div>
+
+                {detailMotorista.tipo_pagamento && (
+                  <>
+                    <p className="text-sm font-semibold text-muted-foreground pt-2">Pagamento</p>
+                    <div className="space-y-0">
+                      <DetailRow label="Tipo" value={detailMotorista.tipo_pagamento === "pix" ? "PIX" : "Conta Bancária"} />
+                      {detailMotorista.tipo_pagamento === "pix" && <DetailRow label="Chave PIX" value={detailMotorista.chave_pix} />}
+                      {detailMotorista.tipo_pagamento === "conta_bancaria" && (
+                        <>
+                          <DetailRow label="Banco" value={detailMotorista.banco} />
+                          <DetailRow label="Agência" value={detailMotorista.agencia} />
+                          <DetailRow label="Conta" value={detailMotorista.conta} />
+                          <DetailRow label="Tipo de Conta" value={detailMotorista.tipo_conta} />
+                          <DetailRow label="Nome Recebedor" value={detailMotorista.nome_recebedor} />
+                          <DetailRow label="CPF/CNPJ Recebedor" value={detailMotorista.cpf_cnpj_recebedor} />
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {detailMotorista.observacoes && (
+                  <>
+                    <p className="text-sm font-semibold text-muted-foreground pt-2">Observações</p>
+                    <p className="text-sm">{detailMotorista.observacoes}</p>
+                  </>
+                )}
+
+                {detailVeiculos.length > 0 && (
+                  <>
+                    <p className="text-sm font-semibold text-muted-foreground pt-2">Veículos</p>
+                    {detailVeiculos.map((v) => (
+                      <Card key={v.id} className="p-3">
+                        <p className="font-medium text-sm">{v.marca} {v.modelo} ({v.ano})</p>
+                        <p className="text-xs text-muted-foreground">Placa: {v.placa} · {v.combustivel || "—"} · {v.cor || "—"}</p>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize mt-1 inline-block ${statusColor[v.status] || "bg-muted text-muted-foreground"}`}>
+                          {v.status}
+                        </span>
+                      </Card>
+                    ))}
+                  </>
+                )}
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={() => { handleEdit(detailMotorista); setDetailMotorista(null); }}>
+                    <Edit className="h-4 w-4 mr-2" /> Editar
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <ComunicarDialog
         open={!!comunicando}
