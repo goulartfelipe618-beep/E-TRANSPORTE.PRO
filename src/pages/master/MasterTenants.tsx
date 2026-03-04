@@ -60,9 +60,19 @@ export default function MasterTenants() {
   };
 
   const handleToggle = async (tenant: Tenant, ativo: boolean) => {
-    await supabase.from("tenants").update({ ativo }).eq("id", tenant.id);
-    setTenants(prev => prev.map(t => t.id === tenant.id ? { ...t, ativo } : t));
-    toast({ title: ativo ? "Tenant ativado" : "Tenant desativado" });
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-users", {
+        body: { action: "suspend_tenant", tenant_id: tenant.id, ativo },
+      });
+      if (error) throw error;
+      setTenants(prev => prev.map(t => t.id === tenant.id ? { ...t, ativo } : t));
+      toast({
+        title: ativo ? "Tenant ativado" : "Tenant suspenso",
+        description: !ativo ? "Todos os usuários deste tenant foram deslogados." : undefined,
+      });
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
   };
 
   const handleDelete = async (id: string) => {

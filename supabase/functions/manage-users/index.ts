@@ -81,11 +81,9 @@ Deno.serve(async (req) => {
       if (!user_id) {
         return new Response(JSON.stringify({ error: "user_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      // Don't allow deleting yourself
       if (user_id === caller.id) {
         return new Response(JSON.stringify({ error: "Cannot delete yourself" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      // Don't allow deleting any master_admin
       const { data: targetRole } = await adminClient.from("user_roles").select("role").eq("user_id", user_id).maybeSingle();
       if (targetRole?.role === "master_admin") {
         return new Response(JSON.stringify({ error: "Master Admin não pode ser excluído" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -93,6 +91,37 @@ Deno.serve(async (req) => {
       await adminClient.from("user_roles").delete().eq("user_id", user_id);
       await adminClient.auth.admin.deleteUser(user_id);
       return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (action === "suspend_tenant") {
+      const { tenant_id, ativo } = body;
+      if (!tenant_id) {
+        return new Response(JSON.stringify({ error: "tenant_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      // Update tenant status
+      await adminClient.from("tenants").update({ ativo: !!ativo }).eq("id", tenant_id);
+
+      // If suspending (ativo=false), force logout all users of this tenant
+      if (!ativo) {
+        const { data: tenantUsers } = await adminClient
+          .from("user_roles")
+          .select("user_id, role")
+          .eq("tenant_id", tenant_id);
+
+        if (tenantUsers?.length) {
+          for (const u of tenantUsers) {
+            // Don't logout master admins
+            if (u.role === "master_admin") continue;
+            await adminClient.auth.admin.signOut(u.user_id);
+          }
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, ativo: !!ativo }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });

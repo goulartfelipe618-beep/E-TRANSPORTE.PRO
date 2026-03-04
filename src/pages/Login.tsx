@@ -66,7 +66,6 @@ export default function Login() {
     }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
 
     // Record attempt
     try {
@@ -78,9 +77,47 @@ export default function Login() {
     }
 
     if (error) {
+      setLoading(false);
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       refreshCaptcha();
+      return;
     }
+
+    // Check if user's tenant is active
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role, tenant_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (roleData?.role !== "master_admin" && roleData?.tenant_id) {
+          const { data: tenant } = await supabase
+            .from("tenants")
+            .select("ativo")
+            .eq("id", roleData.tenant_id)
+            .maybeSingle();
+
+          if (tenant && !tenant.ativo) {
+            await supabase.auth.signOut();
+            setLoading(false);
+            toast({
+              title: "Conta suspensa",
+              description: "Sua conta está temporariamente suspensa. Entre em contato com o administrador.",
+              variant: "destructive",
+            });
+            refreshCaptcha();
+            return;
+          }
+        }
+      }
+    } catch {
+      // Non-blocking
+    }
+
+    setLoading(false);
   };
 
   return (
