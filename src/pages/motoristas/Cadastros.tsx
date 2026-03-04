@@ -96,6 +96,7 @@ export default function MotoristasCadastros() {
   const [detailMotorista, setDetailMotorista] = useState<MotoristaDB | null>(null);
   const [detailVeiculos, setDetailVeiculos] = useState<VeiculoDB[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingVeiculos, setEditingVeiculos] = useState<VeiculoDB[]>([]);
   const [files, setFiles] = useState<Record<string, File | null>>({
     foto_perfil: null, cnh_frente: null, cnh_verso: null, comprovante_residencia: null,
     crlv: null, seguro: null, fotos_veiculo: null,
