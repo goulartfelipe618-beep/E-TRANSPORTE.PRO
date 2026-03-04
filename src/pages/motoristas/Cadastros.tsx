@@ -138,14 +138,16 @@ export default function MotoristasCadastros() {
       if (error) throw error;
       const mid = motorista.id;
 
-      // Upload documents
-      const docUpdates: Record<string, string> = {};
-      if (files.foto_perfil) docUpdates.foto_perfil_url = await uploadFile(files.foto_perfil, "foto-perfil", mid);
-      if (files.cnh_frente) docUpdates.cnh_frente_url = await uploadFile(files.cnh_frente, "cnh-frente", mid);
-      if (files.cnh_verso) docUpdates.cnh_verso_url = await uploadFile(files.cnh_verso, "cnh-verso", mid);
-      if (files.comprovante_residencia) docUpdates.comprovante_residencia_url = await uploadFile(files.comprovante_residencia, "comprovante", mid);
+      // Upload documents in parallel
+      const docUploads: Promise<[string, string]>[] = [];
+      if (files.foto_perfil) docUploads.push(uploadFile(files.foto_perfil, "foto-perfil", mid).then(url => ["foto_perfil_url", url] as [string, string]));
+      if (files.cnh_frente) docUploads.push(uploadFile(files.cnh_frente, "cnh-frente", mid).then(url => ["cnh_frente_url", url] as [string, string]));
+      if (files.cnh_verso) docUploads.push(uploadFile(files.cnh_verso, "cnh-verso", mid).then(url => ["cnh_verso_url", url] as [string, string]));
+      if (files.comprovante_residencia) docUploads.push(uploadFile(files.comprovante_residencia, "comprovante", mid).then(url => ["comprovante_residencia_url", url] as [string, string]));
 
-      if (Object.keys(docUpdates).length > 0) {
+      if (docUploads.length > 0) {
+        const results = await Promise.all(docUploads);
+        const docUpdates = Object.fromEntries(results);
         await (supabase as any).from("motoristas").update(docUpdates).eq("id", mid);
       }
 
