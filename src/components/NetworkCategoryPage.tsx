@@ -399,7 +399,7 @@ export default function NetworkCategoryPage({ categoria, titulo, descricao, tipo
                 </div>
                 <div>
                   <Label>Endereço Completo</Label>
-                  <Input value={form.endereco} onChange={(e) => setForm({ ...form, endereco: e.target.value })} />
+                  <AddressAutocomplete value={form.endereco} onChange={(v) => setForm({ ...form, endereco: v })} placeholder="Digite o endereço..." />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>

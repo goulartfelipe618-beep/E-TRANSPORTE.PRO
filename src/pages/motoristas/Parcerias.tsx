@@ -360,7 +360,7 @@ export default function MotoristasParcerias() {
                 <div className="border-t pt-4">
                   <p className="text-sm font-semibold text-muted-foreground mb-3">Endereço</p>
                   <div className="grid gap-3">
-                    <Input value={form.endereco} onChange={(e) => setField("endereco", e.target.value)} placeholder="Rua, número, complemento, bairro" />
+                    <AddressAutocomplete value={form.endereco} onChange={(v) => setField("endereco", v)} placeholder="Rua, número, complemento, bairro" />
                     <div className="grid grid-cols-3 gap-3">
                       <Input value={form.cidade} onChange={(e) => setField("cidade", e.target.value)} placeholder="Cidade" />
                       <Select value={form.estado} onValueChange={(v) => setField("estado", v)}>
