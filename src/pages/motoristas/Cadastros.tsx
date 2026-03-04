@@ -375,40 +375,57 @@ export default function MotoristasCadastros() {
                       <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pix">PIX</SelectItem>
-                        <SelectItem value="ted">TED</SelectItem>
                         <SelectItem value="conta_bancaria">Conta Bancária</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+
+                  {form.tipo_pagamento === "pix" && (
                     <div className="grid gap-2">
-                      <Label>Banco</Label>
-                      <Input value={form.banco} onChange={(e) => setField("banco", e.target.value)} />
+                      <Label>Chave PIX</Label>
+                      <Input value={form.chave_pix} onChange={(e) => setField("chave_pix", e.target.value)} placeholder="CPF, e-mail, telefone ou chave aleatória" />
                     </div>
-                    <div className="grid gap-2">
-                      <Label>Agência</Label>
-                      <Input value={form.agencia} onChange={(e) => setField("agencia", e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="grid gap-2">
-                      <Label>Conta</Label>
-                      <Input value={form.conta} onChange={(e) => setField("conta", e.target.value)} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Tipo de Conta</Label>
-                      <Select value={form.tipo_conta} onValueChange={(v) => setField("tipo_conta", v)}>
-                        <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                        <SelectContent>
-                          {TIPO_CONTA_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Chave PIX</Label>
-                    <Input value={form.chave_pix} onChange={(e) => setField("chave_pix", e.target.value)} placeholder="CPF, e-mail, telefone ou chave aleatória" />
-                  </div>
+                  )}
+
+                  {form.tipo_pagamento === "conta_bancaria" && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2">
+                          <Label>Banco</Label>
+                          <Input value={form.banco} onChange={(e) => setField("banco", e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Agência</Label>
+                          <Input value={form.agencia} onChange={(e) => setField("agencia", e.target.value)} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2">
+                          <Label>Conta</Label>
+                          <Input value={form.conta} onChange={(e) => setField("conta", e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Tipo de Conta</Label>
+                          <Select value={form.tipo_conta} onValueChange={(v) => setField("tipo_conta", v)}>
+                            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                            <SelectContent>
+                              {TIPO_CONTA_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2">
+                          <Label>Nome Completo do Recebedor</Label>
+                          <Input value={form.nome_recebedor} onChange={(e) => setField("nome_recebedor", e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>CPF/CNPJ do Recebedor</Label>
+                          <Input value={form.cpf_cnpj_recebedor} onChange={(e) => setField("cpf_cnpj_recebedor", e.target.value)} placeholder="000.000.000-00" />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="flex justify-between pt-2">
                   <Button variant="outline" onClick={() => setActiveTab("documentos")}>← Anterior</Button>
