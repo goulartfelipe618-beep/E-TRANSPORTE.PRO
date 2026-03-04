@@ -187,6 +187,32 @@ export default function MotoristasCadastros() {
         const { error } = await (supabase as any).from("motoristas").update(payload).eq("id", editingId);
         if (error) throw error;
         mid = editingId;
+
+        // Update or insert vehicle when editing
+        if (form.possui_veiculo && form.v_marca && form.v_modelo && form.v_placa && form.v_ano) {
+          const [crlvUrl, seguroUrl, fotosUrl] = await Promise.all([
+            files.crlv ? uploadFile(files.crlv, "crlv", mid) : Promise.resolve(null),
+            files.seguro ? uploadFile(files.seguro, "seguro", mid) : Promise.resolve(null),
+            files.fotos_veiculo ? uploadFile(files.fotos_veiculo, "fotos-veiculo", mid) : Promise.resolve(null),
+          ]);
+          const veiculoPayload: any = {
+            marca: form.v_marca, modelo: form.v_modelo,
+            ano: parseInt(form.v_ano), cor: form.v_cor || null, placa: form.v_placa,
+            combustivel: form.v_combustivel || null, renavam: form.v_renavam || null,
+            chassi: form.v_chassi || null, status: form.v_status, observacoes: form.v_observacoes || null,
+          };
+          if (crlvUrl) veiculoPayload.crlv_url = crlvUrl;
+          if (seguroUrl) veiculoPayload.seguro_url = seguroUrl;
+          if (fotosUrl) veiculoPayload.fotos_url = [fotosUrl];
+
+          if (editingVeiculos.length > 0) {
+            await (supabase as any).from("motorista_veiculos").update(veiculoPayload).eq("id", editingVeiculos[0].id);
+          } else {
+            await (supabase as any).from("motorista_veiculos").insert({
+              ...veiculoPayload, motorista_id: mid, tenant_id: tenantId,
+            });
+          }
+        }
         toast.success("Motorista atualizado com sucesso!");
       } else {
         const { data: motorista, error } = await (supabase as any).from("motoristas").insert(payload).select().single();
