@@ -397,98 +397,86 @@ export default function MotoristasParcerias() {
 
               {/* VEÍCULOS */}
               <TabsContent value="veiculos" className="space-y-4 mt-4">
-                {editingId ? (
-                  <p className="text-sm text-muted-foreground">Veículos são gerenciados na tela de detalhes do parceiro.</p>
-                ) : (
-                  <>
-                    {veiculos.map((v, idx) => (
-                      <Card key={idx} className="border shadow-sm">
-                        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                          <CardTitle className="text-sm font-semibold">Veículo {veiculos.length > 1 ? `#${idx + 1}` : ""}</CardTitle>
-                          {veiculos.length > 1 && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setVeiculos(prev => prev.filter((_, i) => i !== idx))}>
-                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                            </Button>
-                          )}
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="grid grid-cols-4 gap-3">
-                            <div className="grid gap-2"><Label>Marca *</Label><Input value={v.marca} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, marca: e.target.value } : ve))} /></div>
-                            <div className="grid gap-2"><Label>Modelo *</Label><Input value={v.modelo} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, modelo: e.target.value } : ve))} /></div>
-                            <div className="grid gap-2"><Label>Ano</Label><Input type="number" value={v.ano} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, ano: e.target.value } : ve))} /></div>
-                            <div className="grid gap-2"><Label>Placa *</Label><Input value={v.placa} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, placa: e.target.value } : ve))} /></div>
-                          </div>
-                          <div className="grid grid-cols-4 gap-3">
-                            <div className="grid gap-2"><Label>Cor</Label><Input value={v.cor} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, cor: e.target.value } : ve))} /></div>
-                            <div className="grid gap-2">
-                              <Label>Combustível</Label>
-                              <Select value={v.combustivel} onValueChange={(val) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, combustivel: val } : ve))}>
-                                <SelectTrigger><SelectValue placeholder="Tipo" /></SelectTrigger>
-                                <SelectContent>{COMBUSTIVEL_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                              </Select>
-                            </div>
-                            <div className="grid gap-2"><Label>Renavam</Label><Input value={v.renavam} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, renavam: e.target.value } : ve))} /></div>
-                            <div className="grid gap-2">
-                              <Label>Status</Label>
-                              <Select value={v.status} onValueChange={(val) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, status: val } : ve))}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent><SelectItem value="ativo">Ativo</SelectItem><SelectItem value="inativo">Inativo</SelectItem></SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <GenericUpload label="CRLV" file={v.crlv} onFile={(f) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, crlv: f } : ve))} />
-                            <GenericUpload label="Seguro" file={v.seguro} onFile={(f) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, seguro: f } : ve))} />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={() => setVeiculos(prev => [...prev, emptyVeiculo()])}>
-                      <Plus className="h-4 w-4 mr-2" /> Adicionar Veículo
-                    </Button>
-                  </>
-                )}
+                {veiculos.map((v, idx) => (
+                  <Card key={idx} className="border shadow-sm">
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                      <CardTitle className="text-sm font-semibold">Veículo {veiculos.length > 1 ? `#${idx + 1}` : ""}</CardTitle>
+                      {veiculos.length > 1 && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setVeiculos(prev => prev.filter((_, i) => i !== idx))}>
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      )}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="grid gap-2"><Label>Marca *</Label><Input value={v.marca} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, marca: e.target.value } : ve))} /></div>
+                        <div className="grid gap-2"><Label>Modelo *</Label><Input value={v.modelo} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, modelo: e.target.value } : ve))} /></div>
+                        <div className="grid gap-2"><Label>Ano</Label><Input type="number" value={v.ano} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, ano: e.target.value } : ve))} /></div>
+                        <div className="grid gap-2"><Label>Placa *</Label><Input value={v.placa} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, placa: e.target.value } : ve))} /></div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="grid gap-2"><Label>Cor</Label><Input value={v.cor} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, cor: e.target.value } : ve))} /></div>
+                        <div className="grid gap-2">
+                          <Label>Combustível</Label>
+                          <Select value={v.combustivel} onValueChange={(val) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, combustivel: val } : ve))}>
+                            <SelectTrigger><SelectValue placeholder="Tipo" /></SelectTrigger>
+                            <SelectContent>{COMBUSTIVEL_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid gap-2"><Label>Renavam</Label><Input value={v.renavam} onChange={(e) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, renavam: e.target.value } : ve))} /></div>
+                        <div className="grid gap-2">
+                          <Label>Status</Label>
+                          <Select value={v.status} onValueChange={(val) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, status: val } : ve))}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="ativo">Ativo</SelectItem><SelectItem value="inativo">Inativo</SelectItem></SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <GenericUpload label="CRLV" file={v.crlv} onFile={(f) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, crlv: f } : ve))} />
+                        <GenericUpload label="Seguro" file={v.seguro} onFile={(f) => setVeiculos(prev => prev.map((ve, i) => i === idx ? { ...ve, seguro: f } : ve))} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button variant="outline" className="w-full" onClick={() => setVeiculos(prev => [...prev, emptyVeiculo()])}>
+                  <Plus className="h-4 w-4 mr-2" /> Adicionar Veículo
+                </Button>
               </TabsContent>
 
               {/* SUBPARCEIROS */}
               <TabsContent value="subparceiros" className="space-y-4 mt-4">
-                {editingId ? (
-                  <p className="text-sm text-muted-foreground">Subparceiros são gerenciados na tela de detalhes do parceiro.</p>
-                ) : (
-                  <>
-                    {subparceiros.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-6">Nenhum subparceiro adicionado.</p>
-                    )}
-                    {subparceiros.map((s, idx) => (
-                      <Card key={idx} className="border shadow-sm">
-                        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                          <CardTitle className="text-sm font-semibold">Subparceiro #{idx + 1}</CardTitle>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSubparceiros(prev => prev.filter((_, i) => i !== idx))}>
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="grid gap-2"><Label>Nome *</Label><Input value={s.nome} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, nome: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>CPF/CNPJ</Label><Input value={s.cpf_cnpj} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cpf_cnpj: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>Função</Label><Input value={s.funcao} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, funcao: e.target.value } : sp))} /></div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="grid gap-2"><Label>Telefone</Label><Input value={s.telefone} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, telefone: e.target.value } : sp))} /></div>
-                            <div className="grid gap-2"><Label>E-mail</Label><Input type="email" value={s.email} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, email: e.target.value } : sp))} /></div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <GenericUpload label="CNH (PDF)" file={s.cnh} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cnh: f } : sp))} />
-                            <GenericUpload label="CRLV (PDF)" file={s.crlv} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, crlv: f } : sp))} />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={() => setSubparceiros(prev => [...prev, emptySubparceiro()])}>
-                      <Plus className="h-4 w-4 mr-2" /> Adicionar Subparceiro
-                    </Button>
-                  </>
+                {subparceiros.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-6">Nenhum subparceiro adicionado.</p>
                 )}
+                {subparceiros.map((s, idx) => (
+                  <Card key={idx} className="border shadow-sm">
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                      <CardTitle className="text-sm font-semibold">Subparceiro #{idx + 1}</CardTitle>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSubparceiros(prev => prev.filter((_, i) => i !== idx))}>
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="grid gap-2"><Label>Nome *</Label><Input value={s.nome} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, nome: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>CPF/CNPJ</Label><Input value={s.cpf_cnpj} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cpf_cnpj: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>Função</Label><Input value={s.funcao} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, funcao: e.target.value } : sp))} /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2"><Label>Telefone</Label><Input value={s.telefone} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, telefone: e.target.value } : sp))} /></div>
+                        <div className="grid gap-2"><Label>E-mail</Label><Input type="email" value={s.email} onChange={(e) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, email: e.target.value } : sp))} /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <GenericUpload label="CNH (PDF)" file={s.cnh} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, cnh: f } : sp))} />
+                        <GenericUpload label="CRLV (PDF)" file={s.crlv} onFile={(f) => setSubparceiros(prev => prev.map((sp, i) => i === idx ? { ...sp, crlv: f } : sp))} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button variant="outline" className="w-full" onClick={() => setSubparceiros(prev => [...prev, emptySubparceiro()])}>
+                  <Plus className="h-4 w-4 mr-2" /> Adicionar Subparceiro
+                </Button>
               </TabsContent>
             </Tabs>
 
