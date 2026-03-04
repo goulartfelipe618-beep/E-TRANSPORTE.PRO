@@ -170,7 +170,6 @@ export default function MotoristasParcerias() {
         const { error } = await (supabase as any).from("parceiros").update(payload).eq("id", editingId);
         if (error) throw error;
         pid = editingId;
-        toast.success("Parceiro atualizado com sucesso!");
       } else {
         const { data: parceiro, error } = await (supabase as any).from("parceiros").insert(payload).select().single();
         if (error) throw error;
@@ -186,38 +185,36 @@ export default function MotoristasParcerias() {
         await (supabase as any).from("parceiros").update(Object.fromEntries(results)).eq("id", pid);
       }
 
-      // Insert vehicles in parallel (only on create)
-      if (!editingId) {
-        const vehicleInserts = veiculos.filter(v => v.marca && v.modelo && v.placa).map(async (v) => {
-          const [crlvUrl, seguroUrl] = await Promise.all([
-            v.crlv ? uploadFile(v.crlv, `veiculo-crlv-${v.placa}`, pid) : Promise.resolve(null),
-            v.seguro ? uploadFile(v.seguro, `veiculo-seguro-${v.placa}`, pid) : Promise.resolve(null),
-          ]);
-          return (supabase as any).from("parceiro_veiculos").insert({
-            parceiro_id: pid, marca: v.marca, modelo: v.modelo,
-            ano: parseInt(v.ano) || null, placa: v.placa, cor: v.cor || null,
-            combustivel: v.combustivel || null, renavam: v.renavam || null, status: v.status,
-            tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
-          });
+      // Insert vehicles in parallel (always - new ones from the form)
+      const vehicleInserts = veiculos.filter(v => v.marca && v.modelo && v.placa).map(async (v) => {
+        const [crlvUrl, seguroUrl] = await Promise.all([
+          v.crlv ? uploadFile(v.crlv, `veiculo-crlv-${v.placa}`, pid) : Promise.resolve(null),
+          v.seguro ? uploadFile(v.seguro, `veiculo-seguro-${v.placa}`, pid) : Promise.resolve(null),
+        ]);
+        return (supabase as any).from("parceiro_veiculos").insert({
+          parceiro_id: pid, marca: v.marca, modelo: v.modelo,
+          ano: parseInt(v.ano) || null, placa: v.placa, cor: v.cor || null,
+          combustivel: v.combustivel || null, renavam: v.renavam || null, status: v.status,
+          tenant_id: tenantId, crlv_url: crlvUrl, seguro_url: seguroUrl,
         });
+      });
 
-        // Insert subparceiros in parallel
-        const subInserts = subparceiros.filter(s => s.nome).map(async (s) => {
-          const [cnhUrl, crlvUrl] = await Promise.all([
-            s.cnh ? uploadFile(s.cnh, `sub-cnh-${s.nome}`, pid) : Promise.resolve(null),
-            s.crlv ? uploadFile(s.crlv, `sub-crlv-${s.nome}`, pid) : Promise.resolve(null),
-          ]);
-          return (supabase as any).from("subparceiros").insert({
-            parceiro_id: pid, nome: s.nome, cpf_cnpj: s.cpf_cnpj || null,
-            telefone: s.telefone || null, email: s.email || null,
-            funcao: s.funcao || null, observacoes: s.observacoes || null,
-            tenant_id: tenantId, cnh_url: cnhUrl, crlv_url: crlvUrl,
-          });
+      // Insert subparceiros in parallel (always - new ones from the form)
+      const subInserts = subparceiros.filter(s => s.nome).map(async (s) => {
+        const [cnhUrl, crlvUrl] = await Promise.all([
+          s.cnh ? uploadFile(s.cnh, `sub-cnh-${s.nome}`, pid) : Promise.resolve(null),
+          s.crlv ? uploadFile(s.crlv, `sub-crlv-${s.nome}`, pid) : Promise.resolve(null),
+        ]);
+        return (supabase as any).from("subparceiros").insert({
+          parceiro_id: pid, nome: s.nome, cpf_cnpj: s.cpf_cnpj || null,
+          telefone: s.telefone || null, email: s.email || null,
+          funcao: s.funcao || null, observacoes: s.observacoes || null,
+          tenant_id: tenantId, cnh_url: cnhUrl, crlv_url: crlvUrl,
         });
+      });
 
-        await Promise.all([...vehicleInserts, ...subInserts]);
-        toast.success("Parceiro cadastrado com sucesso!");
-      }
+      await Promise.all([...vehicleInserts, ...subInserts]);
+      toast.success(editingId ? "Parceiro atualizado com sucesso!" : "Parceiro cadastrado com sucesso!");
 
       resetForm();
       setDialogOpen(false);
