@@ -55,7 +55,7 @@ const emptyForm = {
   nome_completo: "", cpf: "", rg: "", data_nascimento: "", telefone: "", email: "",
   endereco: "", cidade: "", estado: "", cep: "",
   cnh_numero: "", cnh_categoria: "", cnh_validade: "", status: "ativo", observacoes: "",
-  tipo_pagamento: "", banco: "", agencia: "", conta: "", tipo_conta: "", chave_pix: "",
+  tipo_pagamento: "", banco: "", agencia: "", conta: "", tipo_conta: "", chave_pix: "", nome_recebedor: "", cpf_cnpj_recebedor: "",
   possui_veiculo: false,
   // vehicle
   v_marca: "", v_modelo: "", v_ano: "", v_cor: "", v_placa: "", v_combustivel: "",
@@ -128,6 +128,8 @@ export default function MotoristasCadastros() {
         conta: form.conta || null,
         tipo_conta: form.tipo_conta || null,
         chave_pix: form.chave_pix || null,
+        nome_recebedor: form.nome_recebedor || null,
+        cpf_cnpj_recebedor: form.cpf_cnpj_recebedor || null,
         possui_veiculo: form.possui_veiculo,
       }).select().single();
 
