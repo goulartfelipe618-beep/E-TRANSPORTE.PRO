@@ -12,6 +12,8 @@ import {
 import { ArrowRightLeft } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { supabase } from "@/integrations/supabase/client";
+import { useTenantId } from "@/hooks/useTenantId";
 
 type SolicitacaoRow = Tables<"solicitacoes_transfer">;
 
