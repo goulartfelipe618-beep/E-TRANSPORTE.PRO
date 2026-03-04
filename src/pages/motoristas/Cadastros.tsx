@@ -327,7 +327,7 @@ export default function MotoristasCadastros() {
           <h1 className="text-2xl font-bold text-foreground">Cadastros de Motoristas</h1>
           <p className="text-muted-foreground">Gerenciamento completo de motoristas</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); setEditingId(null); } }}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setActiveTab("pessoal"); setForm({ ...emptyForm }); setEditingId(null); setEditingVeiculos([]); } }}>
           <DialogTrigger asChild>
             <Button><Plus className="h-4 w-4 mr-2" /> Novo Motorista</Button>
           </DialogTrigger>
