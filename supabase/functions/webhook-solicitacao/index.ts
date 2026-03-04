@@ -220,6 +220,7 @@ Deno.serve(async (req) => {
       }
       const leadRecord = {
         campanha_id: campId,
+        tenant_id: tenantId,
         nome: cleanStr(mapping ? resolve("nome") : (body.name ?? body.nome ?? body.nome_completo), 300) || "Sem nome",
         email: cleanStr(mapping ? resolve("email") : (body.email ?? body.e_mail), 255),
         telefone: cleanStr(mapping ? resolve("telefone") : (body.phone ?? body.telefone ?? body.whatsapp), 30),
