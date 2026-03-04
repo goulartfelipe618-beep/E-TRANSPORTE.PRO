@@ -1413,8 +1413,10 @@ export type Database = {
       }
       subparceiros: {
         Row: {
+          cnh_url: string | null
           cpf_cnpj: string | null
           created_at: string
+          crlv_url: string | null
           email: string | null
           funcao: string | null
           id: string
@@ -1426,8 +1428,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cnh_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          crlv_url?: string | null
           email?: string | null
           funcao?: string | null
           id?: string
@@ -1439,8 +1443,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cnh_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          crlv_url?: string | null
           email?: string | null
           funcao?: string | null
           id?: string
