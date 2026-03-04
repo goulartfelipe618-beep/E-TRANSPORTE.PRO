@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { Plus, RefreshCw, ChevronLeft, ChevronRight, Trash2, Eye, Calendar as CalendarIcon } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -319,11 +320,11 @@ export default function MotoristasAgendamentos() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label>Local de Origem</Label>
-                <Input placeholder="Endereço de origem" value={form.local_origem} onChange={(e) => setForm({ ...form, local_origem: e.target.value })} />
+                <AddressAutocomplete value={form.local_origem} onChange={(v) => setForm({ ...form, local_origem: v })} placeholder="Endereço de origem" />
               </div>
               <div className="space-y-1">
                 <Label>Local de Destino</Label>
-                <Input placeholder="Endereço de destino" value={form.local_destino} onChange={(e) => setForm({ ...form, local_destino: e.target.value })} />
+                <AddressAutocomplete value={form.local_destino} onChange={(v) => setForm({ ...form, local_destino: v })} placeholder="Endereço de destino" />
               </div>
             </div>
             <div className="space-y-1">

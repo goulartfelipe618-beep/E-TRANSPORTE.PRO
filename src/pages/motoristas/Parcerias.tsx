@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Building2, FileText, Car, Users, Upload, X, Phone, Mail, Trash2, Save, MessageSquare, Eye, Edit, LayoutGrid, List } from "lucide-react";
 import ComunicarDialog from "@/components/ComunicarDialog";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -359,7 +360,7 @@ export default function MotoristasParcerias() {
                 <div className="border-t pt-4">
                   <p className="text-sm font-semibold text-muted-foreground mb-3">Endereço</p>
                   <div className="grid gap-3">
-                    <Input value={form.endereco} onChange={(e) => setField("endereco", e.target.value)} placeholder="Rua, número, complemento, bairro" />
+                    <AddressAutocomplete value={form.endereco} onChange={(v) => setField("endereco", v)} placeholder="Rua, número, complemento, bairro" />
                     <div className="grid grid-cols-3 gap-3">
                       <Input value={form.cidade} onChange={(e) => setField("cidade", e.target.value)} placeholder="Cidade" />
                       <Select value={form.estado} onValueChange={(v) => setField("estado", v)}>
