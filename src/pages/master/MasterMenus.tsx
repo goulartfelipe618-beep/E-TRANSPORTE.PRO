@@ -144,17 +144,48 @@ export default function MasterMenus() {
           <CardHeader><CardTitle className="text-base">Menus disponíveis</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {ALL_MENUS.map((m) => (
-                <div key={m.key} className="flex items-center justify-between py-1">
-                  <span className={`text-sm ${m.key.includes(".") ? "pl-4 text-muted-foreground" : "font-medium text-foreground"}`}>
-                    {m.label}
-                  </span>
-                  <Switch
-                    checked={menuState[m.key] ?? true}
-                    onCheckedChange={(v) => setMenuState(prev => ({ ...prev, [m.key]: v }))}
-                  />
-                </div>
-              ))}
+              {ALL_MENUS.map((m) => {
+                const isChild = !!m.parent;
+                const isLocked = !!m.locked;
+                // If parent is disabled, child is also disabled
+                const parentDisabled = isChild && !(menuState[m.parent!] ?? true);
+                const checked = parentDisabled ? false : (menuState[m.key] ?? true);
+
+                return (
+                  <div key={m.key} className="flex items-center justify-between py-1">
+                    <span className={`text-sm ${isChild ? "pl-6 text-muted-foreground" : "font-medium text-foreground"}`}>
+                      {isChild ? `↳ ${m.label}` : m.label}
+                      {isLocked && (
+                        <span className="ml-2 text-xs text-muted-foreground/60">(padrão)</span>
+                      )}
+                    </span>
+                    <Switch
+                      checked={checked}
+                      disabled={isLocked || parentDisabled}
+                      onCheckedChange={(v) => {
+                        const updates: Record<string, boolean> = { [m.key]: v };
+                        // If disabling a parent, disable all children
+                        if (!isChild && !v) {
+                          ALL_MENUS.forEach((child) => {
+                            if (child.parent === m.key) {
+                              updates[child.key] = false;
+                            }
+                          });
+                        }
+                        // If enabling a parent, enable all children
+                        if (!isChild && v) {
+                          ALL_MENUS.forEach((child) => {
+                            if (child.parent === m.key) {
+                              updates[child.key] = true;
+                            }
+                          });
+                        }
+                        setMenuState((prev) => ({ ...prev, ...updates }));
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
