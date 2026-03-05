@@ -157,6 +157,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo, reserv
     setMensagem("");
     setSaudacao("Olá, recebemos a sua solicitação:");
     setSelectedFields(new Set(payloadEntries.map((e) => e.key)));
+    setIncluirPdf(false);
     setLoading(true);
     supabase
       .from("comunicadores")
