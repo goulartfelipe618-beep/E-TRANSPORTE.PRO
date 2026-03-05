@@ -5,8 +5,6 @@ interface GlobalConfig {
   projectName: string;
   logoUrl: string;
   globalFont: string;
-  mapProvider: string;
-  mapApiKey: string;
   isLoading: boolean;
   refetch: () => void;
 }
