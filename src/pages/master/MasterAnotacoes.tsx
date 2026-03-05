@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,7 +78,13 @@ export default function MasterAnotacoes() {
     if (url) execCommand("createLink", url);
   };
 
-  const getEditorContent = () => editorRef.current?.innerHTML || "";
+  const sanitizeHtml = (html: string) => DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'b', 'i', 'u', 'strong', 'em', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'img', 'div', 'span'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'style'],
+    ALLOW_DATA_ATTR: false,
+  });
+
+  const getEditorContent = () => sanitizeHtml(editorRef.current?.innerHTML || "");
 
   const handleCreate = async () => {
     if (!titulo.trim()) return;
@@ -284,7 +291,7 @@ export default function MasterAnotacoes() {
           </DialogHeader>
           <div
             className="prose prose-sm max-w-none text-foreground [&_img]:max-w-full [&_img]:rounded [&_a]:text-primary min-h-[100px]"
-            dangerouslySetInnerHTML={{ __html: viewOpen?.conteudo || "" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(viewOpen?.conteudo || "") }}
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewOpen(null)}>Fechar</Button>
