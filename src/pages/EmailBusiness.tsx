@@ -99,7 +99,7 @@ export default function EmailBusiness() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl mx-auto">
           {BENEFITS.map((b) => (
             <div key={b} className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+              <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
               <span>{b}</span>
             </div>
           ))}
@@ -109,7 +109,7 @@ export default function EmailBusiness() {
         <Card className="border-none bg-muted/50 max-w-2xl mx-auto">
           <CardContent className="pt-6 space-y-2">
             <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-amber-500" />
+              <Zap className="h-5 w-5 text-primary" />
               <h3 className="font-semibold text-foreground">Pare de parecer amador</h3>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -142,7 +142,7 @@ export default function EmailBusiness() {
                   <ul className="space-y-1.5">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                         <span>{f}</span>
                       </li>
                     ))}
