@@ -185,7 +185,7 @@ export default function GruposReservas() {
           por_hora_passageiros: null, por_hora_qtd_horas: null, por_hora_ponto_encerramento: null,
           por_hora_itinerario: null, por_hora_cupom: null,
         } as any : null}
-        pdfConfig={{ projectName, logoUrl, mapProvider, mapApiKey }}
+        pdfConfig={{ projectName, logoUrl }}
         payload={comunicando ? {
           tipo: "reserva_grupo",
           id: comunicando.id,
