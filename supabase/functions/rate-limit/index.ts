@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { email, action } = await req.json();
+    const { email, action, success: loginSuccess } = await req.json();
     if (!email) {
       return new Response(
         JSON.stringify({ error: "Email required" }),
@@ -54,10 +54,8 @@ Deno.serve(async (req) => {
     }
 
     if (action === "record") {
-      const { success } = await req.json().catch(() => ({ success: false }));
-
       // If login succeeded, clear previous failed attempts
-      if (success) {
+      if (loginSuccess) {
         await supabase
           .from("login_attempts")
           .delete()

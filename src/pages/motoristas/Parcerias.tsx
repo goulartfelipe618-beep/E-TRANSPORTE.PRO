@@ -116,7 +116,9 @@ export default function MotoristasParcerias() {
     const path = `${parceiroId}/${folder}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("parceiro-documentos").upload(path, file, { upsert: true });
     if (error) throw error;
-    return supabase.storage.from("parceiro-documentos").getPublicUrl(path).data.publicUrl;
+    const { data: signedData, error: signedError } = await supabase.storage.from("parceiro-documentos").createSignedUrl(path, 31536000);
+    if (signedError) throw signedError;
+    return signedData.signedUrl;
   };
 
   const populateFormFromParceiro = (p: ParceiroDB) => {

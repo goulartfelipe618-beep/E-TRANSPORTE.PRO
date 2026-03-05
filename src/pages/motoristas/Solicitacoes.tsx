@@ -146,8 +146,9 @@ export default function MotoristasSolicitacoes() {
     const path = `${motoristaId}/${folder}.${ext}`;
     const { error } = await supabase.storage.from("motorista-documentos").upload(path, file, { upsert: true });
     if (error) throw error;
-    const { data } = supabase.storage.from("motorista-documentos").getPublicUrl(path);
-    return data.publicUrl;
+    const { data: signedData, error: signedError } = await supabase.storage.from("motorista-documentos").createSignedUrl(path, 31536000);
+    if (signedError) throw signedError;
+    return signedData.signedUrl;
   };
 
   const handleSaveMotorista = async () => {
