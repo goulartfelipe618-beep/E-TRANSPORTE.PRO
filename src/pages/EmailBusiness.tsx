@@ -151,12 +151,12 @@ export default function EmailBusiness() {
   if (accounts.length > 0 && step === 0) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-foreground">E-mail Business</h1>
             <p className="text-muted-foreground">Gerencie suas contas de e-mail profissional</p>
           </div>
-          <Button onClick={() => setStep(1)} className="gap-2">
+          <Button onClick={() => setStep(1)} className="gap-2 w-full sm:w-auto">
             <Mail className="h-4 w-4" /> Nova Conta
           </Button>
         </div>
@@ -167,7 +167,7 @@ export default function EmailBusiness() {
               <TableHeader>
                 <TableRow>
                   <TableHead>E-mail</TableHead>
-                  <TableHead>Senha</TableHead>
+                  <TableHead className="hidden sm:table-cell">Senha</TableHead>
                   <TableHead>Plano</TableHead>
                   <TableHead>Espaço</TableHead>
                   <TableHead>Status</TableHead>
@@ -177,8 +177,8 @@ export default function EmailBusiness() {
               <TableBody>
                 {accounts.map((acc) => (
                   <TableRow key={acc.id}>
-                    <TableCell className="font-mono text-sm">{acc.email}</TableCell>
-                    <TableCell className="font-mono text-sm">••••••••</TableCell>
+                    <TableCell className="font-mono text-sm max-w-[200px] truncate">{acc.email}</TableCell>
+                    <TableCell className="font-mono text-sm hidden sm:table-cell">••••••••</TableCell>
                     <TableCell>{acc.plano}</TableCell>
                     <TableCell>{acc.espaco}</TableCell>
                     <TableCell>
