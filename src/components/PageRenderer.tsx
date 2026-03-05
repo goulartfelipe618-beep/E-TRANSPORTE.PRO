@@ -44,6 +44,7 @@ import SistemaComunicador from "@/pages/sistema/Comunicador";
 import Politicas from "@/pages/Politicas";
 import Anotacoes from "@/pages/Anotacoes";
 import Documentacao from "@/pages/Documentacao";
+import WebsitePage from "@/pages/Website";
 
 const pageMap: Record<PageKey, React.ComponentType> = {
   "dashboard/metricas": DashboardMetricas,
@@ -78,6 +79,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "politicas": Politicas,
   "anotacoes": Anotacoes,
   "documentacao": Documentacao,
+  "website": WebsitePage,
 };
 
 export function PageRenderer() {

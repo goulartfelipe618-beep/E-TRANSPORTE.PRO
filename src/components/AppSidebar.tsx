@@ -162,6 +162,12 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         page: "email-business" as PageKey,
         menuKey: "email-business",
       },
+      {
+        title: "Website",
+        icon: Globe,
+        page: "website" as PageKey,
+        menuKey: "website",
+      },
     ],
   },
   {

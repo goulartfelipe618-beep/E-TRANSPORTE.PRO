@@ -1875,6 +1875,128 @@ export type Database = {
           },
         ]
       }
+      website_briefings: {
+        Row: {
+          acesso_dns: boolean | null
+          captacao_orcamento: boolean | null
+          cidade_atuacao: string | null
+          cores_preferidas: string | null
+          created_at: string
+          data_publicacao: string | null
+          diferenciais: string | null
+          dominio: string | null
+          email_profissional: string | null
+          estilo_desejado: string | null
+          faixa_preco: string | null
+          frota: string | null
+          funcionalidades: string[] | null
+          id: string
+          integracao_whatsapp: boolean | null
+          logo_url: string | null
+          nome_empresa: string | null
+          observacoes_master: string | null
+          pagamento_online: boolean | null
+          possui_dominio: boolean | null
+          possui_logotipo: boolean | null
+          produtos_descricao: string | null
+          produtos_quantidade: string | null
+          provedor_atual: string | null
+          publico_alvo: string | null
+          redes_sociais: string | null
+          regiao_atendida: string | null
+          site_url: string | null
+          status: string
+          tenant_id: string
+          tipos_servico: string[] | null
+          trabalha_24h: boolean | null
+          updated_at: string
+          venda_produtos_online: boolean | null
+          whatsapp: string | null
+        }
+        Insert: {
+          acesso_dns?: boolean | null
+          captacao_orcamento?: boolean | null
+          cidade_atuacao?: string | null
+          cores_preferidas?: string | null
+          created_at?: string
+          data_publicacao?: string | null
+          diferenciais?: string | null
+          dominio?: string | null
+          email_profissional?: string | null
+          estilo_desejado?: string | null
+          faixa_preco?: string | null
+          frota?: string | null
+          funcionalidades?: string[] | null
+          id?: string
+          integracao_whatsapp?: boolean | null
+          logo_url?: string | null
+          nome_empresa?: string | null
+          observacoes_master?: string | null
+          pagamento_online?: boolean | null
+          possui_dominio?: boolean | null
+          possui_logotipo?: boolean | null
+          produtos_descricao?: string | null
+          produtos_quantidade?: string | null
+          provedor_atual?: string | null
+          publico_alvo?: string | null
+          redes_sociais?: string | null
+          regiao_atendida?: string | null
+          site_url?: string | null
+          status?: string
+          tenant_id: string
+          tipos_servico?: string[] | null
+          trabalha_24h?: boolean | null
+          updated_at?: string
+          venda_produtos_online?: boolean | null
+          whatsapp?: string | null
+        }
+        Update: {
+          acesso_dns?: boolean | null
+          captacao_orcamento?: boolean | null
+          cidade_atuacao?: string | null
+          cores_preferidas?: string | null
+          created_at?: string
+          data_publicacao?: string | null
+          diferenciais?: string | null
+          dominio?: string | null
+          email_profissional?: string | null
+          estilo_desejado?: string | null
+          faixa_preco?: string | null
+          frota?: string | null
+          funcionalidades?: string[] | null
+          id?: string
+          integracao_whatsapp?: boolean | null
+          logo_url?: string | null
+          nome_empresa?: string | null
+          observacoes_master?: string | null
+          pagamento_online?: boolean | null
+          possui_dominio?: boolean | null
+          possui_logotipo?: boolean | null
+          produtos_descricao?: string | null
+          produtos_quantidade?: string | null
+          provedor_atual?: string | null
+          publico_alvo?: string | null
+          redes_sociais?: string | null
+          regiao_atendida?: string | null
+          site_url?: string | null
+          status?: string
+          tenant_id?: string
+          tipos_servico?: string[] | null
+          trabalha_24h?: boolean | null
+          updated_at?: string
+          venda_produtos_online?: boolean | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_briefings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
