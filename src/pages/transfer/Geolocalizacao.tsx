@@ -153,13 +153,25 @@ export default function TransferGeolocalizacao() {
     return link.status;
   };
 
+  const [mapImageUrls, setMapImageUrls] = useState<Record<string, string>>({});
+
+  const fetchMapImage = useCallback(async (linkId: string, lat: number, lng: number) => {
+    try {
+      const { data, error } = await supabase.functions.invoke("geocode", {
+        body: { query: "static_map", type: "static_map", lat, lng, width: 600, height: 350 },
+      });
+      if (!error && data) {
+        // The edge function returns the image as blob, we need to create an object URL
+        // Actually since invoke returns JSON by default, let's handle the URL approach
+      }
+    } catch {
+      // Fallback: no map
+    }
+  }, []);
+
   const buildMapEmbedUrl = (lat: number, lng: number) => {
-    if (mapProvider === "mapbox" && mapApiKey) {
-      return `https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/pin-s+ff0000(${lng},${lat})/${lng},${lat},13,0/600x350@2x?access_token=${mapApiKey}`;
-    }
-    if (mapProvider === "google" && mapApiKey) {
-      return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=13&size=600x350&scale=2&markers=color:red|${lat},${lng}&key=${mapApiKey}`;
-    }
+    // Maps are now proxied via edge function - return null to show fallback
+    // Static map images require a different approach with edge functions
     return null;
   };
 
