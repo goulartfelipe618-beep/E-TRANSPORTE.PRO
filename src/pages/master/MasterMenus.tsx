@@ -7,42 +7,69 @@ import { Save, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const ALL_MENUS = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "dashboard.metricas", label: "  ↳ Métricas" },
-  { key: "dashboard.abrangencia", label: "  ↳ Abrangência" },
-  { key: "transfer", label: "Transfer" },
-  { key: "transfer.solicitacoes", label: "  ↳ Solicitações" },
-  { key: "transfer.reservas", label: "  ↳ Reservas" },
-  { key: "transfer.contrato", label: "  ↳ Contrato" },
-  { key: "transfer.geolocalizacao", label: "  ↳ Geolocalização" },
-  { key: "grupos", label: "Grupos" },
-  { key: "grupos.solicitacoes", label: "  ↳ Solicitações" },
-  { key: "grupos.reservas", label: "  ↳ Reservas" },
-  { key: "grupos.contrato", label: "  ↳ Contrato" },
+// Parent menus that are always enabled (cannot be disabled)
+const LOCKED_MENUS = ["dashboard", "transfer", "marketing", "grupos"];
+
+interface MenuDef {
+  key: string;
+  label: string;
+  parent?: string;
+  locked?: boolean;
+}
+
+const ALL_MENUS: MenuDef[] = [
+  // Dashboard (locked)
+  { key: "dashboard", label: "Dashboard", locked: true },
+  { key: "dashboard.metricas", label: "Métricas", parent: "dashboard", locked: true },
+  { key: "dashboard.abrangencia", label: "Abrangência", parent: "dashboard", locked: true },
+  // Transfer (locked)
+  { key: "transfer", label: "Transfer", locked: true },
+  { key: "transfer.solicitacoes", label: "Solicitações", parent: "transfer", locked: true },
+  { key: "transfer.reservas", label: "Reservas", parent: "transfer", locked: true },
+  { key: "transfer.contrato", label: "Contrato", parent: "transfer", locked: true },
+  { key: "transfer.geolocalizacao", label: "Geolocalização", parent: "transfer", locked: true },
+  // Grupos (locked)
+  { key: "grupos", label: "Grupos", locked: true },
+  { key: "grupos.solicitacoes", label: "Solicitações", parent: "grupos", locked: true },
+  { key: "grupos.reservas", label: "Reservas", parent: "grupos", locked: true },
+  { key: "grupos.contrato", label: "Contrato", parent: "grupos", locked: true },
+  // Motoristas
   { key: "motoristas", label: "Motoristas" },
-  { key: "motoristas.cadastros", label: "  ↳ Cadastros" },
-  { key: "motoristas.parcerias", label: "  ↳ Parcerias" },
-  { key: "motoristas.solicitacoes", label: "  ↳ Solicitações" },
-  { key: "motoristas.agendamentos", label: "  ↳ Agendamentos" },
+  { key: "motoristas.cadastros", label: "Cadastros", parent: "motoristas" },
+  { key: "motoristas.parcerias", label: "Parcerias", parent: "motoristas" },
+  { key: "motoristas.solicitacoes", label: "Solicitações", parent: "motoristas" },
+  { key: "motoristas.agendamentos", label: "Agendamentos", parent: "motoristas" },
+  // Veículos
   { key: "veiculos", label: "Veículos" },
+  // Campanhas
   { key: "campanhas", label: "Campanhas" },
-  { key: "campanhas.ativos", label: "  ↳ Ativos" },
-  { key: "campanhas.leads", label: "  ↳ Leads" },
-  { key: "marketing", label: "Marketing" },
+  { key: "campanhas.ativos", label: "Ativos", parent: "campanhas" },
+  { key: "campanhas.leads", label: "Leads", parent: "campanhas" },
+  // Marketing (locked)
+  { key: "marketing", label: "Marketing", locked: true },
+  { key: "marketing.receptivos", label: "Receptivos", parent: "marketing", locked: true },
+  { key: "marketing.qrcode", label: "QR Code", parent: "marketing", locked: true },
+  // Network
   { key: "network", label: "Network" },
+  // Google
   { key: "google", label: "Google Business" },
+  // E-mail Business
   { key: "email-business", label: "E-mail Business" },
+  // Website
   { key: "website", label: "Website" },
+  // Domínios
+  { key: "dominios", label: "Domínios" },
+  // Sistema
   { key: "sistema", label: "Sistema" },
-  { key: "sistema.configuracoes", label: "  ↳ Configurações" },
-  { key: "sistema.automacoes", label: "  ↳ Automações" },
-  { key: "sistema.comunicador", label: "  ↳ Comunicador" },
-  { key: "sistema.usuarios", label: "  ↳ Usuários" },
-  { key: "sistema.logs", label: "  ↳ Logs" },
-  { key: "politicas", label: "Políticas" },
+  { key: "sistema.configuracoes", label: "Configurações", parent: "sistema" },
+  { key: "sistema.automacoes", label: "Automações", parent: "sistema" },
+  { key: "sistema.comunicador", label: "Comunicador", parent: "sistema" },
+  { key: "sistema.usuarios", label: "Usuários", parent: "sistema" },
+  { key: "sistema.logs", label: "Logs", parent: "sistema" },
+  { key: "sistema.aplicativo", label: "Aplicativo", parent: "sistema" },
+  { key: "sistema.tickets", label: "Tickets", parent: "sistema" },
+  // Anotações
   { key: "anotacoes", label: "Anotações" },
-  { key: "documentacao", label: "Documentação" },
 ];
 
 interface Tenant { id: string; nome: string; }
@@ -117,17 +144,48 @@ export default function MasterMenus() {
           <CardHeader><CardTitle className="text-base">Menus disponíveis</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {ALL_MENUS.map((m) => (
-                <div key={m.key} className="flex items-center justify-between py-1">
-                  <span className={`text-sm ${m.key.includes(".") ? "pl-4 text-muted-foreground" : "font-medium text-foreground"}`}>
-                    {m.label}
-                  </span>
-                  <Switch
-                    checked={menuState[m.key] ?? true}
-                    onCheckedChange={(v) => setMenuState(prev => ({ ...prev, [m.key]: v }))}
-                  />
-                </div>
-              ))}
+              {ALL_MENUS.map((m) => {
+                const isChild = !!m.parent;
+                const isLocked = !!m.locked;
+                // If parent is disabled, child is also disabled
+                const parentDisabled = isChild && !(menuState[m.parent!] ?? true);
+                const checked = parentDisabled ? false : (menuState[m.key] ?? true);
+
+                return (
+                  <div key={m.key} className="flex items-center justify-between py-1">
+                    <span className={`text-sm ${isChild ? "pl-6 text-muted-foreground" : "font-medium text-foreground"}`}>
+                      {isChild ? `↳ ${m.label}` : m.label}
+                      {isLocked && (
+                        <span className="ml-2 text-xs text-muted-foreground/60">(padrão)</span>
+                      )}
+                    </span>
+                    <Switch
+                      checked={checked}
+                      disabled={isLocked || parentDisabled}
+                      onCheckedChange={(v) => {
+                        const updates: Record<string, boolean> = { [m.key]: v };
+                        // If disabling a parent, disable all children
+                        if (!isChild && !v) {
+                          ALL_MENUS.forEach((child) => {
+                            if (child.parent === m.key) {
+                              updates[child.key] = false;
+                            }
+                          });
+                        }
+                        // If enabling a parent, enable all children
+                        if (!isChild && v) {
+                          ALL_MENUS.forEach((child) => {
+                            if (child.parent === m.key) {
+                              updates[child.key] = true;
+                            }
+                          });
+                        }
+                        setMenuState((prev) => ({ ...prev, ...updates }));
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
