@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
 
       await supabase.from("login_attempts").insert({
         email: normalizedEmail,
-        success: !!success,
+        success: !!loginSuccess,
       });
 
       return new Response(

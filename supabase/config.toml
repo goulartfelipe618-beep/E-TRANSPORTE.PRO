@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.verify-recaptcha]
 verify_jwt = false
+
+[functions.geocode]
+verify_jwt = false
+
+[functions.tracking]
+verify_jwt = false
