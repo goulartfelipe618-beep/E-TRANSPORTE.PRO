@@ -343,6 +343,23 @@ export default function ComunicarDialog({ open, onClose, payload, titulo, reserv
             </div>
           )}
 
+          {/* PDF attachment option */}
+          {canAttachPdf && (
+            <div className="border border-border rounded-lg p-3 bg-muted/20">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Checkbox
+                  checked={incluirPdf}
+                  onCheckedChange={(v) => setIncluirPdf(!!v)}
+                />
+                <FileText className="h-4 w-4 text-primary" />
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-foreground">Enviar PDF de Confirmação</span>
+                  <p className="text-xs text-muted-foreground">Anexa o documento de confirmação de reserva junto com a mensagem</p>
+                </div>
+              </label>
+            </div>
+          )}
+
           {/* Additional message */}
           <div className="space-y-2">
             <Label>Mensagem Adicional (opcional)</Label>
