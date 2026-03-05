@@ -12,6 +12,7 @@ import { Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock, 
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
+import { useActivePage } from "@/contexts/PageContext";
 
 const TIPOS_SERVICO = [
   "Transfer Executivo",
