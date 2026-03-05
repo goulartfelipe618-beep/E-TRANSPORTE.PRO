@@ -30,6 +30,8 @@ import MarketingQrCode from "@/pages/marketing/QrCode";
 import NetworkPage from "@/pages/Network";
 // Google
 import GoogleBusiness from "@/pages/GoogleBusiness";
+// Email Business
+import EmailBusiness from "@/pages/EmailBusiness";
 // Sistema
 import SistemaConfiguracoes from "@/pages/sistema/Configuracoes";
 import SistemaUsuarios from "@/pages/sistema/Usuarios";
