@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon,
+  Sun, Moon, Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -55,6 +55,7 @@ export default function MasterLayout() {
       case "logs": return <MasterLogs />;
       case "apis": return <MasterApiConfig />;
       case "security": return <MasterSecurity />;
+      case "websites": return <MasterWebsites />;
       default: return <MasterDashboard />;
     }
   };
