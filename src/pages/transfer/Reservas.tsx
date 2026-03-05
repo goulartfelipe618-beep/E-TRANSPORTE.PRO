@@ -41,7 +41,7 @@ export default function TransferReservas() {
   const [loading, setLoading] = useState(true);
   const [comunicando, setComunicando] = useState<ReservaRow | null>(null);
   const { toast } = useToast();
-  const { projectName, logoUrl, mapProvider, mapApiKey } = useGlobalConfig();
+  const { projectName, logoUrl } = useGlobalConfig();
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
@@ -163,7 +163,7 @@ export default function TransferReservas() {
         onClose={() => setComunicando(null)}
         titulo={comunicando ? `Comunicar sobre reserva de ${comunicando.cliente_nome || "Cliente"}` : undefined}
         reservaTransfer={comunicando}
-        pdfConfig={{ projectName, logoUrl, mapProvider, mapApiKey }}
+        pdfConfig={{ projectName, logoUrl }}
         payload={comunicando ? {
           tipo: "reserva_transfer",
           id: comunicando.id,
@@ -197,7 +197,7 @@ export default function TransferReservas() {
                 variant="outline"
                 size="sm"
                 className="gap-2"
-                onClick={() => generateReservaPdf(selected, { projectName, logoUrl, mapProvider, mapApiKey })}
+                onClick={() => generateReservaPdf(selected, { projectName, logoUrl })}
               >
                 <Download className="h-4 w-4" />
                 Baixar Confirmação (PDF)

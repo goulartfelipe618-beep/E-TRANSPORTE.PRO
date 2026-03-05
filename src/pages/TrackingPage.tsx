@@ -9,24 +9,27 @@ export default function TrackingPage() {
   const token = window.location.pathname.split("/rastreamento/")[1];
 
   const updateLocation = useCallback(async (lat: number, lng: number) => {
-    await supabase
-      .from("tracking_links")
-      .update({ latitude: lat, longitude: lng, last_location_at: new Date().toISOString(), status: "ativo" })
-      .eq("token", token);
+    await supabase.functions.invoke("tracking", {
+      body: { action: "update_location", token, latitude: lat, longitude: lng },
+    });
   }, [token]);
 
   useEffect(() => {
     if (!token) { setStatus("invalid"); return; }
 
     const init = async () => {
-      const { data, error } = await supabase
-        .from("tracking_links")
-        .select("*")
-        .eq("token", token)
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke("tracking", {
+        body: { action: "get", token },
+      });
 
-      if (error || !data) { setStatus("invalid"); return; }
-      if (data.expires_at && new Date(data.expires_at) < new Date()) { setStatus("expired"); return; }
+      if (error || !data?.valid) {
+        if (data?.error === "Link expired") {
+          setStatus("expired");
+        } else {
+          setStatus("invalid");
+        }
+        return;
+      }
 
       if (!navigator.geolocation) {
         setStatus("error");
@@ -40,7 +43,7 @@ export default function TrackingPage() {
         (pos) => {
           updateLocation(pos.coords.latitude, pos.coords.longitude);
         },
-        (err) => {
+        () => {
           setMessage("Permita o acesso à localização para continuar.");
         },
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }

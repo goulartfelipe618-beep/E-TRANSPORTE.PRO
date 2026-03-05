@@ -5,8 +5,6 @@ interface GlobalConfig {
   projectName: string;
   logoUrl: string;
   globalFont: string;
-  mapProvider: string;
-  mapApiKey: string;
   isLoading: boolean;
   refetch: () => void;
 }
@@ -15,8 +13,6 @@ const GlobalConfigContext = createContext<GlobalConfig>({
   projectName: "TransExec",
   logoUrl: "",
   globalFont: "Poppins",
-  mapProvider: "",
-  mapApiKey: "",
   isLoading: true,
   refetch: () => {},
 });
@@ -29,8 +25,6 @@ export function GlobalConfigProvider({ children }: { children: React.ReactNode }
   const [projectName, setProjectName] = useState("TransExec");
   const [logoUrl, setLogoUrl] = useState("");
   const [globalFont, setGlobalFont] = useState("Poppins");
-  const [mapProvider, setMapProvider] = useState("");
-  const [mapApiKey, setMapApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchSettings = async () => {
@@ -40,8 +34,6 @@ export function GlobalConfigProvider({ children }: { children: React.ReactNode }
         if (row.key === "project_name" && row.value) setProjectName(row.value);
         if (row.key === "logo_url" && row.value) setLogoUrl(row.value);
         if (row.key === "global_font" && row.value) setGlobalFont(row.value);
-        if (row.key === "map_provider" && row.value) setMapProvider(row.value);
-        if (row.key === "map_api_key" && row.value) setMapApiKey(row.value);
       });
     }
     setIsLoading(false);
@@ -69,7 +61,7 @@ export function GlobalConfigProvider({ children }: { children: React.ReactNode }
   }, [globalFont]);
 
   return (
-    <GlobalConfigContext.Provider value={{ projectName, logoUrl, globalFont, mapProvider, mapApiKey, isLoading, refetch: fetchSettings }}>
+    <GlobalConfigContext.Provider value={{ projectName, logoUrl, globalFont, isLoading, refetch: fetchSettings }}>
       {children}
     </GlobalConfigContext.Provider>
   );

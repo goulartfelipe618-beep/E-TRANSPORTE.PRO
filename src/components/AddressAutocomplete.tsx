@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
+import { supabase } from "@/integrations/supabase/client";
 import { MapPin } from "lucide-react";
 
 interface AddressAutocompleteProps {
@@ -16,7 +16,6 @@ interface Suggestion {
 }
 
 export default function AddressAutocomplete({ value, onChange, placeholder, className }: AddressAutocompleteProps) {
-  const { mapProvider, mapApiKey } = useGlobalConfig();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -38,36 +37,26 @@ export default function AddressAutocomplete({ value, onChange, placeholder, clas
   }, []);
 
   const fetchSuggestions = useCallback(async (query: string) => {
-    if (!query || query.length < 3 || !mapApiKey) {
+    if (!query || query.length < 3) {
       setSuggestions([]);
       return;
     }
 
     try {
-      if (mapProvider === "mapbox") {
-        const res = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapApiKey}&language=pt-BR&country=BR&limit=5`
-        );
-        const data = await res.json();
-        setSuggestions(
-          (data.features || []).map((f: any) => ({ id: f.id, place_name: f.place_name }))
-        );
-      } else if (mapProvider === "google") {
-        // Google Places Autocomplete via session proxy not available client-side without SDK
-        // Use the simple geocoding approach
-        const res = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${mapApiKey}&language=pt-BR&region=br`
-        );
-        const data = await res.json();
-        setSuggestions(
-          (data.results || []).slice(0, 5).map((r: any) => ({ id: r.place_id, place_name: r.formatted_address }))
-        );
+      const { data, error } = await supabase.functions.invoke("geocode", {
+        body: { query, type: "autocomplete" },
+      });
+
+      if (!error && data?.results) {
+        setSuggestions(data.results);
+      } else {
+        setSuggestions([]);
       }
       setShowDropdown(true);
     } catch {
       setSuggestions([]);
     }
-  }, [mapProvider, mapApiKey]);
+  }, []);
 
   const handleInputChange = (val: string) => {
     setInputValue(val);
@@ -82,10 +71,6 @@ export default function AddressAutocomplete({ value, onChange, placeholder, clas
     setShowDropdown(false);
     setSuggestions([]);
   };
-
-  if (!mapApiKey) {
-    return <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={className} />;
-  }
 
   return (
     <div ref={wrapperRef} className="relative">
