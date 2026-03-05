@@ -156,17 +156,8 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
       {
         title: "Network",
         icon: Globe,
+        page: "network" as PageKey,
         menuKey: "network",
-        subItems: [
-          { title: "Hotéis e Resorts", page: "network/hoteis", icon: Hotel, menuKey: "network.hoteis" },
-          { title: "Agências de Viagens", page: "network/agencias", icon: Plane, menuKey: "network.agencias" },
-          { title: "Clínicas e Hospitais", page: "network/clinicas", icon: Building2, menuKey: "network.clinicas" },
-          { title: "Laboratórios e Farmácias", page: "network/laboratorios", icon: FlaskConical, menuKey: "network.laboratorios" },
-          { title: "Produtores de Shows", page: "network/shows", icon: Music, menuKey: "network.shows" },
-          { title: "Empresas de Casamento", page: "network/casamentos", icon: Heart, menuKey: "network.casamentos" },
-          { title: "Embaixadas e Consulados", page: "network/embaixadas", icon: Landmark, menuKey: "network.embaixadas" },
-          { title: "Órgãos Governamentais", page: "network/governo", icon: Building, menuKey: "network.governo" },
-        ],
       },
     ],
   },
