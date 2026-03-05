@@ -61,7 +61,7 @@ export function GlobalConfigProvider({ children }: { children: React.ReactNode }
   }, [globalFont]);
 
   return (
-    <GlobalConfigContext.Provider value={{ projectName, logoUrl, globalFont, mapProvider, mapApiKey, isLoading, refetch: fetchSettings }}>
+    <GlobalConfigContext.Provider value={{ projectName, logoUrl, globalFont, isLoading, refetch: fetchSettings }}>
       {children}
     </GlobalConfigContext.Provider>
   );

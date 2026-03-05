@@ -40,7 +40,7 @@ export default function GruposReservas() {
   const [loading, setLoading] = useState(true);
   const [comunicando, setComunicando] = useState<ReservaRow | null>(null);
   const { toast } = useToast();
-  const { projectName, logoUrl, mapProvider, mapApiKey } = useGlobalConfig();
+  const { projectName, logoUrl } = useGlobalConfig();
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
