@@ -28,6 +28,8 @@ import MarketingReceptivos from "@/pages/marketing/Receptivos";
 import MarketingQrCode from "@/pages/marketing/QrCode";
 // Network
 import NetworkPage from "@/pages/Network";
+// Google
+import GoogleBusiness from "@/pages/GoogleBusiness";
 // Sistema
 import SistemaConfiguracoes from "@/pages/sistema/Configuracoes";
 import SistemaUsuarios from "@/pages/sistema/Usuarios";
