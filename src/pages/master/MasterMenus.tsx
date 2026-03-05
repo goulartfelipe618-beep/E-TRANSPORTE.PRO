@@ -32,6 +32,7 @@ const ALL_MENUS = [
   { key: "marketing", label: "Marketing" },
   { key: "network", label: "Network" },
   { key: "google", label: "Google Business" },
+  { key: "email-business", label: "E-mail Business" },
   { key: "sistema", label: "Sistema" },
   { key: "sistema.configuracoes", label: "  ↳ Configurações" },
   { key: "sistema.automacoes", label: "  ↳ Automações" },
