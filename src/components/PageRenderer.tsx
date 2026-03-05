@@ -64,6 +64,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "marketing/receptivos": MarketingReceptivos,
   "marketing/qrcode": MarketingQrCode,
   "network": NetworkPage,
+  "google": GoogleBusiness,
   "sistema/configuracoes": SistemaConfiguracoes,
   "sistema/usuarios": SistemaUsuarios,
   "sistema/logs": SistemaLogs,
