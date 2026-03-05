@@ -107,7 +107,32 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Responsive table wrapper */
+  .table-responsive {
+    @apply w-full overflow-x-auto -mx-px;
+  }
+
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Fix input zoom on iOS */
+  @media (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
 }
