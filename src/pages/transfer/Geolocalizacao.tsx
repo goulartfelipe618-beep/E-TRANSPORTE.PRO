@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTenantId } from "@/hooks/useTenantId";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export default function TransferGeolocalizacao() {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedLink, setSelectedLink] = useState<TrackingLink | null>(null);
   const { toast } = useToast();
-  const { mapProvider, mapApiKey } = useGlobalConfig();
+  const { toast } = useToast();
 
   // Form state
   const [formReservaId, setFormReservaId] = useState("");
