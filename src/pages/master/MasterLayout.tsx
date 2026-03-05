@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe,
+  Sun, Moon, Globe, StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import MasterSecurity from "./MasterSecurity";
 import MasterDeveloper from "./MasterDeveloper";
 import MasterNetworkCategories from "./MasterNetworkCategories";
 import MasterWebsites from "./MasterWebsites";
+import MasterAnotacoes from "./MasterAnotacoes";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -32,6 +33,7 @@ const MENU_ITEMS = [
   { key: "apis", label: "APIs & Configurações", icon: KeyRound },
   { key: "security", label: "Segurança", icon: Shield },
   { key: "websites", label: "Websites", icon: Globe },
+  { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
 
 export default function MasterLayout() {
@@ -56,6 +58,7 @@ export default function MasterLayout() {
       case "apis": return <MasterApiConfig />;
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
+      case "anotacoes": return <MasterAnotacoes />;
       default: return <MasterDashboard />;
     }
   };
