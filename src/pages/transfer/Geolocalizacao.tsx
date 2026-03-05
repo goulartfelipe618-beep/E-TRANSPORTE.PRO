@@ -48,7 +48,6 @@ export default function TransferGeolocalizacao() {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedLink, setSelectedLink] = useState<TrackingLink | null>(null);
   const { toast } = useToast();
-  const { toast } = useToast();
 
   // Form state
   const [formReservaId, setFormReservaId] = useState("");
