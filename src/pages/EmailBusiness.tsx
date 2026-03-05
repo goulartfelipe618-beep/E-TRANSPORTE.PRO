@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Globe, Shield, Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Star, Users, Zap } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Mail, Globe, Shield, Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Star, Users, Zap, ExternalLink, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +19,7 @@ const PLANS = [
     name: "Motorista Start",
     icon: Mail,
     price: "14,90",
+    storage: "30 GB",
     features: ["1 conta de e-mail profissional", "30 GB de armazenamento", "Domínio incluso por 1 ano", "Acesso pelo celular", "Antivírus e antispam"],
     ideal: "Motorista individual",
     highlight: false,
@@ -24,6 +29,7 @@ const PLANS = [
     name: "Executivo Pro",
     icon: Star,
     price: "19,90",
+    storage: "50 GB",
     features: ["1 conta com 50 GB", "Domínio incluso", "Calendário e contatos sincronizados", "Suporte prioritário"],
     ideal: "Quem atende hotéis e empresas",
     highlight: true,
@@ -33,6 +39,7 @@ const PLANS = [
     name: "Frota",
     icon: Users,
     price: "49,90",
+    storage: "30 GB x5",
     features: ["Até 5 contas de e-mail", "30 GB cada conta", "Domínio incluso", "Gestão centralizada"],
     ideal: "Quem tem equipe",
     highlight: false,
@@ -47,7 +54,25 @@ const BENEFITS = [
   "Integração com Google Business",
 ];
 
+interface EmailAccount {
+  id: string;
+  email: string;
+  senha: string;
+  plano: string;
+  espaco: string;
+  status: string;
+  dominio: string;
+  webmail_url: string;
+  created_at: string;
+}
+
 export default function EmailBusiness() {
+  const tenantId = useTenantId();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [accounts, setAccounts] = useState<EmailAccount[]>([]);
+
+  // Wizard state
   const [step, setStep] = useState(0); // 0=landing, 1=dominio, 2=plano, 3=conta, 4=confirmacao
   const [domainOption, setDomainOption] = useState<"novo" | "existente" | "">("");
   const [domain, setDomain] = useState("");
@@ -56,12 +81,56 @@ export default function EmailBusiness() {
   const [nomeEmpresa, setNomeEmpresa] = useState("");
   const [nomeEmail, setNomeEmail] = useState("contato");
   const [senha, setSenha] = useState("");
-  const { toast } = useToast();
 
   const emailPreview = domain ? `${nomeEmail}@${domain}` : `${nomeEmail}@suaempresa.com.br`;
 
-  const handleFinish = () => {
-    toast({ title: "Solicitação enviada!", description: "Sua conta de e-mail profissional será ativada em breve." });
+  // Load existing accounts from system_settings (lightweight approach)
+  useEffect(() => {
+    if (!tenantId) return;
+    setLoading(true);
+    supabase
+      .from("system_settings")
+      .select("*")
+      .eq("key", `email_accounts_${tenantId}`)
+      .single()
+      .then(({ data }) => {
+        if (data?.value) {
+          try {
+            setAccounts(JSON.parse(data.value));
+          } catch { setAccounts([]); }
+        }
+        setLoading(false);
+      });
+  }, [tenantId]);
+
+  const saveAccounts = async (newAccounts: EmailAccount[]) => {
+    if (!tenantId) return;
+    const key = `email_accounts_${tenantId}`;
+    const value = JSON.stringify(newAccounts);
+    const { data: existing } = await supabase.from("system_settings").select("id").eq("key", key).single();
+    if (existing) {
+      await supabase.from("system_settings").update({ value }).eq("key", key);
+    } else {
+      await supabase.from("system_settings").insert({ key, value });
+    }
+    setAccounts(newAccounts);
+  };
+
+  const handleFinish = async () => {
+    const plan = PLANS.find((p) => p.id === selectedPlan);
+    const newAccount: EmailAccount = {
+      id: crypto.randomUUID(),
+      email: emailPreview,
+      senha,
+      plano: plan?.name || selectedPlan,
+      espaco: plan?.storage || "30 GB",
+      status: "ativo",
+      dominio: domain,
+      webmail_url: "https://webmail.locaweb.com.br",
+      created_at: new Date().toISOString(),
+    };
+    await saveAccounts([...accounts, newAccount]);
+    toast({ title: "E-mail criado!", description: `${emailPreview} está ativo.` });
     setStep(0);
     setDomainOption("");
     setDomain("");
@@ -71,6 +140,69 @@ export default function EmailBusiness() {
     setNomeEmail("contato");
     setSenha("");
   };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  // If accounts exist, show dashboard + table
+  if (accounts.length > 0 && step === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">E-mail Business</h1>
+            <p className="text-muted-foreground">Gerencie suas contas de e-mail profissional</p>
+          </div>
+          <Button onClick={() => setStep(1)} className="gap-2">
+            <Mail className="h-4 w-4" /> Nova Conta
+          </Button>
+        </div>
+
+        <Card className="border-none shadow-sm">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>E-mail</TableHead>
+                  <TableHead>Senha</TableHead>
+                  <TableHead>Plano</TableHead>
+                  <TableHead>Espaço</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {accounts.map((acc) => (
+                  <TableRow key={acc.id}>
+                    <TableCell className="font-mono text-sm">{acc.email}</TableCell>
+                    <TableCell className="font-mono text-sm">••••••••</TableCell>
+                    <TableCell>{acc.plano}</TableCell>
+                    <TableCell>{acc.espaco}</TableCell>
+                    <TableCell>
+                      <Badge className={acc.status === "ativo" ? "bg-emerald-600 text-white" : "bg-destructive text-white"}>
+                        {acc.status === "ativo" ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(acc.webmail_url, "_blank")}
+                        className="gap-1"
+                      >
+                        <ExternalLink className="h-3 w-3" /> Acessar Webmail
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Landing page
   if (step === 0) {
@@ -87,7 +219,6 @@ export default function EmailBusiness() {
           </p>
         </div>
 
-        {/* Example */}
         <Card className="border-primary/20 bg-primary/5 max-w-md mx-auto">
           <CardContent className="pt-6 text-center">
             <p className="text-sm text-muted-foreground mb-1">Exemplo:</p>
@@ -95,7 +226,6 @@ export default function EmailBusiness() {
           </CardContent>
         </Card>
 
-        {/* Benefits */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl mx-auto">
           {BENEFITS.map((b) => (
             <div key={b} className="flex items-center gap-2 text-sm text-foreground">
@@ -105,7 +235,6 @@ export default function EmailBusiness() {
           ))}
         </div>
 
-        {/* Persuasive text */}
         <Card className="border-none bg-muted/50 max-w-2xl mx-auto">
           <CardContent className="pt-6 space-y-2">
             <div className="flex items-center gap-2">
@@ -119,7 +248,6 @@ export default function EmailBusiness() {
           </CardContent>
         </Card>
 
-        {/* Plans */}
         <div>
           <h2 className="text-xl font-bold text-center text-foreground mb-4">Escolha seu plano</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -194,15 +322,22 @@ export default function EmailBusiness() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
+            <div>
               <Label>Você já tem um domínio?</Label>
-              <Select value={domainOption} onValueChange={(v) => setDomainOption(v as "novo" | "existente")}>
-                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="novo">Quero registrar um novo domínio</SelectItem>
-                  <SelectItem value="existente">Já tenho um domínio</SelectItem>
-                </SelectContent>
-              </Select>
+              <RadioGroup
+                value={domainOption || undefined}
+                onValueChange={(v) => setDomainOption(v as "novo" | "existente")}
+                className="flex gap-4 mt-2"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="novo" id="email-dom-novo" />
+                  <Label htmlFor="email-dom-novo">Quero registrar um novo</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="existente" id="email-dom-existente" />
+                  <Label htmlFor="email-dom-existente">Já tenho um domínio</Label>
+                </div>
+              </RadioGroup>
             </div>
             {domainOption && (
               <div className="space-y-2">
@@ -210,6 +345,9 @@ export default function EmailBusiness() {
                 <Input placeholder="suaempresa.com.br" value={domain} onChange={(e) => setDomain(e.target.value)} />
                 {domainOption === "existente" && (
                   <p className="text-xs text-muted-foreground">Será necessário apontar o DNS para ativação.</p>
+                )}
+                {domainOption === "novo" && (
+                  <p className="text-xs text-muted-foreground">A disponibilidade será verificada e o registro solicitado ao administrador.</p>
                 )}
               </div>
             )}
@@ -291,7 +429,6 @@ export default function EmailBusiness() {
               <Input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Mínimo 8 caracteres" />
             </div>
 
-            {/* Preview */}
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="pt-4 text-center">
                 <p className="text-xs text-muted-foreground mb-1">Seu e-mail será:</p>
