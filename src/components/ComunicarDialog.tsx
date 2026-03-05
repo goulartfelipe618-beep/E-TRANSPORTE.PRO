@@ -295,7 +295,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
                   {selectedFields.size === payloadEntries.length ? "Desmarcar todos" : "Selecionar todos"}
                 </button>
               </div>
-              <ScrollArea className="max-h-64 border border-border rounded-lg p-3">
+              <ScrollArea className="max-h-[40vh] border border-border rounded-lg p-3">
                 <div className="space-y-2">
                   {payloadEntries.map((entry) => (
                     <label
