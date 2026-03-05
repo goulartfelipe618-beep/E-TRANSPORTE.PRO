@@ -48,6 +48,7 @@ export default function MasterLayout() {
       case "users": return <MasterUsers />;
       case "menus": return <MasterMenus />;
       case "categories": return <MasterCategories />;
+      case "network_categories": return <MasterNetworkCategories />;
       case "developer": return <MasterDeveloper />;
       case "logs": return <MasterLogs />;
       case "apis": return <MasterApiConfig />;
