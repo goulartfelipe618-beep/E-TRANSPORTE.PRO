@@ -10,7 +10,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Send, MessageSquare, Loader2 } from "lucide-react";
+import { Send, MessageSquare, Loader2, FileText } from "lucide-react";
+import { generateReservaPdf } from "@/lib/generateReservaPdf";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface Comunicador {
   id: string;
@@ -20,11 +22,21 @@ interface Comunicador {
   ativo: boolean;
 }
 
+interface PdfConfig {
+  projectName: string;
+  logoUrl: string;
+  mapProvider?: string;
+  mapApiKey?: string;
+}
+
 interface ComunicarDialogProps {
   open: boolean;
   onClose: () => void;
   payload: Record<string, unknown>;
   titulo?: string;
+  /** Pass reserva data to enable PDF attachment option */
+  reservaTransfer?: Tables<"reservas_transfer"> | null;
+  pdfConfig?: PdfConfig;
 }
 
 /** Pretty-print a payload key as a human-readable label */
@@ -114,13 +126,16 @@ function getLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export default function ComunicarDialog({ open, onClose, payload, titulo }: ComunicarDialogProps) {
+export default function ComunicarDialog({ open, onClose, payload, titulo, reservaTransfer, pdfConfig }: ComunicarDialogProps) {
   const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saudacao, setSaudacao] = useState("Olá, recebemos a sua solicitação:");
   const [mensagem, setMensagem] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [incluirPdf, setIncluirPdf] = useState(false);
+
+  const canAttachPdf = !!reservaTransfer && !!pdfConfig;
 
   // Build entries from payload (excluding internal keys)
   const payloadEntries = useMemo(() => {
