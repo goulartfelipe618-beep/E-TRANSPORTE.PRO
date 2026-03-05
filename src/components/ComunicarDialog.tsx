@@ -215,12 +215,21 @@ export default function ComunicarDialog({ open, onClose, payload, titulo, reserv
         .filter((e) => selectedFields.has(e.key))
         .forEach((e) => { selectedPayload[e.key] = payload[e.key]; });
 
-      const body = {
+      const body: Record<string, unknown> = {
         ...selectedPayload,
         mensagem_formatada: formattedMessage,
         mensagem_adicional: mensagem || null,
         comunicador_nome: comunicador.nome,
       };
+
+      // Generate PDF base64 if requested
+      if (incluirPdf && reservaTransfer && pdfConfig) {
+        const pdfBase64 = await generateReservaPdf(reservaTransfer, pdfConfig, { returnBase64: true });
+        if (pdfBase64) {
+          body.pdf_confirmacao = pdfBase64;
+          body.pdf_nome = `confirmacao_${(reservaTransfer.cliente_nome || "reserva").replace(/\s+/g, "_").toLowerCase()}_${reservaTransfer.id.substring(0, 8)}.pdf`;
+        }
+      }
 
       const res = await fetch(comunicador.webhook_url, {
         method: "POST",
