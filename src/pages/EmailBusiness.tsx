@@ -167,7 +167,7 @@ export default function EmailBusiness() {
               <TableHeader>
                 <TableRow>
                   <TableHead>E-mail</TableHead>
-                  <TableHead>Senha</TableHead>
+                  <TableHead className="hidden sm:table-cell">Senha</TableHead>
                   <TableHead>Plano</TableHead>
                   <TableHead>Espaço</TableHead>
                   <TableHead>Status</TableHead>
