@@ -27,14 +27,7 @@ import MarketingEmails from "@/pages/marketing/Emails";
 import MarketingReceptivos from "@/pages/marketing/Receptivos";
 import MarketingQrCode from "@/pages/marketing/QrCode";
 // Network
-import NetworkHoteis from "@/pages/network/Hoteis";
-import NetworkAgencias from "@/pages/network/Agencias";
-import NetworkClinicas from "@/pages/network/Clinicas";
-import NetworkLaboratorios from "@/pages/network/Laboratorios";
-import NetworkShows from "@/pages/network/Shows";
-import NetworkCasamentos from "@/pages/network/Casamentos";
-import NetworkEmbaixadas from "@/pages/network/Embaixadas";
-import NetworkGoverno from "@/pages/network/Governo";
+import NetworkPage from "@/pages/Network";
 // Sistema
 import SistemaConfiguracoes from "@/pages/sistema/Configuracoes";
 import SistemaUsuarios from "@/pages/sistema/Usuarios";
@@ -68,14 +61,7 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "marketing/emails": MarketingEmails,
   "marketing/receptivos": MarketingReceptivos,
   "marketing/qrcode": MarketingQrCode,
-  "network/hoteis": NetworkHoteis,
-  "network/agencias": NetworkAgencias,
-  "network/clinicas": NetworkClinicas,
-  "network/laboratorios": NetworkLaboratorios,
-  "network/shows": NetworkShows,
-  "network/casamentos": NetworkCasamentos,
-  "network/embaixadas": NetworkEmbaixadas,
-  "network/governo": NetworkGoverno,
+  "network": NetworkPage,
   "sistema/configuracoes": SistemaConfiguracoes,
   "sistema/usuarios": SistemaUsuarios,
   "sistema/logs": SistemaLogs,
