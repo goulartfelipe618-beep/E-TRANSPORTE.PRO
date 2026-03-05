@@ -256,7 +256,7 @@ export default function Anotacoes() {
 
       {/* Create Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Nova Anotação</DialogTitle>
             <DialogDescription>Crie uma nova anotação com texto formatado e imagens.</DialogDescription>
@@ -271,7 +271,7 @@ export default function Anotacoes() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editOpen} onOpenChange={(o) => { if (!o) { setEditOpen(null); resetForm(); } }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Editar Anotação</DialogTitle>
             <DialogDescription>Edite o conteúdo da anotação.</DialogDescription>
@@ -286,7 +286,7 @@ export default function Anotacoes() {
 
       {/* View Dialog */}
       <Dialog open={!!viewOpen} onOpenChange={(o) => { if (!o) setViewOpen(null); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <div className="h-3 w-3 rounded-full" style={{ backgroundColor: viewOpen?.cor }} />
