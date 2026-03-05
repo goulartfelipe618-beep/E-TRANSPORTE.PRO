@@ -186,8 +186,6 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
           { title: "Configurações", page: "sistema/configuracoes", icon: Cog, menuKey: "sistema.configuracoes" },
           { title: "Automações", page: "sistema/automacoes", icon: Cog, menuKey: "sistema.automacoes" },
           { title: "Comunicador", page: "sistema/comunicador", icon: MessageSquare, menuKey: "sistema.comunicador" },
-          { title: "Usuários", page: "sistema/usuarios", icon: UsersRound, menuKey: "sistema.usuarios" },
-          { title: "Logs", page: "sistema/logs", icon: ScrollText, menuKey: "sistema.logs" },
           { title: "Aplicativo", page: "sistema/aplicativo", icon: Smartphone, menuKey: "sistema.aplicativo" },
           { title: "Tickets", page: "sistema/tickets", icon: Ticket, menuKey: "sistema.tickets" },
         ],
