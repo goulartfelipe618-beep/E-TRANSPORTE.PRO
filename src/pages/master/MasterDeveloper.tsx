@@ -69,7 +69,7 @@ export default function MasterDeveloper() {
       onClick={() => copyToClipboard(text, label)}
     >
       {copiedField === label ? (
-        <Check className="h-3 w-3 text-green-500" />
+        <Check className="h-3 w-3 text-primary" />
       ) : (
         <Copy className="h-3 w-3" />
       )}
