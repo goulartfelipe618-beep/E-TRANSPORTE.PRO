@@ -162,6 +162,8 @@ export default function TransferReservas() {
         open={!!comunicando}
         onClose={() => setComunicando(null)}
         titulo={comunicando ? `Comunicar sobre reserva de ${comunicando.cliente_nome || "Cliente"}` : undefined}
+        reservaTransfer={comunicando}
+        pdfConfig={{ projectName, logoUrl, mapProvider, mapApiKey }}
         payload={comunicando ? {
           tipo: "reserva_transfer",
           id: comunicando.id,

@@ -16,6 +16,7 @@ import { Eye, Trash2, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ComunicarDialog from "@/components/ComunicarDialog";
 import { useToast } from "@/hooks/use-toast";
+import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import type { Tables } from "@/integrations/supabase/types";
 
 type ReservaRow = Tables<"reservas_grupos">;
@@ -39,6 +40,7 @@ export default function GruposReservas() {
   const [loading, setLoading] = useState(true);
   const [comunicando, setComunicando] = useState<ReservaRow | null>(null);
   const { toast } = useToast();
+  const { projectName, logoUrl, mapProvider, mapApiKey } = useGlobalConfig();
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
