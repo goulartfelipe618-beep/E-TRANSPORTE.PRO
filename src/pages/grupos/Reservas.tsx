@@ -152,6 +152,40 @@ export default function GruposReservas() {
         open={!!comunicando}
         onClose={() => setComunicando(null)}
         titulo={comunicando ? `Comunicar sobre reserva de grupo de ${comunicando.cliente_nome || "Cliente"}` : undefined}
+        reservaTransfer={comunicando ? {
+          id: comunicando.id,
+          tipo_viagem: "somente_ida",
+          cliente_nome: comunicando.cliente_nome,
+          cliente_telefone: comunicando.cliente_whatsapp,
+          cliente_email: comunicando.cliente_email,
+          cliente_cpf_cnpj: comunicando.cliente_cpf_cnpj,
+          cliente_origem: comunicando.cliente_origem,
+          ida_embarque: comunicando.endereco_embarque,
+          ida_destino: comunicando.destino,
+          ida_data: comunicando.data_ida,
+          ida_hora: comunicando.hora_ida,
+          ida_passageiros: comunicando.numero_passageiros,
+          motorista_nome: comunicando.motorista_nome,
+          motorista_telefone: comunicando.motorista_telefone,
+          veiculo: comunicando.veiculo,
+          valor_base: comunicando.valor_base,
+          valor_total: comunicando.valor_total,
+          desconto_percentual: comunicando.desconto_percentual,
+          metodo_pagamento: comunicando.metodo_pagamento,
+          observacoes: comunicando.observacoes,
+          status: comunicando.status,
+          created_at: comunicando.created_at,
+          updated_at: comunicando.updated_at,
+          solicitacao_id: comunicando.solicitacao_id,
+          tenant_id: comunicando.tenant_id,
+          ida_mensagem: null, ida_cupom: null, ida_embarque_lat: null, ida_embarque_lng: null,
+          volta_embarque: null, volta_destino: null, volta_data: null, volta_hora: null,
+          volta_passageiros: null, volta_mensagem: null, volta_cupom: null, volta_embarque_lat: null, volta_embarque_lng: null,
+          por_hora_endereco_inicio: null, por_hora_hora: null, por_hora_data: null,
+          por_hora_passageiros: null, por_hora_qtd_horas: null, por_hora_ponto_encerramento: null,
+          por_hora_itinerario: null, por_hora_cupom: null,
+        } as any : null}
+        pdfConfig={{ projectName, logoUrl, mapProvider, mapApiKey }}
         payload={comunicando ? {
           tipo: "reserva_grupo",
           id: comunicando.id,
