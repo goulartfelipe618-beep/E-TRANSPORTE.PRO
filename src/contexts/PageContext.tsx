@@ -17,7 +17,6 @@ export type PageKey =
   | "veiculos"
   | "campanhas/ativos"
   | "campanhas/leads"
-  | "marketing/emails"
   | "marketing/receptivos"
   | "marketing/qrcode"
   | "network"

@@ -30,7 +30,6 @@ const ALL_MENUS = [
   { key: "campanhas.ativos", label: "  ↳ Ativos" },
   { key: "campanhas.leads", label: "  ↳ Leads" },
   { key: "marketing", label: "Marketing" },
-  { key: "network", label: "Network" },
   { key: "google", label: "Google Business" },
   { key: "email-business", label: "E-mail Business" },
   { key: "website", label: "Website" },
