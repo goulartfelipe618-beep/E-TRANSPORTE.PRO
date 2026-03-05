@@ -167,6 +167,12 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         page: "website" as PageKey,
         menuKey: "website",
       },
+      {
+        title: "Domínios",
+        icon: Globe,
+        page: "dominios" as PageKey,
+        menuKey: "dominios",
+      },
     ],
   },
   {

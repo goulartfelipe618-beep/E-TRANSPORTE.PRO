@@ -12,6 +12,7 @@ import { Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock, 
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
+import { useActivePage } from "@/contexts/PageContext";
 
 const TIPOS_SERVICO = [
   "Transfer Executivo",
@@ -44,6 +45,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 export default function WebsitePage() {
   const tenantId = useTenantId();
   const { toast } = useToast();
+  const { setActivePage } = useActivePage();
   const [loading, setLoading] = useState(true);
   const [briefing, setBriefing] = useState<any>(null);
   const [step, setStep] = useState(1);
@@ -295,12 +297,24 @@ export default function WebsitePage() {
 
             {!form.possui_dominio && (
               <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground">Informe o domínio desejado para registro:</p>
-                <Input
-                  placeholder="nomedaempresa.com.br"
-                  value={form.dominio}
-                  onChange={(e) => updateField("dominio", e.target.value)}
-                />
+                <p className="text-sm text-muted-foreground">Você ainda não tem um domínio? Pesquise a disponibilidade no menu Domínios.</p>
+                <Button
+                  variant="outline"
+                  onClick={() => setActivePage("dominios")}
+                  className="gap-2"
+                >
+                  <Globe className="h-4 w-4" />
+                  Ir para Domínios
+                </Button>
+                <div className="mt-3">
+                  <Label>Ou informe o domínio desejado para registro:</Label>
+                  <Input
+                    placeholder="nomedaempresa.com.br"
+                    value={form.dominio}
+                    onChange={(e) => updateField("dominio", e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
               </div>
             )}
 

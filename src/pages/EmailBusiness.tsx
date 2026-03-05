@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useActivePage } from "@/contexts/PageContext";
 
 const PLANS = [
   {
@@ -69,6 +70,7 @@ interface EmailAccount {
 export default function EmailBusiness() {
   const tenantId = useTenantId();
   const { toast } = useToast();
+  const { setActivePage } = useActivePage();
   const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<EmailAccount[]>([]);
 
@@ -347,7 +349,18 @@ export default function EmailBusiness() {
                   <p className="text-xs text-muted-foreground">Será necessário apontar o DNS para ativação.</p>
                 )}
                 {domainOption === "novo" && (
-                  <p className="text-xs text-muted-foreground">A disponibilidade será verificada e o registro solicitado ao administrador.</p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">Pesquise a disponibilidade antes de continuar.</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActivePage("dominios")}
+                      className="gap-2"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Pesquisar Domínio
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
