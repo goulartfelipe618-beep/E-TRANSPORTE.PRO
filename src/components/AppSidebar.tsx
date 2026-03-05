@@ -32,6 +32,7 @@ import {
   Moon,
   Mail,
   QrCode,
+  Building2,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -148,6 +149,12 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         icon: Globe,
         page: "network" as PageKey,
         menuKey: "network",
+      },
+      {
+        title: "Google",
+        icon: Building2,
+        page: "google" as PageKey,
+        menuKey: "google",
       },
     ],
   },

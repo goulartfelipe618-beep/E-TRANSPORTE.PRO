@@ -300,6 +300,113 @@ export type Database = {
           },
         ]
       }
+      google_business_profiles: {
+        Row: {
+          api_errors: Json | null
+          area_atendimento: string | null
+          capa_url: string | null
+          categoria_principal: string | null
+          categoria_secundaria: string | null
+          cep: string | null
+          cidade: string | null
+          created_at: string
+          dados_validados: boolean
+          descricao: string | null
+          endereco: string | null
+          entidade_id: string | null
+          entidade_tipo: string
+          estado: string | null
+          etapa_atual: number
+          fotos_url: string[] | null
+          google_account_id: string | null
+          google_location_name: string | null
+          horario_padrao: Json | null
+          horarios_especiais: Json | null
+          id: string
+          logo_url: string | null
+          nome_empresa: string
+          service_area_business: boolean
+          telefone: string | null
+          tenant_id: string | null
+          updated_at: string
+          verification_status: string
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          api_errors?: Json | null
+          area_atendimento?: string | null
+          capa_url?: string | null
+          categoria_principal?: string | null
+          categoria_secundaria?: string | null
+          cep?: string | null
+          cidade?: string | null
+          created_at?: string
+          dados_validados?: boolean
+          descricao?: string | null
+          endereco?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string
+          estado?: string | null
+          etapa_atual?: number
+          fotos_url?: string[] | null
+          google_account_id?: string | null
+          google_location_name?: string | null
+          horario_padrao?: Json | null
+          horarios_especiais?: Json | null
+          id?: string
+          logo_url?: string | null
+          nome_empresa: string
+          service_area_business?: boolean
+          telefone?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          verification_status?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          api_errors?: Json | null
+          area_atendimento?: string | null
+          capa_url?: string | null
+          categoria_principal?: string | null
+          categoria_secundaria?: string | null
+          cep?: string | null
+          cidade?: string | null
+          created_at?: string
+          dados_validados?: boolean
+          descricao?: string | null
+          endereco?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string
+          estado?: string | null
+          etapa_atual?: number
+          fotos_url?: string[] | null
+          google_account_id?: string | null
+          google_location_name?: string | null
+          horario_padrao?: Json | null
+          horarios_especiais?: Json | null
+          id?: string
+          logo_url?: string | null
+          nome_empresa?: string
+          service_area_business?: boolean
+          telefone?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          verification_status?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_business_profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           campanha_id: string | null

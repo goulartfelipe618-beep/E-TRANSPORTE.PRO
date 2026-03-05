@@ -21,6 +21,7 @@ export type PageKey =
   | "marketing/receptivos"
   | "marketing/qrcode"
   | "network"
+  | "google"
   | "sistema/configuracoes"
   | "sistema/usuarios"
   | "sistema/logs"
