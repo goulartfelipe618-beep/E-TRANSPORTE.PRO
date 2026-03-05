@@ -17,6 +17,7 @@ import MasterLogs from "./MasterLogs";
 import MasterApiConfig from "./MasterApiConfig";
 import MasterSecurity from "./MasterSecurity";
 import MasterDeveloper from "./MasterDeveloper";
+import MasterNetworkCategories from "./MasterNetworkCategories";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -24,6 +25,7 @@ const MENU_ITEMS = [
   { key: "users", label: "Usuários", icon: Users },
   { key: "menus", label: "Menus / Permissões", icon: MenuIcon },
   { key: "categories", label: "Categorias de Automação", icon: Layers3 },
+  { key: "network_categories", label: "Categorias de Network", icon: Settings2 },
   { key: "developer", label: "Desenvolvedor", icon: ListChecks },
   { key: "logs", label: "Logs", icon: ScrollText },
   { key: "apis", label: "APIs & Configurações", icon: KeyRound },
