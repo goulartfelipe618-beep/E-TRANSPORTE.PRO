@@ -18,6 +18,7 @@ import MasterApiConfig from "./MasterApiConfig";
 import MasterSecurity from "./MasterSecurity";
 import MasterDeveloper from "./MasterDeveloper";
 import MasterNetworkCategories from "./MasterNetworkCategories";
+import MasterWebsites from "./MasterWebsites";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -30,6 +31,7 @@ const MENU_ITEMS = [
   { key: "logs", label: "Logs", icon: ScrollText },
   { key: "apis", label: "APIs & Configurações", icon: KeyRound },
   { key: "security", label: "Segurança", icon: Shield },
+  { key: "websites", label: "Websites", icon: Globe },
 ];
 
 export default function MasterLayout() {

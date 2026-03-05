@@ -32,7 +32,8 @@ export type PageKey =
   | "sistema/comunicador"
   | "politicas"
   | "anotacoes"
-  | "documentacao";
+  | "documentacao"
+  | "website";
 
 interface PageContextType {
   activePage: PageKey;
