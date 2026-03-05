@@ -1,179 +1,294 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Eye, StickyNote, Loader2 } from "lucide-react";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { RefreshCw, Plus, Trash2, Eye, Edit, Search, Bold, Italic, Link, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-const CORES = [
-  { value: "#3b82f6", label: "Azul" },
-  { value: "#ef4444", label: "Vermelho" },
-  { value: "#22c55e", label: "Verde" },
-  { value: "#f59e0b", label: "Amarelo" },
-  { value: "#8b5cf6", label: "Roxo" },
-  { value: "#ec4899", label: "Rosa" },
-];
 
 interface Anotacao {
   id: string;
   titulo: string;
   conteudo: string;
   cor: string;
-  tenant_id: string | null;
   created_at: string;
   updated_at: string;
 }
 
-interface Tenant {
-  id: string;
-  nome: string;
-}
+const CORES = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8b5cf6", "#f97316", "#ec4899", "#06b6d4", "#64748b", "#84cc16"];
 
 export default function MasterAnotacoes() {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
   const [anotacoes, setAnotacoes] = useState<Anotacao[]>([]);
-  const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [filterTenant, setFilterTenant] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<Anotacao | null>(null);
+  const [viewOpen, setViewOpen] = useState<Anotacao | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // Dialog state
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<Anotacao | null>(null);
-  const [viewing, setViewing] = useState<Anotacao | null>(null);
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
-  const [cor, setCor] = useState("#3b82f6");
+  const [cor, setCor] = useState(CORES[0]);
 
-  const fetchData = async () => {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  const fetchAnotacoes = async () => {
     setLoading(true);
-    const [{ data: notes }, { data: tenantList }] = await Promise.all([
-      supabase.from("anotacoes").select("*").order("created_at", { ascending: false }),
-      supabase.from("tenants").select("id, nome").order("nome"),
-    ]);
-    if (notes) setAnotacoes(notes as Anotacao[]);
-    if (tenantList) setTenants(tenantList as Tenant[]);
+    const { data } = await supabase
+      .from("anotacoes")
+      .select("*")
+      .is("tenant_id", null)
+      .order("updated_at", { ascending: false });
+    if (data) setAnotacoes(data as Anotacao[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchAnotacoes(); }, []);
 
-  const getTenantName = (tenantId: string | null) => {
-    if (!tenantId) return "—";
-    return tenants.find((t) => t.id === tenantId)?.nome || tenantId.slice(0, 8);
+  const filtered = anotacoes.filter((a) =>
+    a.titulo.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const resetForm = () => { setTitulo(""); setConteudo(""); setCor(CORES[0]); };
+
+  const execCommand = (cmd: string, value?: string) => {
+    document.execCommand(cmd, false, value);
+    editorRef.current?.focus();
   };
 
-  const filtered = filterTenant === "all"
-    ? anotacoes
-    : anotacoes.filter((a) => a.tenant_id === filterTenant);
+  const handleInsertImage = () => {
+    const url = prompt("URL da imagem:");
+    if (url) execCommand("insertImage", url);
+  };
+
+  const handleInsertLink = () => {
+    const url = prompt("URL do link:");
+    if (url) execCommand("createLink", url);
+  };
+
+  const getEditorContent = () => editorRef.current?.innerHTML || "";
+
+  const handleCreate = async () => {
+    if (!titulo.trim()) return;
+    setSaving(true);
+    const { error } = await supabase.from("anotacoes").insert({
+      titulo: titulo.trim(),
+      conteudo: getEditorContent(),
+      cor,
+      tenant_id: null,
+    });
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Anotação criada!" }); resetForm(); setCreateOpen(false); fetchAnotacoes(); }
+    setSaving(false);
+  };
+
+  const handleUpdate = async () => {
+    if (!editOpen) return;
+    setSaving(true);
+    const { error } = await supabase.from("anotacoes").update({
+      titulo: titulo.trim(),
+      conteudo: getEditorContent(),
+      cor,
+    }).eq("id", editOpen.id);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Anotação atualizada!" }); setEditOpen(null); resetForm(); fetchAnotacoes(); }
+    setSaving(false);
+  };
 
   const handleDelete = async (id: string) => {
     await supabase.from("anotacoes").delete().eq("id", id);
-    toast({ title: "Anotação removida" });
-    fetchData();
+    toast({ title: "Anotação excluída" });
+    fetchAnotacoes();
   };
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  }
+  const openEdit = (a: Anotacao) => {
+    setTitulo(a.titulo); setConteudo(a.conteudo); setCor(a.cor);
+    setEditOpen(a);
+  };
+
+  useEffect(() => {
+    if ((createOpen || editOpen) && editorRef.current) {
+      editorRef.current.innerHTML = conteudo;
+    }
+  }, [createOpen, editOpen]);
+
+  const renderEditor = () => (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Título</label>
+        <Input placeholder="Digite o título da anotação" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Cor</label>
+        <div className="flex gap-2 flex-wrap">
+          {CORES.map((c) => (
+            <button key={c} type="button" onClick={() => setCor(c)} className={`h-7 w-7 rounded-full border-2 transition-all ${cor === c ? "border-foreground scale-110" : "border-transparent"}`} style={{ backgroundColor: c }} />
+          ))}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Conteúdo</label>
+        <div className="border rounded-md overflow-hidden">
+          <div className="flex items-center gap-1 p-2 border-b bg-muted/50">
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => execCommand("bold")} title="Negrito"><Bold className="h-4 w-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => execCommand("italic")} title="Itálico"><Italic className="h-4 w-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleInsertLink} title="Inserir Link"><Link className="h-4 w-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleInsertImage} title="Inserir Imagem"><ImageIcon className="h-4 w-4" /></Button>
+          </div>
+          <div
+            ref={editorRef}
+            contentEditable
+            className="min-h-[250px] p-4 bg-background text-foreground focus:outline-none prose prose-sm max-w-none [&_img]:max-w-full [&_img]:rounded [&_a]:text-primary"
+            style={{ wordBreak: "break-word" }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Anotações</h1>
-          <p className="text-muted-foreground">Visualize todas as anotações dos tenants.</p>
+          <p className="text-muted-foreground">Suas anotações pessoais do painel Master</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={fetchAnotacoes} title="Recarregar">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          <Button onClick={() => { resetForm(); setCreateOpen(true); }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nova Anotação
+          </Button>
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Select value={filterTenant} onValueChange={setFilterTenant}>
-          <SelectTrigger className="w-64"><SelectValue placeholder="Filtrar por tenant" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tenants</SelectItem>
-            {tenants.map((t) => (
-              <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Badge variant="secondary">{filtered.length} anotações</Badge>
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Buscar anotação..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
       </div>
 
       <Card className="border-none shadow-sm">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Cor</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead>Tenant</TableHead>
-                <TableHead>Criada em</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length === 0 && (
+          {loading ? (
+            <p className="p-6 text-muted-foreground text-sm">Carregando...</p>
+          ) : filtered.length === 0 ? (
+            <p className="p-6 text-muted-foreground text-sm text-center">Nenhuma anotação encontrada.</p>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    Nenhuma anotação encontrada.
-                  </TableCell>
+                  <TableHead>Título</TableHead>
+                  <TableHead>Data de Criação</TableHead>
+                  <TableHead>Última Atualização</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
-              )}
-              {filtered.map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell>
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: a.cor }} />
-                  </TableCell>
-                  <TableCell className="font-medium">{a.titulo}</TableCell>
-                  <TableCell className="text-muted-foreground">{getTenantName(a.tenant_id)}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {new Date(a.created_at).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell className="text-right space-x-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => { setViewing(a); setViewDialogOpen(true); }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-destructive"
-                      onClick={() => handleDelete(a.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((a) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: a.cor }} />
+                        {a.titulo}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {new Date(a.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {new Date(a.updated_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => setViewOpen(a)} title="Visualizar"><Eye className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => openEdit(a)} title="Editar"><Edit className="h-4 w-4" /></Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir anotação?</AlertDialogTitle>
+                              <AlertDialogDescription>Essa ação não pode ser desfeita.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(a.id)}>Excluir</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
+      {/* Create Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nova Anotação</DialogTitle>
+            <DialogDescription>Crie uma nova anotação com texto formatado e imagens.</DialogDescription>
+          </DialogHeader>
+          {renderEditor()}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancelar</Button>
+            <Button onClick={handleCreate} disabled={saving || !titulo.trim()}>{saving ? "Salvando..." : "Salvar"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editOpen} onOpenChange={(o) => { if (!o) { setEditOpen(null); resetForm(); } }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Anotação</DialogTitle>
+            <DialogDescription>Edite o conteúdo da anotação.</DialogDescription>
+          </DialogHeader>
+          {renderEditor()}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setEditOpen(null); resetForm(); }}>Cancelar</Button>
+            <Button onClick={handleUpdate} disabled={saving || !titulo.trim()}>{saving ? "Salvando..." : "Salvar"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* View Dialog */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+      <Dialog open={!!viewOpen} onOpenChange={(o) => { if (!o) setViewOpen(null); }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: viewing?.cor }} />
-              {viewing?.titulo}
+              <div className="h-3 w-3 rounded-full" style={{ backgroundColor: viewOpen?.cor }} />
+              {viewOpen?.titulo}
             </DialogTitle>
+            <DialogDescription>
+              Criada em {viewOpen && new Date(viewOpen.created_at).toLocaleString("pt-BR")}
+            </DialogDescription>
           </DialogHeader>
-          <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-            {viewing?.conteudo || "Sem conteúdo."}
-          </div>
-          <p className="text-xs text-muted-foreground mt-4">
-            Tenant: {getTenantName(viewing?.tenant_id ?? null)} · {viewing && new Date(viewing.created_at).toLocaleString("pt-BR")}
-          </p>
+          <div
+            className="prose prose-sm max-w-none text-foreground [&_img]:max-w-full [&_img]:rounded [&_a]:text-primary min-h-[100px]"
+            dangerouslySetInnerHTML={{ __html: viewOpen?.conteudo || "" }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewOpen(null)}>Fechar</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
