@@ -16,6 +16,7 @@ import MasterCategories from "./MasterCategories";
 import MasterLogs from "./MasterLogs";
 import MasterApiConfig from "./MasterApiConfig";
 import MasterSecurity from "./MasterSecurity";
+import MasterDeveloper from "./MasterDeveloper";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -23,6 +24,7 @@ const MENU_ITEMS = [
   { key: "users", label: "Usuários", icon: Users },
   { key: "menus", label: "Menus / Permissões", icon: MenuIcon },
   { key: "categories", label: "Categorias de Automação", icon: Layers3 },
+  { key: "developer", label: "Desenvolvedor", icon: ListChecks },
   { key: "logs", label: "Logs", icon: ScrollText },
   { key: "apis", label: "APIs & Configurações", icon: KeyRound },
   { key: "security", label: "Segurança", icon: Shield },
@@ -44,6 +46,7 @@ export default function MasterLayout() {
       case "users": return <MasterUsers />;
       case "menus": return <MasterMenus />;
       case "categories": return <MasterCategories />;
+      case "developer": return <MasterDeveloper />;
       case "logs": return <MasterLogs />;
       case "apis": return <MasterApiConfig />;
       case "security": return <MasterSecurity />;
