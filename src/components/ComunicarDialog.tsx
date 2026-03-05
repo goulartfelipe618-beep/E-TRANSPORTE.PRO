@@ -10,7 +10,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Send, MessageSquare, Loader2 } from "lucide-react";
+import { Send, MessageSquare, Loader2, FileText } from "lucide-react";
+import { generateReservaPdf } from "@/lib/generateReservaPdf";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface Comunicador {
   id: string;
@@ -20,11 +22,21 @@ interface Comunicador {
   ativo: boolean;
 }
 
+interface PdfConfig {
+  projectName: string;
+  logoUrl: string;
+  mapProvider?: string;
+  mapApiKey?: string;
+}
+
 interface ComunicarDialogProps {
   open: boolean;
   onClose: () => void;
   payload: Record<string, unknown>;
   titulo?: string;
+  /** Pass reserva data to enable PDF attachment option */
+  reservaTransfer?: Tables<"reservas_transfer"> | null;
+  pdfConfig?: PdfConfig;
 }
 
 /** Pretty-print a payload key as a human-readable label */
@@ -114,13 +126,16 @@ function getLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export default function ComunicarDialog({ open, onClose, payload, titulo }: ComunicarDialogProps) {
+export default function ComunicarDialog({ open, onClose, payload, titulo, reservaTransfer, pdfConfig }: ComunicarDialogProps) {
   const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saudacao, setSaudacao] = useState("Olá, recebemos a sua solicitação:");
   const [mensagem, setMensagem] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [incluirPdf, setIncluirPdf] = useState(false);
+
+  const canAttachPdf = !!reservaTransfer && !!pdfConfig;
 
   // Build entries from payload (excluding internal keys)
   const payloadEntries = useMemo(() => {
@@ -142,6 +157,7 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
     setMensagem("");
     setSaudacao("Olá, recebemos a sua solicitação:");
     setSelectedFields(new Set(payloadEntries.map((e) => e.key)));
+    setIncluirPdf(false);
     setLoading(true);
     supabase
       .from("comunicadores")
@@ -199,12 +215,21 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
         .filter((e) => selectedFields.has(e.key))
         .forEach((e) => { selectedPayload[e.key] = payload[e.key]; });
 
-      const body = {
+      const body: Record<string, unknown> = {
         ...selectedPayload,
         mensagem_formatada: formattedMessage,
         mensagem_adicional: mensagem || null,
         comunicador_nome: comunicador.nome,
       };
+
+      // Generate PDF base64 if requested
+      if (incluirPdf && reservaTransfer && pdfConfig) {
+        const pdfBase64 = await generateReservaPdf(reservaTransfer, pdfConfig, { returnBase64: true });
+        if (pdfBase64) {
+          body.pdf_confirmacao = pdfBase64;
+          body.pdf_nome = `confirmacao_${(reservaTransfer.cliente_nome || "reserva").replace(/\s+/g, "_").toLowerCase()}_${reservaTransfer.id.substring(0, 8)}.pdf`;
+        }
+      }
 
       const res = await fetch(comunicador.webhook_url, {
         method: "POST",
@@ -315,6 +340,23 @@ export default function ComunicarDialog({ open, onClose, payload, titulo }: Comu
                   ))}
                 </div>
               </ScrollArea>
+            </div>
+          )}
+
+          {/* PDF attachment option */}
+          {canAttachPdf && (
+            <div className="border border-border rounded-lg p-3 bg-muted/20">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Checkbox
+                  checked={incluirPdf}
+                  onCheckedChange={(v) => setIncluirPdf(!!v)}
+                />
+                <FileText className="h-4 w-4 text-primary" />
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-foreground">Enviar PDF de Confirmação</span>
+                  <p className="text-xs text-muted-foreground">Anexa o documento de confirmação de reserva junto com a mensagem</p>
+                </div>
+              </label>
             </div>
           )}
 

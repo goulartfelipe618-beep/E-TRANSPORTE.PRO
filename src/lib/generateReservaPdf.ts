@@ -92,8 +92,9 @@ const divider: [number, number, number] = [210, 210, 210];
 
 export async function generateReservaPdf(
   reserva: ReservaRow,
-  config: { projectName: string; logoUrl: string; mapProvider?: string; mapApiKey?: string }
-) {
+  config: { projectName: string; logoUrl: string; mapProvider?: string; mapApiKey?: string },
+  options?: { returnBase64?: boolean }
+): Promise<string | undefined> {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -477,7 +478,11 @@ export async function generateReservaPdf(
     addFooter();
   }
 
-  // Save
+  // Save or return
   const clientName = (reserva.cliente_nome || "reserva").replace(/\s+/g, "_").toLowerCase();
+  if (options?.returnBase64) {
+    return doc.output("datauristring");
+  }
   doc.save(`confirmacao_${clientName}_${reserva.id.substring(0, 8)}.pdf`);
+  return undefined;
 }
