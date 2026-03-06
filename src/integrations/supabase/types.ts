@@ -991,6 +991,39 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nome_completo: string
+          setup_complete: boolean
+          telefone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome_completo?: string
+          setup_complete?: boolean
+          telefone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome_completo?: string
+          setup_complete?: boolean
+          telefone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reservas_grupos: {
         Row: {
           cliente_cpf_cnpj: string | null
