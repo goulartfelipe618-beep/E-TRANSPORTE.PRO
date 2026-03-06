@@ -65,6 +65,7 @@ export default function MasterLayout() {
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
       case "anotacoes": return <MasterAnotacoes />;
+      case "comunicador_requests": return <MasterComunicadorRequests />;
       default: return <MasterDashboard />;
     }
   };
