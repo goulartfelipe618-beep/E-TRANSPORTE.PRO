@@ -410,6 +410,7 @@ export type Database = {
       leads: {
         Row: {
           campanha_id: string | null
+          codigo: string | null
           created_at: string
           data_conversao: string | null
           email: string | null
@@ -425,6 +426,7 @@ export type Database = {
         }
         Insert: {
           campanha_id?: string | null
+          codigo?: string | null
           created_at?: string
           data_conversao?: string | null
           email?: string | null
@@ -440,6 +442,7 @@ export type Database = {
         }
         Update: {
           campanha_id?: string | null
+          codigo?: string | null
           created_at?: string
           data_conversao?: string | null
           email?: string | null
@@ -1307,6 +1310,7 @@ export type Database = {
           cliente_nome: string | null
           cliente_origem: string | null
           cliente_whatsapp: string | null
+          codigo: string | null
           created_at: string
           cupom: string | null
           data_ida: string | null
@@ -1329,6 +1333,7 @@ export type Database = {
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_whatsapp?: string | null
+          codigo?: string | null
           created_at?: string
           cupom?: string | null
           data_ida?: string | null
@@ -1351,6 +1356,7 @@ export type Database = {
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_whatsapp?: string | null
+          codigo?: string | null
           created_at?: string
           cupom?: string | null
           data_ida?: string | null
@@ -1389,6 +1395,7 @@ export type Database = {
           cidade: string | null
           cnh_categoria: string | null
           cnh_numero: string | null
+          codigo: string | null
           cpf: string | null
           created_at: string
           email: string | null
@@ -1411,6 +1418,7 @@ export type Database = {
           cidade?: string | null
           cnh_categoria?: string | null
           cnh_numero?: string | null
+          codigo?: string | null
           cpf?: string | null
           created_at?: string
           email?: string | null
@@ -1433,6 +1441,7 @@ export type Database = {
           cidade?: string | null
           cnh_categoria?: string | null
           cnh_numero?: string | null
+          codigo?: string | null
           cpf?: string | null
           created_at?: string
           email?: string | null
@@ -1468,6 +1477,7 @@ export type Database = {
           cliente_nome: string | null
           cliente_origem: string | null
           cliente_telefone: string | null
+          codigo: string | null
           created_at: string
           id: string
           ida_cupom: string | null
@@ -1503,6 +1513,7 @@ export type Database = {
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_telefone?: string | null
+          codigo?: string | null
           created_at?: string
           id?: string
           ida_cupom?: string | null
@@ -1538,6 +1549,7 @@ export type Database = {
           cliente_nome?: string | null
           cliente_origem?: string | null
           cliente_telefone?: string | null
+          codigo?: string | null
           created_at?: string
           id?: string
           ida_cupom?: string | null
