@@ -12,8 +12,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2, MessageSquare } from "lucide-react";
+import { Eye, Trash2, Download, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { generateReservaPdf } from "@/lib/generateReservaPdf";
 import ComunicarDialog from "@/components/ComunicarDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
@@ -41,6 +42,40 @@ export default function GruposReservas() {
   const [comunicando, setComunicando] = useState<ReservaRow | null>(null);
   const { toast } = useToast();
   const { projectName, logoUrl } = useGlobalConfig();
+
+  const mapGrupoToTransfer = (r: ReservaRow) => ({
+    id: r.id,
+    tipo_viagem: "somente_ida" as const,
+    cliente_nome: r.cliente_nome,
+    cliente_telefone: r.cliente_whatsapp,
+    cliente_email: r.cliente_email,
+    cliente_cpf_cnpj: r.cliente_cpf_cnpj,
+    cliente_origem: r.cliente_origem,
+    ida_embarque: r.endereco_embarque,
+    ida_destino: r.destino,
+    ida_data: r.data_ida,
+    ida_hora: r.hora_ida,
+    ida_passageiros: r.numero_passageiros,
+    motorista_nome: r.motorista_nome,
+    motorista_telefone: r.motorista_telefone,
+    veiculo: r.veiculo,
+    valor_base: r.valor_base,
+    valor_total: r.valor_total,
+    desconto_percentual: r.desconto_percentual,
+    metodo_pagamento: r.metodo_pagamento,
+    observacoes: r.observacoes,
+    status: r.status,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+    solicitacao_id: r.solicitacao_id,
+    tenant_id: r.tenant_id,
+    ida_mensagem: null, ida_cupom: null, ida_embarque_lat: null, ida_embarque_lng: null,
+    volta_embarque: null, volta_destino: null, volta_data: null, volta_hora: null,
+    volta_passageiros: null, volta_mensagem: null, volta_cupom: null, volta_embarque_lat: null, volta_embarque_lng: null,
+    por_hora_endereco_inicio: null, por_hora_hora: null, por_hora_data: null,
+    por_hora_passageiros: null, por_hora_qtd_horas: null, por_hora_ponto_encerramento: null,
+    por_hora_itinerario: null, por_hora_cupom: null,
+  } as any);
 
   const fetchReservas = async () => {
     const { data, error } = await supabase
@@ -117,6 +152,9 @@ export default function GruposReservas() {
                         <Button variant="ghost" size="icon" onClick={() => setSelected(res)} title="Ver detalhes">
                           <Eye className="h-4 w-4" />
                         </Button>
+                        <Button variant="ghost" size="icon" onClick={() => generateReservaPdf(mapGrupoToTransfer(res), { projectName, logoUrl })} title="Baixar PDF">
+                          <Download className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setComunicando(res)} title="Comunicar ao cliente">
                           <MessageSquare className="h-3.5 w-3.5 mr-1" />
                           Comunicar
@@ -152,39 +190,7 @@ export default function GruposReservas() {
         open={!!comunicando}
         onClose={() => setComunicando(null)}
         titulo={comunicando ? `Comunicar sobre reserva de grupo de ${comunicando.cliente_nome || "Cliente"}` : undefined}
-        reservaTransfer={comunicando ? {
-          id: comunicando.id,
-          tipo_viagem: "somente_ida",
-          cliente_nome: comunicando.cliente_nome,
-          cliente_telefone: comunicando.cliente_whatsapp,
-          cliente_email: comunicando.cliente_email,
-          cliente_cpf_cnpj: comunicando.cliente_cpf_cnpj,
-          cliente_origem: comunicando.cliente_origem,
-          ida_embarque: comunicando.endereco_embarque,
-          ida_destino: comunicando.destino,
-          ida_data: comunicando.data_ida,
-          ida_hora: comunicando.hora_ida,
-          ida_passageiros: comunicando.numero_passageiros,
-          motorista_nome: comunicando.motorista_nome,
-          motorista_telefone: comunicando.motorista_telefone,
-          veiculo: comunicando.veiculo,
-          valor_base: comunicando.valor_base,
-          valor_total: comunicando.valor_total,
-          desconto_percentual: comunicando.desconto_percentual,
-          metodo_pagamento: comunicando.metodo_pagamento,
-          observacoes: comunicando.observacoes,
-          status: comunicando.status,
-          created_at: comunicando.created_at,
-          updated_at: comunicando.updated_at,
-          solicitacao_id: comunicando.solicitacao_id,
-          tenant_id: comunicando.tenant_id,
-          ida_mensagem: null, ida_cupom: null, ida_embarque_lat: null, ida_embarque_lng: null,
-          volta_embarque: null, volta_destino: null, volta_data: null, volta_hora: null,
-          volta_passageiros: null, volta_mensagem: null, volta_cupom: null, volta_embarque_lat: null, volta_embarque_lng: null,
-          por_hora_endereco_inicio: null, por_hora_hora: null, por_hora_data: null,
-          por_hora_passageiros: null, por_hora_qtd_horas: null, por_hora_ponto_encerramento: null,
-          por_hora_itinerario: null, por_hora_cupom: null,
-        } as any : null}
+        reservaTransfer={comunicando ? mapGrupoToTransfer(comunicando) : null}
         pdfConfig={{ projectName, logoUrl }}
         payload={comunicando ? {
           tipo: "reserva_grupo",
@@ -213,6 +219,19 @@ export default function GruposReservas() {
             <DialogTitle>Detalhes da Reserva de Grupo</DialogTitle>
             <DialogDescription>{selected?.id}</DialogDescription>
           </DialogHeader>
+          {selected && (
+            <div className="flex justify-end -mt-2 mb-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => generateReservaPdf(mapGrupoToTransfer(selected), { projectName, logoUrl })}
+              >
+                <Download className="h-4 w-4" />
+                Baixar Confirmação (PDF)
+              </Button>
+            </div>
+          )}
           {selected && (
             <div className="space-y-3 text-sm">
               <Detail label="Tipo de Veículo" value={veiculoMap[selected.tipo_veiculo || ""] || selected.tipo_veiculo || "—"} />
