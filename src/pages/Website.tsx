@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock,
-  Loader2, Eye, Pencil, LayoutTemplate,
+  Loader2, Eye, Pencil, LayoutTemplate, Upload, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
@@ -617,7 +617,7 @@ export default function WebsitePage() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2"><Checkbox checked={form.possui_logotipo} onCheckedChange={(v) => updateField("possui_logotipo", !!v)} /><Label>Já possui logotipo?</Label></div>
               {form.possui_logotipo && (
-                <div><Label>URL do logotipo</Label><Input placeholder="https://..." value={form.logo_url} onChange={(e) => updateField("logo_url", e.target.value)} /></div>
+                <LogoUploadField logoUrl={form.logo_url} onLogoUrlChange={(url) => updateField("logo_url", url)} tenantId={tenantId} />
               )}
               <div><Label>Cores preferidas</Label><Input placeholder="Preto e dourado, azul marinho..." value={form.cores_preferidas} onChange={(e) => updateField("cores_preferidas", e.target.value)} /></div>
               <div>
