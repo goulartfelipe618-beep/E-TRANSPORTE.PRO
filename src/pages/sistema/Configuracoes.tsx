@@ -63,6 +63,26 @@ export default function SistemaConfiguracoes() {
     }
   }, [isLoading, settings]);
 
+  // Load profile
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data) {
+        setProfileNome(data.nome_completo || "");
+        setProfileTelefone(data.telefone || "");
+        setProfileEmail(data.email || "");
+        setProfileLoaded(true);
+      }
+    };
+    loadProfile();
+  }, []);
+
   const saving = upsert.isPending;
 
   const handleSave = async (key: string, value: string, label: string) => {
