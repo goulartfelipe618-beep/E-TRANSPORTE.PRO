@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock,
-  Loader2, Eye, Pencil, LayoutTemplate,
+  Loader2, Eye, Pencil, LayoutTemplate, Upload, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
@@ -140,6 +140,81 @@ function TemplateCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/* ────────── Logo Upload Field ────────── */
+function LogoUploadField({
+  logoUrl,
+  onLogoUrlChange,
+  tenantId,
+}: {
+  logoUrl: string;
+  onLogoUrlChange: (url: string) => void;
+  tenantId: string | null;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Selecione uma imagem válida", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande (máx 5MB)", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "png";
+    const fileName = `briefing-logo-${tenantId || "tmp"}-${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("logos").upload(fileName, file, { contentType: file.type, upsert: true });
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("logos").getPublicUrl(fileName);
+    onLogoUrlChange(urlData.publicUrl);
+    setUploading(false);
+  };
+
+  return (
+    <div>
+      <Label>Logotipo da empresa</Label>
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      {logoUrl ? (
+        <div className="mt-2 space-y-2">
+          <div className="rounded border p-2 bg-muted inline-block">
+            <img src={logoUrl} alt="Logo" className="max-h-24 max-w-48 object-contain" />
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              <Upload className="h-3 w-3 mr-1" /> Trocar
+            </Button>
+            <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={() => onLogoUrlChange("")}>
+              <X className="h-3 w-3 mr-1" /> Remover
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="mt-2 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-colors"
+          onClick={() => !uploading && fileInputRef.current?.click()}
+        >
+          {uploading ? (
+            <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
+          ) : (
+            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+          )}
+          <p className="text-sm text-muted-foreground">{uploading ? "Enviando..." : "Clique para enviar o logotipo"}</p>
+          <p className="text-xs text-muted-foreground mt-1">PNG, JPG ou WEBP (máx 5MB)</p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -617,7 +692,7 @@ export default function WebsitePage() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2"><Checkbox checked={form.possui_logotipo} onCheckedChange={(v) => updateField("possui_logotipo", !!v)} /><Label>Já possui logotipo?</Label></div>
               {form.possui_logotipo && (
-                <div><Label>URL do logotipo</Label><Input placeholder="https://..." value={form.logo_url} onChange={(e) => updateField("logo_url", e.target.value)} /></div>
+                <LogoUploadField logoUrl={form.logo_url} onLogoUrlChange={(url) => updateField("logo_url", url)} tenantId={tenantId} />
               )}
               <div><Label>Cores preferidas</Label><Input placeholder="Preto e dourado, azul marinho..." value={form.cores_preferidas} onChange={(e) => updateField("cores_preferidas", e.target.value)} /></div>
               <div>
