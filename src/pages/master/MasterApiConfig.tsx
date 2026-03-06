@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Save, Plus, Trash2, KeyRound, RefreshCw } from "lucide-react";
+import { Save, Plus, Trash2, KeyRound, RefreshCw, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
 
 interface ApiConfig {
   id: string;
@@ -27,6 +28,14 @@ export default function MasterApiConfig() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const { toast } = useToast();
+  const { settings, isLoading: settingsLoading, upsert } = useSystemSettings();
+  const [chatEnabled, setChatEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!settingsLoading) {
+      setChatEnabled(settings["ai_chat_enabled"] === "true");
+    }
+  }, [settings, settingsLoading]);
 
   const fetchConfigs = async () => {
     setLoading(true);
@@ -80,6 +89,30 @@ export default function MasterApiConfig() {
         </div>
         <Button variant="outline" size="icon" onClick={fetchConfigs}><RefreshCw className="h-4 w-4" /></Button>
       </div>
+
+      {/* AI Chat Toggle */}
+      <Card className="border-none shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div className="flex items-center gap-3">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base">Chat IA (Assistente)</CardTitle>
+          </div>
+          <Switch
+            checked={chatEnabled}
+            onCheckedChange={async (v) => {
+              setChatEnabled(v);
+              await upsert.mutateAsync({ key: "ai_chat_enabled", value: v ? "true" : "false" });
+              toast({ title: v ? "Chat IA ativado!" : "Chat IA desativado!" });
+            }}
+          />
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Quando ativado, um assistente IA aparecerá no painel dos administradores comuns para tirar dúvidas sobre o sistema. 
+            Utiliza Lovable AI — sem necessidade de chave externa.
+          </p>
+        </CardContent>
+      </Card>
 
       {loading ? (
         <p className="text-muted-foreground text-sm">Carregando...</p>
