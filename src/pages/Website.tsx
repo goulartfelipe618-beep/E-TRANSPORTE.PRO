@@ -118,12 +118,12 @@ function TemplateCard({
       </div>
       <CardContent className="p-4 space-y-2">
         <h3 className="font-bold text-foreground">{template.nome}</h3>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           {template.preview_url && (
             <Button
               size="sm"
               variant="outline"
-              className="flex-1"
+              className="w-full"
               onClick={(e) => { e.stopPropagation(); window.open(template.preview_url, "_blank"); }}
             >
               <Eye className="h-3 w-3 mr-1" /> Ver Modelo
@@ -132,7 +132,7 @@ function TemplateCard({
           <Button
             size="sm"
             variant={selected ? "default" : "secondary"}
-            className="flex-1"
+            className="w-full"
             onClick={(e) => { e.stopPropagation(); onSelect(); }}
           >
             {selected ? <><CheckCircle2 className="h-3 w-3 mr-1" /> Selecionado</> : "Selecionar"}
