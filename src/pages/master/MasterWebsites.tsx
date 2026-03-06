@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, RefreshCw, Loader2, Globe } from "lucide-react";
+import { Eye, RefreshCw, Loader2, Globe, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -103,7 +103,7 @@ export default function MasterWebsites() {
                   <TableHead>Tenant</TableHead>
                   <TableHead>Empresa</TableHead>
                   <TableHead>Domínio</TableHead>
-                  <TableHead>Serviços</TableHead>
+                  <TableHead>Modelo</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
@@ -115,12 +115,12 @@ export default function MasterWebsites() {
                     <TableCell className="font-medium">{(b as any).tenants?.nome || "—"}</TableCell>
                     <TableCell>{b.nome_empresa || "—"}</TableCell>
                     <TableCell>{b.dominio || "—"}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">{b.tipos_servico?.join(", ") || "—"}</TableCell>
+                    <TableCell>{(b as any).modelo_nome || "—"}</TableCell>
                     <TableCell>{new Date(b.created_at).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell>{getStatusBadge(b.status)}</TableCell>
                     <TableCell className="text-right">
                       <Button size="sm" variant="outline" onClick={() => openDetail(b)}>
-                        <Eye className="h-4 w-4 mr-1" /> Ver Briefing
+                        <Eye className="h-4 w-4 mr-1" /> Ver
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -139,10 +139,23 @@ export default function MasterWebsites() {
           </DialogHeader>
           {selected && (
             <div className="space-y-6">
+              {/* Template info */}
+              {(selected as any).modelo_nome && (
+                <div className="p-3 bg-primary/5 rounded-lg text-sm space-y-1">
+                  <strong>Modelo Selecionado:</strong> {(selected as any).modelo_nome}
+                  {(selected as any).modelo_preview_url && (
+                    <div>
+                      <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => window.open((selected as any).modelo_preview_url, "_blank")}>
+                        <ExternalLink className="h-3 w-3 mr-1" /> Ver preview do modelo
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Domain */}
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><strong>Possui domínio:</strong> {selected.possui_dominio ? "Sim" : "Não"}</div>
-                <div><strong>Domínio:</strong> {selected.dominio || "—"}</div>
+                <div><strong>Domínio solicitado:</strong> {selected.dominio || "—"}</div>
                 <div><strong>Provedor:</strong> {selected.provedor_atual || "—"}</div>
                 <div><strong>Acesso DNS:</strong> {selected.acesso_dns ? "Sim" : "Não"}</div>
               </div>
@@ -219,7 +232,7 @@ export default function MasterWebsites() {
                 </div>
                 <div>
                   <Label>Observações para o cliente</Label>
-                  <Textarea value={obsmaster} onChange={(e) => setObsmaster(e.target.value)} />
+                  <Textarea placeholder="Ex: Domínio disponível, em produção..." value={obsmaster} onChange={(e) => setObsmaster(e.target.value)} />
                 </div>
                 <Button onClick={handleSave} disabled={saving} className="w-full">
                   {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
