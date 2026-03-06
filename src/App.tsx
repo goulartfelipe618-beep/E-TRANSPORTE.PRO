@@ -7,6 +7,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageProvider } from "@/contexts/PageContext";
 import { TransferProvider } from "@/contexts/TransferContext";
 import { GlobalConfigProvider } from "@/contexts/GlobalConfigContext";
+import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
 import { supabase } from "@/integrations/supabase/client";
 import Login from "@/pages/Login";
 import MasterLayout from "@/pages/master/MasterLayout";
@@ -19,6 +20,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [isMaster, setIsMaster] = useState(false);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [profileKey, setProfileKey] = useState(0);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -73,6 +75,11 @@ const App = () => {
             <GlobalConfigProvider>
               <PageProvider>
                 <TransferProvider>
+                  <ProfileSetupDialog
+                    key={profileKey}
+                    userId={session.user.id}
+                    onComplete={() => setProfileKey((k) => k + 1)}
+                  />
                   <DashboardLayout />
                 </TransferProvider>
               </PageProvider>
