@@ -11,7 +11,7 @@ import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Upload, Type, Shield, Key, RefreshCw,
-  Save, Loader2, Image as ImageIcon, Lock, Smartphone
+  Save, Loader2, Image as ImageIcon, Lock, Smartphone, User
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
@@ -30,6 +30,13 @@ export default function SistemaConfiguracoes() {
   const [font, setFont] = useState("Poppins");
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+
+  // Profile
+  const [profileNome, setProfileNome] = useState("");
+  const [profileTelefone, setProfileTelefone] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   // Password change
   const [pwdDialogOpen, setPwdDialogOpen] = useState(false);
@@ -55,6 +62,52 @@ export default function SistemaConfiguracoes() {
       setLogoUrl(settings["logo_url"] || "");
     }
   }, [isLoading, settings]);
+
+  // Load profile
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data) {
+        setProfileNome(data.nome_completo || "");
+        setProfileTelefone(data.telefone || "");
+        setProfileEmail(data.email || "");
+        setProfileLoaded(true);
+      }
+    };
+    loadProfile();
+  }, []);
+
+  const handleProfileSave = async () => {
+    if (!profileNome.trim() || !profileTelefone.trim() || !profileEmail.trim()) {
+      toast({ title: "Preencha todos os campos do perfil", variant: "destructive" });
+      return;
+    }
+    setProfileSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          nome_completo: profileNome.trim(),
+          telefone: profileTelefone.trim(),
+          email: profileEmail.trim(),
+        })
+        .eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: "Perfil atualizado com sucesso!" });
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao salvar perfil.", variant: "destructive" });
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   const saving = upsert.isPending;
 
@@ -204,6 +257,34 @@ export default function SistemaConfiguracoes() {
         <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
         <p className="text-muted-foreground">Configurações gerais do sistema</p>
       </div>
+
+      {/* Meu Perfil */}
+      <Card className="border-none shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg"><User className="h-5 w-5" /> Meu Perfil</CardTitle>
+          <CardDescription>Seus dados pessoais de cadastro</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nome Completo *</Label>
+            <Input value={profileNome} onChange={(e) => setProfileNome(e.target.value)} placeholder="Seu nome completo" />
+          </div>
+          <div className="space-y-2">
+            <Label>Telefone *</Label>
+            <Input value={profileTelefone} onChange={(e) => setProfileTelefone(e.target.value)} placeholder="(00) 00000-0000" />
+          </div>
+          <div className="space-y-2">
+            <Label>E-mail *</Label>
+            <Input type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder="seu@email.com" />
+          </div>
+          <Button size="sm" onClick={handleProfileSave} disabled={profileSaving || !profileNome.trim() || !profileTelefone.trim() || !profileEmail.trim()}>
+            {profileSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+            Salvar Perfil
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Separator />
 
       {/* Logomarca */}
       <Card className="border-none shadow-sm">
