@@ -258,6 +258,34 @@ export default function SistemaConfiguracoes() {
         <p className="text-muted-foreground">Configurações gerais do sistema</p>
       </div>
 
+      {/* Meu Perfil */}
+      <Card className="border-none shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg"><User className="h-5 w-5" /> Meu Perfil</CardTitle>
+          <CardDescription>Seus dados pessoais de cadastro</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nome Completo *</Label>
+            <Input value={profileNome} onChange={(e) => setProfileNome(e.target.value)} placeholder="Seu nome completo" />
+          </div>
+          <div className="space-y-2">
+            <Label>Telefone *</Label>
+            <Input value={profileTelefone} onChange={(e) => setProfileTelefone(e.target.value)} placeholder="(00) 00000-0000" />
+          </div>
+          <div className="space-y-2">
+            <Label>E-mail *</Label>
+            <Input type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder="seu@email.com" />
+          </div>
+          <Button size="sm" onClick={handleProfileSave} disabled={profileSaving || !profileNome.trim() || !profileTelefone.trim() || !profileEmail.trim()}>
+            {profileSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+            Salvar Perfil
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
       {/* Logomarca */}
       <Card className="border-none shadow-sm">
         <CardHeader>
