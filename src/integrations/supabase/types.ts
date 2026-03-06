@@ -1303,6 +1303,50 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_comunicador: {
+        Row: {
+          created_at: string
+          id: string
+          instance_name: string | null
+          nome_projeto: string
+          status: string
+          telefone_whatsapp: string
+          tenant_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instance_name?: string | null
+          nome_projeto?: string
+          status?: string
+          telefone_whatsapp?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instance_name?: string | null
+          nome_projeto?: string
+          status?: string
+          telefone_whatsapp?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_comunicador_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitacoes_grupos: {
         Row: {
           automacao_id: string | null
