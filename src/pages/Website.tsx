@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,34 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
 
-/* ────────── TEMPLATES (master can manage later) ────────── */
-const TEMPLATES = [
-  {
-    id: "executive-dark",
-    name: "Executive Dark",
-    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-1/",
-    thumbnail: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=900&fit=crop",
-  },
-  {
-    id: "modern-light",
-    name: "Modern Light",
-    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-2/",
-    thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=900&fit=crop",
-  },
-  {
-    id: "luxury-gold",
-    name: "Luxury Gold",
-    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-3/",
-    thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=900&fit=crop",
-  },
-  {
-    id: "clean-minimal",
-    name: "Clean Minimal",
-    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-4/",
-    thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=900&fit=crop",
-  },
-];
-
+/* ────────── Constants ────────── */
 const TIPOS_SERVICO = [
   "Transfer Executivo", "Transporte para Grupos", "Excursões",
   "Transporte Corporativo", "Transporte para Aeroporto", "Venda de Produtos Online",
@@ -92,17 +64,24 @@ const emptyForm = {
   funcionalidades: [] as string[],
 };
 
+/* ────────── Template type ────────── */
+interface TemplateData {
+  id: string;
+  nome: string;
+  preview_url: string;
+  thumbnail_url: string;
+}
+
 /* ────────── Template Card with scroll-on-hover ────────── */
 function TemplateCard({
   template,
   selected,
   onSelect,
 }: {
-  template: (typeof TEMPLATES)[0];
+  template: TemplateData;
   selected: boolean;
   onSelect: () => void;
 }) {
-  const imgRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -116,19 +95,21 @@ function TemplateCard({
       onTouchEnd={() => setTimeout(() => setHovered(false), 2000)}
       onClick={onSelect}
     >
-      {/* Preview area */}
       <div className="relative h-64 overflow-hidden bg-muted">
-        <div
-          ref={imgRef}
-          className="absolute inset-x-0 top-0 w-full transition-transform duration-[3000ms] ease-in-out"
-          style={{
-            backgroundImage: `url(${template.thumbnail})`,
-            backgroundSize: "cover",
-            backgroundPosition: "top center",
-            height: "200%",
-            transform: hovered ? "translateY(-50%)" : "translateY(0%)",
-          }}
-        />
+        {template.thumbnail_url ? (
+          <div
+            className="absolute inset-x-0 top-0 w-full transition-transform duration-[3000ms] ease-in-out"
+            style={{
+              backgroundImage: `url(${template.thumbnail_url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "top center",
+              height: "200%",
+              transform: hovered ? "translateY(-50%)" : "translateY(0%)",
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Sem imagem</div>
+        )}
         {selected && (
           <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
             <CheckCircle2 className="h-5 w-5" />
@@ -136,27 +117,23 @@ function TemplateCard({
         )}
       </div>
       <CardContent className="p-4 space-y-2">
-        <h3 className="font-bold text-foreground">{template.name}</h3>
+        <h3 className="font-bold text-foreground">{template.nome}</h3>
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(template.previewUrl, "_blank");
-            }}
-          >
-            <Eye className="h-3 w-3 mr-1" /> Ver Modelo
-          </Button>
+          {template.preview_url && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1"
+              onClick={(e) => { e.stopPropagation(); window.open(template.preview_url, "_blank"); }}
+            >
+              <Eye className="h-3 w-3 mr-1" /> Ver Modelo
+            </Button>
+          )}
           <Button
             size="sm"
             variant={selected ? "default" : "secondary"}
             className="flex-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect();
-            }}
+            onClick={(e) => { e.stopPropagation(); onSelect(); }}
           >
             {selected ? <><CheckCircle2 className="h-3 w-3 mr-1" /> Selecionado</> : "Selecionar"}
           </Button>
@@ -172,16 +149,29 @@ export default function WebsitePage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [briefing, setBriefing] = useState<any>(null);
+  const [templates, setTemplates] = useState<TemplateData[]>([]);
 
-  // Flow: "gallery" → "briefing" (steps 1-3) → submitted view
   const [phase, setPhase] = useState<"gallery" | "briefing" | "submitted" | "published">("gallery");
-  const [step, setStep] = useState(1); // 1=domain, 2=briefing, 3=review
+  const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
-  const [editing, setEditing] = useState(false); // editing an existing briefing
+  const [editing, setEditing] = useState(false);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
 
+  // Fetch templates from DB
+  useEffect(() => {
+    supabase
+      .from("website_templates")
+      .select("id, nome, preview_url, thumbnail_url")
+      .eq("ativo", true)
+      .order("ordem", { ascending: true })
+      .then(({ data }) => {
+        setTemplates((data as TemplateData[]) || []);
+      });
+  }, []);
+
+  // Fetch existing briefing
   useEffect(() => {
     if (!tenantId) return;
     setLoading(true);
@@ -247,7 +237,7 @@ export default function WebsitePage() {
     });
   };
 
-  const getTemplateInfo = () => TEMPLATES.find((t) => t.id === selectedTemplate);
+  const getTemplateInfo = () => templates.find((t) => t.id === selectedTemplate);
 
   const buildPayload = () => {
     const tpl = getTemplateInfo();
@@ -282,13 +272,16 @@ export default function WebsitePage() {
       estilo_desejado: form.estilo_desejado || null,
       funcionalidades: form.funcionalidades,
       modelo_selecionado: selectedTemplate || null,
-      modelo_nome: tpl?.name || null,
-      modelo_preview_url: tpl?.previewUrl || null,
+      modelo_nome: tpl?.nome || null,
+      modelo_preview_url: tpl?.preview_url || null,
     };
   };
 
   const handleSubmit = async () => {
-    if (!tenantId || !selectedTemplate) return;
+    if (!tenantId || !selectedTemplate) {
+      toast({ title: "Selecione um modelo", variant: "destructive" });
+      return;
+    }
     if (!form.dominio.trim()) {
       toast({ title: "Domínio obrigatório", description: "Informe o domínio desejado.", variant: "destructive" });
       return;
@@ -297,11 +290,7 @@ export default function WebsitePage() {
     const payload = buildPayload();
 
     if (editing && briefing) {
-      // Update existing
-      const { error } = await supabase
-        .from("website_briefings")
-        .update(payload as any)
-        .eq("id", briefing.id);
+      const { error } = await supabase.from("website_briefings").update(payload as any).eq("id", briefing.id);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
@@ -312,7 +301,6 @@ export default function WebsitePage() {
         setPhase("submitted");
       }
     } else {
-      // Insert new
       const { data, error } = await supabase.from("website_briefings").insert(payload as any).select().single();
       if (error) {
         toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
@@ -375,7 +363,7 @@ export default function WebsitePage() {
   /* ─── Submitted / Pending ─── */
   if (phase === "submitted" && briefing && !editing) {
     const st = STATUS_MAP[briefing.status] || STATUS_MAP.aguardando;
-    const tpl = TEMPLATES.find((t) => t.id === (briefing as any).modelo_selecionado);
+    const tplName = (briefing as any).modelo_nome || templates.find((t) => t.id === (briefing as any).modelo_selecionado)?.nome;
     return (
       <div className="space-y-6">
         <div>
@@ -391,9 +379,9 @@ export default function WebsitePage() {
               <h2 className="text-xl font-bold text-foreground">Briefing Enviado</h2>
               <Badge className={st.color + " text-white"}>{st.label}</Badge>
 
-              {tpl && (
+              {tplName && (
                 <div className="mt-2 text-sm text-muted-foreground">
-                  <strong>Modelo:</strong> {tpl.name}
+                  <strong>Modelo:</strong> {tplName}
                 </div>
               )}
               <div className="text-sm text-muted-foreground">
@@ -452,27 +440,37 @@ export default function WebsitePage() {
           <p className="text-muted-foreground">Escolha o modelo ideal para o seu site profissional.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {TEMPLATES.map((t) => (
-            <TemplateCard
-              key={t.id}
-              template={t}
-              selected={selectedTemplate === t.id}
-              onSelect={() => setSelectedTemplate(t.id)}
-            />
-          ))}
-        </div>
+        {templates.length === 0 ? (
+          <Card className="border-none shadow-sm">
+            <CardContent className="py-12 text-center text-muted-foreground">
+              Nenhum modelo disponível no momento. Entre em contato com o administrador.
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {templates.map((t) => (
+                <TemplateCard
+                  key={t.id}
+                  template={t}
+                  selected={selectedTemplate === t.id}
+                  onSelect={() => setSelectedTemplate(t.id)}
+                />
+              ))}
+            </div>
 
-        <div className="flex justify-end">
-          <Button
-            disabled={!selectedTemplate}
-            onClick={() => { setPhase("briefing"); setStep(1); }}
-          >
-            <LayoutTemplate className="h-4 w-4 mr-2" />
-            Continuar com este modelo
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+            <div className="flex justify-end">
+              <Button
+                disabled={!selectedTemplate}
+                onClick={() => { setPhase("briefing"); setStep(1); }}
+              >
+                <LayoutTemplate className="h-4 w-4 mr-2" />
+                Continuar com este modelo
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -483,7 +481,7 @@ export default function WebsitePage() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Website — Briefing</h1>
         <p className="text-muted-foreground">
-          Modelo: <strong>{getTemplateInfo()?.name}</strong>{" "}
+          Modelo: <strong>{getTemplateInfo()?.nome || "Selecionado"}</strong>{" "}
           <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => setPhase("gallery")}>
             (alterar)
           </Button>
@@ -561,7 +559,6 @@ export default function WebsitePage() {
       {/* Step 2 - Briefing details */}
       {step === 2 && (
         <div className="space-y-4">
-          {/* Services */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Tipo de Serviço</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -581,7 +578,6 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Company */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Estrutura da Empresa</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -597,7 +593,6 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Positioning */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Posicionamento</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -617,7 +612,6 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Visual */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Identidade Visual</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -640,7 +634,6 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Features */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Funcionalidades Desejadas</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -666,7 +659,7 @@ export default function WebsitePage() {
           <CardHeader><CardTitle className="text-base">Revisar e Enviar</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Modelo:</strong> {getTemplateInfo()?.name || "—"}</div>
+              <div><strong>Modelo:</strong> {getTemplateInfo()?.nome || "—"}</div>
               <div><strong>Domínio:</strong> {form.dominio || "—"}</div>
               <div><strong>Empresa:</strong> {form.nome_empresa || "—"}</div>
               <div><strong>Cidade:</strong> {form.cidade_atuacao || "—"}</div>
