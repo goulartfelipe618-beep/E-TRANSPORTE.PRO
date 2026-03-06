@@ -31,6 +31,13 @@ export default function SistemaConfiguracoes() {
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  // Profile
+  const [profileNome, setProfileNome] = useState("");
+  const [profileTelefone, setProfileTelefone] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
   // Password change
   const [pwdDialogOpen, setPwdDialogOpen] = useState(false);
   const [currentPwd, setCurrentPwd] = useState("");
