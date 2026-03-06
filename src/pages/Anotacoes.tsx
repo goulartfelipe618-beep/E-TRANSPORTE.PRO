@@ -127,10 +127,16 @@ export default function Anotacoes() {
 
   // Set editor content when dialog opens
   useEffect(() => {
-    if ((createOpen || editOpen) && editorRef.current) {
-      editorRef.current.innerHTML = conteudo;
+    if (createOpen && editorRef.current) {
+      editorRef.current.innerHTML = "";
     }
-  }, [createOpen, editOpen]);
+  }, [createOpen]);
+
+  useEffect(() => {
+    if (editOpen && editorRef.current) {
+      editorRef.current.innerHTML = editOpen.conteudo || "";
+    }
+  }, [editOpen]);
 
   const renderEditor = () => (
     <div className="space-y-4">
