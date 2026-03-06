@@ -272,6 +272,7 @@ export default function CampanhasLeads() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Código</TableHead>
                   <TableHead>Nome</TableHead>
                   <TableHead>E-mail</TableHead>
                   <TableHead>Telefone</TableHead>
@@ -284,6 +285,7 @@ export default function CampanhasLeads() {
               <TableBody>
                 {filtered.map((l) => (
                   <TableRow key={l.id}>
+                    <TableCell className="font-mono text-xs text-primary whitespace-nowrap">{(l as any).codigo || "—"}</TableCell>
                     <TableCell className="font-medium">{l.nome}</TableCell>
                     <TableCell className="text-sm">{l.email || "—"}</TableCell>
                     <TableCell className="text-sm">{l.telefone || "—"}</TableCell>
