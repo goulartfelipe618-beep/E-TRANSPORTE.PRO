@@ -1741,12 +1741,14 @@ export type Database = {
           cliente_nome: string | null
           cliente_telefone: string | null
           created_at: string
+          embarque_endereco: string | null
           expires_at: string | null
           id: string
           last_location_at: string | null
           latitude: number | null
           longitude: number | null
           observacoes: string | null
+          reserva_grupo_id: string | null
           reserva_id: string | null
           status: string
           tenant_id: string | null
@@ -1758,12 +1760,14 @@ export type Database = {
           cliente_nome?: string | null
           cliente_telefone?: string | null
           created_at?: string
+          embarque_endereco?: string | null
           expires_at?: string | null
           id?: string
           last_location_at?: string | null
           latitude?: number | null
           longitude?: number | null
           observacoes?: string | null
+          reserva_grupo_id?: string | null
           reserva_id?: string | null
           status?: string
           tenant_id?: string | null
@@ -1775,12 +1779,14 @@ export type Database = {
           cliente_nome?: string | null
           cliente_telefone?: string | null
           created_at?: string
+          embarque_endereco?: string | null
           expires_at?: string | null
           id?: string
           last_location_at?: string | null
           latitude?: number | null
           longitude?: number | null
           observacoes?: string | null
+          reserva_grupo_id?: string | null
           reserva_id?: string | null
           status?: string
           tenant_id?: string | null
@@ -1788,6 +1794,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tracking_links_reserva_grupo_id_fkey"
+            columns: ["reserva_grupo_id"]
+            isOneToOne: false
+            referencedRelation: "reservas_grupos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tracking_links_reserva_id_fkey"
             columns: ["reserva_id"]
