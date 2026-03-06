@@ -83,6 +83,32 @@ export default function SistemaConfiguracoes() {
     loadProfile();
   }, []);
 
+  const handleProfileSave = async () => {
+    if (!profileNome.trim() || !profileTelefone.trim() || !profileEmail.trim()) {
+      toast({ title: "Preencha todos os campos do perfil", variant: "destructive" });
+      return;
+    }
+    setProfileSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          nome_completo: profileNome.trim(),
+          telefone: profileTelefone.trim(),
+          email: profileEmail.trim(),
+        })
+        .eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: "Perfil atualizado com sucesso!" });
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao salvar perfil.", variant: "destructive" });
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const saving = upsert.isPending;
 
   const handleSave = async (key: string, value: string, label: string) => {
