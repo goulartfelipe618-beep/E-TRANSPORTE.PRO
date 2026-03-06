@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PageRenderer } from "@/components/PageRenderer";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
+import { AIChatWidget } from "@/components/AIChatWidget";
 
 export function DashboardLayout() {
   const { projectName, logoUrl } = useGlobalConfig();
@@ -20,6 +21,7 @@ export function DashboardLayout() {
             <PageRenderer />
           </main>
         </div>
+        <AIChatWidget />
       </div>
     </SidebarProvider>
   );
