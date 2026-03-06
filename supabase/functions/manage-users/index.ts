@@ -73,6 +73,12 @@ Deno.serve(async (req) => {
         role: role || "admin",
         tenant_id: tenant_id || null,
       });
+      // Create empty profile (setup_complete = false forces onboarding)
+      await adminClient.from("profiles").insert({
+        user_id: data.user.id,
+        email: email.trim(),
+        setup_complete: false,
+      });
       return new Response(JSON.stringify({ user: { id: data.user.id, email } }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
