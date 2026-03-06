@@ -12,8 +12,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2, MessageSquare } from "lucide-react";
+import { Eye, Trash2, Download, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { generateReservaPdf } from "@/lib/generateReservaPdf";
 import ComunicarDialog from "@/components/ComunicarDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalConfig } from "@/contexts/GlobalConfigContext";

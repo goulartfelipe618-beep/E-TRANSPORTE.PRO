@@ -126,6 +126,9 @@ export default function TransferReservas() {
                         <Button variant="ghost" size="icon" onClick={() => setSelected(res)} title="Ver detalhes">
                           <Eye className="h-4 w-4" />
                         </Button>
+                        <Button variant="ghost" size="icon" onClick={() => generateReservaPdf(res, { projectName, logoUrl })} title="Baixar PDF">
+                          <Download className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setComunicando(res)} title="Comunicar ao cliente">
                           <MessageSquare className="h-3.5 w-3.5 mr-1" />
                           Comunicar
