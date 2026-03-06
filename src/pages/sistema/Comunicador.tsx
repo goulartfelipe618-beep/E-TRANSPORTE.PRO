@@ -337,14 +337,14 @@ export default function SistemaComunicador() {
       {qrStep === "pending" && !showComunicadores && (
         <Card className="border-none shadow-sm">
           <CardContent className="py-12 text-center space-y-4">
-            <Clock className="h-16 w-16 mx-auto text-yellow-500" />
+            <Clock className="h-16 w-16 mx-auto text-muted-foreground" />
             <div>
               <h3 className="text-lg font-semibold">Aguardando Aprovação</h3>
               <p className="text-muted-foreground text-sm mt-1">
                 Sua solicitação foi enviada. O administrador irá aprovar em até <strong>15 minutos</strong>.
               </p>
             </div>
-            <Badge variant="outline" className="text-yellow-600 border-yellow-300">
+            <Badge variant="outline">
               Status: Pendente
             </Badge>
             <p className="text-xs text-muted-foreground">
