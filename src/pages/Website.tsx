@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,30 +8,51 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import {
+  Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock,
+  Loader2, Eye, Pencil, LayoutTemplate,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
-import { useActivePage } from "@/contexts/PageContext";
+
+/* ────────── TEMPLATES (master can manage later) ────────── */
+const TEMPLATES = [
+  {
+    id: "executive-dark",
+    name: "Executive Dark",
+    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-1/",
+    thumbnail: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=900&fit=crop",
+  },
+  {
+    id: "modern-light",
+    name: "Modern Light",
+    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-2/",
+    thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=900&fit=crop",
+  },
+  {
+    id: "luxury-gold",
+    name: "Luxury Gold",
+    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-3/",
+    thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=900&fit=crop",
+  },
+  {
+    id: "clean-minimal",
+    name: "Clean Minimal",
+    previewUrl: "https://themes.developer.flavor.com.br/theme-flavor-4/",
+    thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=900&fit=crop",
+  },
+];
 
 const TIPOS_SERVICO = [
-  "Transfer Executivo",
-  "Transporte para Grupos",
-  "Excursões",
-  "Transporte Corporativo",
-  "Transporte para Aeroporto",
-  "Venda de Produtos Online",
+  "Transfer Executivo", "Transporte para Grupos", "Excursões",
+  "Transporte Corporativo", "Transporte para Aeroporto", "Venda de Produtos Online",
 ];
 
 const FUNCIONALIDADES = [
-  "Botão WhatsApp",
-  "Formulário de orçamento",
-  "Integração com Google Maps",
-  "Integração com Google Business Profile",
-  "Área para grupos/excursões",
-  "Área de produtos online",
-  "Blog",
-  "Área administrativa futura",
+  "Botão WhatsApp", "Formulário de orçamento", "Integração com Google Maps",
+  "Integração com Google Business Profile", "Área para grupos/excursões",
+  "Área de produtos online", "Blog", "Área administrativa futura",
 ];
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
@@ -42,45 +63,124 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
   rejeitado: { label: "Rejeitado", color: "bg-destructive" },
 };
 
+const emptyForm = {
+  dominio: "",
+  provedor_atual: "",
+  acesso_dns: false,
+  tipos_servico: [] as string[],
+  venda_produtos_online: false,
+  produtos_descricao: "",
+  produtos_quantidade: "",
+  pagamento_online: false,
+  nome_empresa: "",
+  cidade_atuacao: "",
+  regiao_atendida: "",
+  diferenciais: "",
+  frota: "",
+  trabalha_24h: false,
+  whatsapp: "",
+  email_profissional: "",
+  redes_sociais: "",
+  publico_alvo: "",
+  faixa_preco: "",
+  captacao_orcamento: false,
+  integracao_whatsapp: false,
+  possui_logotipo: false,
+  logo_url: "",
+  cores_preferidas: "",
+  estilo_desejado: "",
+  funcionalidades: [] as string[],
+};
+
+/* ────────── Template Card with scroll-on-hover ────────── */
+function TemplateCard({
+  template,
+  selected,
+  onSelect,
+}: {
+  template: (typeof TEMPLATES)[0];
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Card
+      className={`border-2 transition-all cursor-pointer overflow-hidden ${
+        selected ? "border-primary ring-2 ring-primary/30" : "border-transparent hover:border-primary/40"
+      }`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setTimeout(() => setHovered(false), 2000)}
+      onClick={onSelect}
+    >
+      {/* Preview area */}
+      <div className="relative h-64 overflow-hidden bg-muted">
+        <div
+          ref={imgRef}
+          className="absolute inset-x-0 top-0 w-full transition-transform duration-[3000ms] ease-in-out"
+          style={{
+            backgroundImage: `url(${template.thumbnail})`,
+            backgroundSize: "cover",
+            backgroundPosition: "top center",
+            height: "200%",
+            transform: hovered ? "translateY(-50%)" : "translateY(0%)",
+          }}
+        />
+        {selected && (
+          <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+        )}
+      </div>
+      <CardContent className="p-4 space-y-2">
+        <h3 className="font-bold text-foreground">{template.name}</h3>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(template.previewUrl, "_blank");
+            }}
+          >
+            <Eye className="h-3 w-3 mr-1" /> Ver Modelo
+          </Button>
+          <Button
+            size="sm"
+            variant={selected ? "default" : "secondary"}
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+          >
+            {selected ? <><CheckCircle2 className="h-3 w-3 mr-1" /> Selecionado</> : "Selecionar"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ────────── Main Page ────────── */
 export default function WebsitePage() {
   const tenantId = useTenantId();
   const { toast } = useToast();
-  const { setActivePage } = useActivePage();
   const [loading, setLoading] = useState(true);
   const [briefing, setBriefing] = useState<any>(null);
-  const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
 
-  // Form state
-  const [form, setForm] = useState({
-    possui_dominio: false,
-    dominio: "",
-    provedor_atual: "",
-    acesso_dns: false,
-    tipos_servico: [] as string[],
-    venda_produtos_online: false,
-    produtos_descricao: "",
-    produtos_quantidade: "",
-    pagamento_online: false,
-    nome_empresa: "",
-    cidade_atuacao: "",
-    regiao_atendida: "",
-    diferenciais: "",
-    frota: "",
-    trabalha_24h: false,
-    whatsapp: "",
-    email_profissional: "",
-    redes_sociais: "",
-    publico_alvo: "",
-    faixa_preco: "",
-    captacao_orcamento: false,
-    integracao_whatsapp: false,
-    possui_logotipo: false,
-    logo_url: "",
-    cores_preferidas: "",
-    estilo_desejado: "",
-    funcionalidades: [] as string[],
-  });
+  // Flow: "gallery" → "briefing" (steps 1-3) → submitted view
+  const [phase, setPhase] = useState<"gallery" | "briefing" | "submitted" | "published">("gallery");
+  const [step, setStep] = useState(1); // 1=domain, 2=briefing, 3=review
+  const [submitting, setSubmitting] = useState(false);
+  const [editing, setEditing] = useState(false); // editing an existing briefing
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [form, setForm] = useState({ ...emptyForm });
 
   useEffect(() => {
     if (!tenantId) return;
@@ -92,13 +192,54 @@ export default function WebsitePage() {
       .order("created_at", { ascending: false })
       .limit(1)
       .then(({ data }) => {
-        if (data && data.length > 0) setBriefing(data[0]);
+        if (data && data.length > 0) {
+          const b = data[0];
+          setBriefing(b);
+          setSelectedTemplate((b as any).modelo_selecionado || null);
+          if (b.status === "publicado") {
+            setPhase("published");
+          } else {
+            setPhase("submitted");
+            populateFormFromBriefing(b);
+          }
+        }
         setLoading(false);
       });
   }, [tenantId]);
 
-  const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
+  const populateFormFromBriefing = (b: any) => {
+    setForm({
+      dominio: b.dominio || "",
+      provedor_atual: b.provedor_atual || "",
+      acesso_dns: b.acesso_dns || false,
+      tipos_servico: b.tipos_servico || [],
+      venda_produtos_online: b.venda_produtos_online || false,
+      produtos_descricao: b.produtos_descricao || "",
+      produtos_quantidade: b.produtos_quantidade || "",
+      pagamento_online: b.pagamento_online || false,
+      nome_empresa: b.nome_empresa || "",
+      cidade_atuacao: b.cidade_atuacao || "",
+      regiao_atendida: b.regiao_atendida || "",
+      diferenciais: b.diferenciais || "",
+      frota: b.frota || "",
+      trabalha_24h: b.trabalha_24h || false,
+      whatsapp: b.whatsapp || "",
+      email_profissional: b.email_profissional || "",
+      redes_sociais: b.redes_sociais || "",
+      publico_alvo: b.publico_alvo || "",
+      faixa_preco: b.faixa_preco || "",
+      captacao_orcamento: b.captacao_orcamento || false,
+      integracao_whatsapp: b.integracao_whatsapp || false,
+      possui_logotipo: b.possui_logotipo || false,
+      logo_url: b.logo_url || "",
+      cores_preferidas: b.cores_preferidas || "",
+      estilo_desejado: b.estilo_desejado || "",
+      funcionalidades: b.funcionalidades || [],
+    });
+    setSelectedTemplate((b as any).modelo_selecionado || null);
+  };
 
+  const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
   const toggleArrayItem = (key: "tipos_servico" | "funcionalidades", item: string) => {
     setForm((p) => {
       const arr = p[key];
@@ -106,13 +247,14 @@ export default function WebsitePage() {
     });
   };
 
-  const handleSubmit = async () => {
-    if (!tenantId) return;
-    setSubmitting(true);
-    const payload = {
+  const getTemplateInfo = () => TEMPLATES.find((t) => t.id === selectedTemplate);
+
+  const buildPayload = () => {
+    const tpl = getTemplateInfo();
+    return {
       tenant_id: tenantId,
       status: "aguardando",
-      possui_dominio: form.possui_dominio,
+      possui_dominio: !!form.dominio,
       dominio: form.dominio || null,
       provedor_atual: form.provedor_atual || null,
       acesso_dns: form.acesso_dns,
@@ -139,14 +281,46 @@ export default function WebsitePage() {
       cores_preferidas: form.cores_preferidas || null,
       estilo_desejado: form.estilo_desejado || null,
       funcionalidades: form.funcionalidades,
+      modelo_selecionado: selectedTemplate || null,
+      modelo_nome: tpl?.name || null,
+      modelo_preview_url: tpl?.previewUrl || null,
     };
+  };
 
-    const { data, error } = await supabase.from("website_briefings").insert(payload as any).select().single();
-    if (error) {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+  const handleSubmit = async () => {
+    if (!tenantId || !selectedTemplate) return;
+    if (!form.dominio.trim()) {
+      toast({ title: "Domínio obrigatório", description: "Informe o domínio desejado.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const payload = buildPayload();
+
+    if (editing && briefing) {
+      // Update existing
+      const { error } = await supabase
+        .from("website_briefings")
+        .update(payload as any)
+        .eq("id", briefing.id);
+      if (error) {
+        toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Briefing atualizado!", description: "As alterações foram enviadas." });
+        const { data } = await supabase.from("website_briefings").select("*").eq("id", briefing.id).single();
+        if (data) setBriefing(data);
+        setEditing(false);
+        setPhase("submitted");
+      }
     } else {
-      toast({ title: "Briefing enviado!", description: "Aguarde a análise do administrador." });
-      setBriefing(data);
+      // Insert new
+      const { data, error } = await supabase.from("website_briefings").insert(payload as any).select().single();
+      if (error) {
+        toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Briefing enviado!", description: "Aguarde a análise do administrador." });
+        setBriefing(data);
+        setPhase("submitted");
+      }
     }
     setSubmitting(false);
   };
@@ -159,8 +333,8 @@ export default function WebsitePage() {
     );
   }
 
-  // Published state
-  if (briefing?.status === "publicado") {
+  /* ─── Published ─── */
+  if (phase === "published" && briefing) {
     return (
       <div className="space-y-6">
         <div>
@@ -176,26 +350,19 @@ export default function WebsitePage() {
               <h2 className="text-xl font-bold text-foreground">🌐 Seu site está ativo!</h2>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p><strong>Domínio:</strong> {briefing.dominio || "—"}</p>
-                <p><strong>Status:</strong> <Badge className="bg-emerald-600">Online</Badge></p>
+                <p><strong>Status:</strong> <Badge className="bg-emerald-600 text-white">Online</Badge></p>
                 {briefing.data_publicacao && (
                   <p><strong>Publicado em:</strong> {new Date(briefing.data_publicacao).toLocaleDateString("pt-BR")}</p>
                 )}
               </div>
               {briefing.site_url && (
                 <Button onClick={() => window.open(briefing.site_url, "_blank")}>
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Visualizar Site
+                  <ExternalLink className="h-4 w-4 mr-2" /> Visualizar Site
                 </Button>
               )}
               <div className="pt-4 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setBriefing(null);
-                    setStep(1);
-                  }}
-                >
-                  Solicitar Alteração
+                <Button variant="outline" onClick={() => { setBriefing(null); setPhase("gallery"); setForm({ ...emptyForm }); setSelectedTemplate(null); }}>
+                  Solicitar Novo Site
                 </Button>
               </div>
             </div>
@@ -205,9 +372,10 @@ export default function WebsitePage() {
     );
   }
 
-  // Existing briefing pending
-  if (briefing && briefing.status !== "publicado") {
+  /* ─── Submitted / Pending ─── */
+  if (phase === "submitted" && briefing && !editing) {
     const st = STATUS_MAP[briefing.status] || STATUS_MAP.aguardando;
+    const tpl = TEMPLATES.find((t) => t.id === (briefing as any).modelo_selecionado);
     return (
       <div className="space-y-6">
         <div>
@@ -222,25 +390,51 @@ export default function WebsitePage() {
               </div>
               <h2 className="text-xl font-bold text-foreground">Briefing Enviado</h2>
               <Badge className={st.color + " text-white"}>{st.label}</Badge>
+
+              {tpl && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <strong>Modelo:</strong> {tpl.name}
+                </div>
+              )}
+              <div className="text-sm text-muted-foreground">
+                <strong>Domínio solicitado:</strong> {briefing.dominio || "—"}
+              </div>
+
               {briefing.observacoes_master && (
                 <div className="mt-4 p-3 bg-muted rounded-lg text-sm text-left">
-                  <strong>Observações:</strong>
+                  <strong>Observações do administrador:</strong>
                   <p className="mt-1">{briefing.observacoes_master}</p>
                 </div>
               )}
+
               <p className="text-sm text-muted-foreground">
                 Enviado em {new Date(briefing.created_at).toLocaleDateString("pt-BR")}
               </p>
-              {briefing.status === "rejeitado" && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setBriefing(null);
-                    setStep(1);
-                  }}
-                >
-                  Enviar Novo Briefing
-                </Button>
+
+              {briefing.status !== "em_producao" && briefing.status !== "publicado" && (
+                <div className="pt-4 border-t flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(true);
+                      setPhase("gallery");
+                      populateFormFromBriefing(briefing);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" /> Alterar Modelo
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(true);
+                      setPhase("briefing");
+                      setStep(1);
+                      populateFormFromBriefing(briefing);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" /> Editar Briefing
+                  </Button>
+                </div>
               )}
             </div>
           </CardContent>
@@ -249,12 +443,51 @@ export default function WebsitePage() {
     );
   }
 
-  // Wizard
+  /* ─── Template Gallery ─── */
+  if (phase === "gallery") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Website</h1>
+          <p className="text-muted-foreground">Escolha o modelo ideal para o seu site profissional.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {TEMPLATES.map((t) => (
+            <TemplateCard
+              key={t.id}
+              template={t}
+              selected={selectedTemplate === t.id}
+              onSelect={() => setSelectedTemplate(t.id)}
+            />
+          ))}
+        </div>
+
+        <div className="flex justify-end">
+          <Button
+            disabled={!selectedTemplate}
+            onClick={() => { setPhase("briefing"); setStep(1); }}
+          >
+            <LayoutTemplate className="h-4 w-4 mr-2" />
+            Continuar com este modelo
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ─── Briefing Wizard ─── */
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Website</h1>
-        <p className="text-muted-foreground">Tenha seu próprio site profissional para fechar mais corridas e transmitir autoridade.</p>
+        <h1 className="text-2xl font-bold text-foreground">Website — Briefing</h1>
+        <p className="text-muted-foreground">
+          Modelo: <strong>{getTemplateInfo()?.name}</strong>{" "}
+          <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => setPhase("gallery")}>
+            (alterar)
+          </Button>
+        </p>
       </div>
 
       {/* Step indicator */}
@@ -275,68 +508,49 @@ export default function WebsitePage() {
       {/* Step 1 - Domain */}
       {step === 1 && (
         <Card className="border-none shadow-sm">
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Globe className="h-4 w-4" /> Verificação de Domínio</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Globe className="h-4 w-4" /> Domínio Desejado
+            </CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Informe o domínio que deseja para seu site. Nós verificaremos a disponibilidade e entraremos em contato.
+            </p>
             <div>
-              <Label>Você já possui um domínio?</Label>
-              <RadioGroup
-                value={form.possui_dominio ? "sim" : "nao"}
-                onValueChange={(v) => updateField("possui_dominio", v === "sim")}
-                className="flex gap-4 mt-2"
-              >
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="sim" id="dom-sim" />
-                  <Label htmlFor="dom-sim">Sim</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="nao" id="dom-nao" />
-                  <Label htmlFor="dom-nao">Não</Label>
-                </div>
-              </RadioGroup>
+              <Label>Domínio desejado <span className="text-destructive">*</span></Label>
+              <Input
+                placeholder="nomedaempresa.com.br"
+                value={form.dominio}
+                onChange={(e) => updateField("dominio", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Provedor atual (se já possui domínio)</Label>
+              <Input
+                placeholder="Ex: Registro.br, GoDaddy..."
+                value={form.provedor_atual}
+                onChange={(e) => updateField("provedor_atual", e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox checked={form.acesso_dns} onCheckedChange={(v) => updateField("acesso_dns", !!v)} />
+              <Label>Já possuo este domínio e tenho acesso ao DNS</Label>
             </div>
 
-            {!form.possui_dominio && (
-              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground">Você ainda não tem um domínio? Pesquise a disponibilidade no menu Domínios.</p>
-                <Button
-                  variant="outline"
-                  onClick={() => setActivePage("dominios")}
-                  className="gap-2"
-                >
-                  <Globe className="h-4 w-4" />
-                  Ir para Domínios
-                </Button>
-                <div className="mt-3">
-                  <Label>Ou informe o domínio desejado para registro:</Label>
-                  <Input
-                    placeholder="nomedaempresa.com.br"
-                    value={form.dominio}
-                    onChange={(e) => updateField("dominio", e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-            )}
-
-            {form.possui_dominio && (
-              <div className="space-y-3">
-                <div>
-                  <Label>Domínio</Label>
-                  <Input placeholder="seusite.com.br" value={form.dominio} onChange={(e) => updateField("dominio", e.target.value)} />
-                </div>
-                <div>
-                  <Label>Provedor atual</Label>
-                  <Input placeholder="Ex: Registro.br, GoDaddy..." value={form.provedor_atual} onChange={(e) => updateField("provedor_atual", e.target.value)} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox checked={form.acesso_dns} onCheckedChange={(v) => updateField("acesso_dns", !!v)} />
-                  <Label>Tenho acesso ao DNS</Label>
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-end">
-              <Button onClick={() => setStep(2)}>
+            <div className="flex justify-between pt-2">
+              <Button variant="outline" onClick={() => setPhase("gallery")}>
+                <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!form.dominio.trim()) {
+                    toast({ title: "Informe o domínio desejado", variant: "destructive" });
+                    return;
+                  }
+                  setStep(2);
+                }}
+              >
                 Próximo <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
@@ -344,10 +558,10 @@ export default function WebsitePage() {
         </Card>
       )}
 
-      {/* Step 2 - Briefing */}
+      {/* Step 2 - Briefing details */}
       {step === 2 && (
         <div className="space-y-4">
-          {/* Block 1 - Services */}
+          {/* Services */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Tipo de Serviço</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -367,7 +581,7 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Block 2 - Company */}
+          {/* Company */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Estrutura da Empresa</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,7 +597,7 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Block 3 - Positioning */}
+          {/* Positioning */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Posicionamento</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -403,7 +617,7 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Block 4 - Visual */}
+          {/* Visual */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Identidade Visual</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -426,7 +640,7 @@ export default function WebsitePage() {
             </CardContent>
           </Card>
 
-          {/* Block 5 - Features */}
+          {/* Features */}
           <Card className="border-none shadow-sm">
             <CardHeader><CardTitle className="text-base">Funcionalidades Desejadas</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -441,30 +655,36 @@ export default function WebsitePage() {
 
           <div className="flex justify-between">
             <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="h-4 w-4 mr-2" /> Voltar</Button>
-            <Button onClick={() => setStep(3)}>Próximo <ArrowRight className="h-4 w-4 ml-2" /></Button>
+            <Button onClick={() => setStep(3)}>Revisar e Enviar <ArrowRight className="h-4 w-4 ml-2" /></Button>
           </div>
         </div>
       )}
 
-      {/* Step 3 - Review & Submit */}
+      {/* Step 3 - Review */}
       {step === 3 && (
         <Card className="border-none shadow-sm">
           <CardHeader><CardTitle className="text-base">Revisar e Enviar</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Domínio:</strong> {form.dominio || "A definir"}</div>
+              <div><strong>Modelo:</strong> {getTemplateInfo()?.name || "—"}</div>
+              <div><strong>Domínio:</strong> {form.dominio || "—"}</div>
               <div><strong>Empresa:</strong> {form.nome_empresa || "—"}</div>
               <div><strong>Cidade:</strong> {form.cidade_atuacao || "—"}</div>
               <div><strong>Estilo:</strong> {form.estilo_desejado || "—"}</div>
+              <div><strong>WhatsApp:</strong> {form.whatsapp || "—"}</div>
               <div className="md:col-span-2"><strong>Serviços:</strong> {form.tipos_servico.join(", ") || "—"}</div>
               <div className="md:col-span-2"><strong>Funcionalidades:</strong> {form.funcionalidades.join(", ") || "—"}</div>
+            </div>
+
+            <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+              <strong>⏱ Prazo estimado:</strong> Até 3 dias úteis após aprovação do briefing e confirmação do domínio.
             </div>
 
             <div className="flex justify-between pt-4 border-t">
               <Button variant="outline" onClick={() => setStep(2)}><ArrowLeft className="h-4 w-4 mr-2" /> Voltar</Button>
               <Button onClick={handleSubmit} disabled={submitting}>
                 {submitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
-                Enviar para Análise
+                {editing ? "Salvar Alterações" : "Enviar para Análise"}
               </Button>
             </div>
           </CardContent>
@@ -473,4 +693,3 @@ export default function WebsitePage() {
     </div>
   );
 }
-

@@ -1995,6 +1995,9 @@ export type Database = {
           id: string
           integracao_whatsapp: boolean | null
           logo_url: string | null
+          modelo_nome: string | null
+          modelo_preview_url: string | null
+          modelo_selecionado: string | null
           nome_empresa: string | null
           observacoes_master: string | null
           pagamento_online: boolean | null
@@ -2032,6 +2035,9 @@ export type Database = {
           id?: string
           integracao_whatsapp?: boolean | null
           logo_url?: string | null
+          modelo_nome?: string | null
+          modelo_preview_url?: string | null
+          modelo_selecionado?: string | null
           nome_empresa?: string | null
           observacoes_master?: string | null
           pagamento_online?: boolean | null
@@ -2069,6 +2075,9 @@ export type Database = {
           id?: string
           integracao_whatsapp?: boolean | null
           logo_url?: string | null
+          modelo_nome?: string | null
+          modelo_preview_url?: string | null
+          modelo_selecionado?: string | null
           nome_empresa?: string | null
           observacoes_master?: string | null
           pagamento_online?: boolean | null
