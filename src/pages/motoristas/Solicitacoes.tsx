@@ -317,6 +317,7 @@ export default function MotoristasSolicitacoes() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Código</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Nome</TableHead>
                   <TableHead>Telefone</TableHead>
@@ -330,6 +331,7 @@ export default function MotoristasSolicitacoes() {
               <TableBody>
                 {solicitacoes.map((sol) => (
                   <TableRow key={sol.id}>
+                    <TableCell className="font-mono text-xs text-primary whitespace-nowrap">{(sol as any).codigo || "—"}</TableCell>
                     <TableCell className="whitespace-nowrap">
                       {new Date(sol.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
