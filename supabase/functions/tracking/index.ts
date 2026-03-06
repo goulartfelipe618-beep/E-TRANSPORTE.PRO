@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     if (action === "get") {
       const { data, error } = await supabase
         .from("tracking_links")
-        .select("id, token, status, expires_at, cliente_nome")
+        .select("id, token, status, expires_at, cliente_nome, embarque_endereco, reserva_id, reserva_grupo_id")
         .eq("token", token)
         .maybeSingle();
 
@@ -47,7 +47,49 @@ Deno.serve(async (req) => {
         });
       }
 
-      return new Response(JSON.stringify({ valid: true, status: data.status }), {
+      // Try to get embarque coordinates from linked reservation
+      let embarque_lat: number | null = null;
+      let embarque_lng: number | null = null;
+      let embarque_endereco = data.embarque_endereco || null;
+
+      if (data.reserva_id) {
+        const { data: reserva } = await supabase
+          .from("reservas_transfer")
+          .select("ida_embarque, ida_embarque_lat, ida_embarque_lng, por_hora_endereco_inicio, tipo_viagem")
+          .eq("id", data.reserva_id)
+          .maybeSingle();
+        if (reserva) {
+          embarque_lat = reserva.ida_embarque_lat;
+          embarque_lng = reserva.ida_embarque_lng;
+          if (!embarque_endereco) {
+            embarque_endereco = reserva.tipo_viagem === "por_hora"
+              ? reserva.por_hora_endereco_inicio
+              : reserva.ida_embarque;
+          }
+        }
+      } else if (data.reserva_grupo_id) {
+        const { data: reserva } = await supabase
+          .from("reservas_grupos")
+          .select("endereco_embarque, embarque_lat, embarque_lng")
+          .eq("id", data.reserva_grupo_id)
+          .maybeSingle();
+        if (reserva) {
+          embarque_lat = reserva.embarque_lat;
+          embarque_lng = reserva.embarque_lng;
+          if (!embarque_endereco) {
+            embarque_endereco = reserva.endereco_embarque;
+          }
+        }
+      }
+
+      return new Response(JSON.stringify({
+        valid: true,
+        status: data.status,
+        cliente_nome: data.cliente_nome,
+        embarque_endereco,
+        embarque_lat,
+        embarque_lng,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -61,7 +103,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // First verify the token exists and is not expired
       const { data: link } = await supabase
         .from("tracking_links")
         .select("id, expires_at, status")

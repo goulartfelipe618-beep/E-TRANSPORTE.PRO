@@ -66,6 +66,19 @@ export default function GruposSolicitacoes() {
     }
   };
 
+  const createTrackingLink = async (reservaGrupoId: string, clienteNome: string | null, clienteTelefone: string | null, embarqueEndereco: string | null) => {
+    try {
+      await supabase.from("tracking_links").insert({
+        reserva_grupo_id: reservaGrupoId,
+        categoria: "cliente",
+        cliente_nome: clienteNome || null,
+        cliente_telefone: clienteTelefone || null,
+        embarque_endereco: embarqueEndereco || null,
+        tenant_id: tenantId,
+      } as any);
+    } catch { /* non-blocking */ }
+  };
+
   const handleConvertConfirm = async (formData: Record<string, any>) => {
     if (!converting) return;
     setConvertLoading(true);
@@ -74,14 +87,15 @@ export default function GruposSolicitacoes() {
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
-    const { error: insertErr } = await supabase.from("reservas_grupos").insert(reserva as any);
-    if (insertErr) {
-      toast({ title: "Erro ao criar reserva", description: insertErr.message, variant: "destructive" });
+    const { data: inserted, error: insertErr } = await supabase.from("reservas_grupos").insert(reserva as any).select("id").single();
+    if (insertErr || !inserted) {
+      toast({ title: "Erro ao criar reserva", description: insertErr?.message, variant: "destructive" });
       setConvertLoading(false);
       return;
     }
+    await createTrackingLink(inserted.id, formData.cliente_nome, formData.cliente_whatsapp, formData.endereco_embarque);
     await supabase.from("solicitacoes_grupos").update({ status: "convertida" }).eq("id", converting.id);
-    toast({ title: "Reserva de grupo criada!", description: `${formData.cliente_nome || "Cliente"} convertida em reserva.` });
+    toast({ title: "Reserva de grupo criada!", description: `${formData.cliente_nome || "Cliente"} convertida em reserva. Link de rastreamento gerado automaticamente.` });
     setConverting(null);
     setConvertLoading(false);
     fetchSolicitacoes();
@@ -94,11 +108,12 @@ export default function GruposSolicitacoes() {
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
-    const { error } = await supabase.from("reservas_grupos").insert(reserva as any);
-    if (error) {
-      toast({ title: "Erro ao criar reserva", description: error.message, variant: "destructive" });
+    const { data: inserted, error } = await supabase.from("reservas_grupos").insert(reserva as any).select("id").single();
+    if (error || !inserted) {
+      toast({ title: "Erro ao criar reserva", description: error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} — reserva manual criada.` });
+      await createTrackingLink(inserted.id, formData.cliente_nome, formData.cliente_whatsapp, formData.endereco_embarque);
+      toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} — reserva manual criada com link de rastreamento.` });
       setCreatingManual(false);
     }
     setCreateLoading(false);

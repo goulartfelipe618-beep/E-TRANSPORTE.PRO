@@ -76,33 +76,47 @@ export default function TransferSolicitacoes() {
     }
   };
 
+  const createTrackingLink = async (reservaId: string, clienteNome: string | null, clienteTelefone: string | null, embarqueEndereco: string | null) => {
+    try {
+      await supabase.from("tracking_links").insert({
+        reserva_id: reservaId,
+        categoria: "cliente",
+        cliente_nome: clienteNome || null,
+        cliente_telefone: clienteTelefone || null,
+        embarque_endereco: embarqueEndereco || null,
+        tenant_id: tenantId,
+      } as any);
+    } catch { /* non-blocking */ }
+  };
+
   const handleConvertConfirm = async (formData: Record<string, any>) => {
     if (!converting) return;
     setConvertLoading(true);
 
-    // Build reserva insert payload
     const reserva: Record<string, any> = {
       solicitacao_id: converting.id,
       status: "confirmada",
       tenant_id: tenantId,
     };
 
-    // Copy all fields, converting empty strings to null and numbers where needed
     const numFields = ["ida_passageiros", "volta_passageiros", "por_hora_passageiros", "por_hora_qtd_horas", "valor_base", "desconto_percentual", "valor_total"];
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
 
-    const { error: insertErr } = await supabase.from("reservas_transfer").insert(reserva as any);
-    if (insertErr) {
-      toast({ title: "Erro ao criar reserva", description: insertErr.message, variant: "destructive" });
+    const { data: inserted, error: insertErr } = await supabase.from("reservas_transfer").insert(reserva as any).select("id").single();
+    if (insertErr || !inserted) {
+      toast({ title: "Erro ao criar reserva", description: insertErr?.message, variant: "destructive" });
       setConvertLoading(false);
       return;
     }
 
-    // Mark solicitacao as converted
+    // Auto-create tracking link
+    const embarque = formData.tipo_viagem === "por_hora" ? formData.por_hora_endereco_inicio : formData.ida_embarque;
+    await createTrackingLink(inserted.id, formData.cliente_nome, formData.cliente_telefone, embarque);
+
     await supabase.from("solicitacoes_transfer").update({ status: "convertida" }).eq("id", converting.id);
-    toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} convertida em reserva.` });
+    toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} convertida em reserva. Link de rastreamento gerado automaticamente.` });
     setConverting(null);
     setConvertLoading(false);
     fetchSolicitacoes();
@@ -115,11 +129,13 @@ export default function TransferSolicitacoes() {
     for (const [k, v] of Object.entries(formData)) {
       reserva[k] = numFields.includes(k) ? (v !== "" && v != null ? Number(v) : null) : (v || null);
     }
-    const { error } = await supabase.from("reservas_transfer").insert(reserva as any);
-    if (error) {
-      toast({ title: "Erro ao criar reserva", description: error.message, variant: "destructive" });
+    const { data: inserted, error } = await supabase.from("reservas_transfer").insert(reserva as any).select("id").single();
+    if (error || !inserted) {
+      toast({ title: "Erro ao criar reserva", description: error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} — reserva manual criada.` });
+      const embarque = formData.tipo_viagem === "por_hora" ? formData.por_hora_endereco_inicio : formData.ida_embarque;
+      await createTrackingLink(inserted.id, formData.cliente_nome, formData.cliente_telefone, embarque);
+      toast({ title: "Reserva criada!", description: `${formData.cliente_nome || "Cliente"} — reserva manual criada com link de rastreamento.` });
       setCreatingManual(false);
     }
     setCreateLoading(false);
