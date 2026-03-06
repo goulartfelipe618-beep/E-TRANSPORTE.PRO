@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Search, CheckCircle2, XCircle, Loader2, ExternalLink, AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DomainResult {
   domain: string;
@@ -24,11 +25,8 @@ export default function DominiosPage() {
 
   const normalizeDomain = (input: string): string => {
     let d = input.trim().toLowerCase().replace(/\s+/g, "");
-    // Remove protocol
     d = d.replace(/^https?:\/\//, "");
-    // Remove trailing slash
     d = d.replace(/\/+$/, "");
-    // Add .com.br if no TLD
     if (!d.includes(".")) {
       d = `${d}.com.br`;
     } else if (d.endsWith(".com") && !d.endsWith(".com.br")) {
@@ -46,28 +44,29 @@ export default function DominiosPage() {
     const domain = normalizeDomain(query);
 
     try {
-      const res = await fetch(`https://brasilapi.com.br/api/registrobr/v1/${encodeURIComponent(domain)}`);
+      const { data, error: fnError } = await supabase.functions.invoke("domain-lookup", {
+        body: { domain },
+      });
 
-      if (res.status === 404) {
-        // Domain not found = available
-        setResult({ domain, status: "AVAILABLE", available: true });
-      } else if (res.ok) {
-        const data = await res.json();
-        // If API returns data, the domain is registered
-        setResult({
-          domain,
-          status: data.status_dns || data.status || "REGISTERED",
-          available: false,
-          fqdn: data.fqdn,
-          hosts: data.hosts,
-          publicationStatus: data.publication_status,
-          expiresAt: data.expires_at,
-        });
-      } else {
-        // Try alternate interpretation
-        const text = await res.text();
-        setError(`Erro ao consultar: ${res.status}. Tente novamente.`);
+      if (fnError) {
+        setError("Erro ao consultar domínio. Tente novamente.");
+        return;
       }
+
+      if (!data.success) {
+        setError(data.error || "Erro ao consultar domínio.");
+        return;
+      }
+
+      setResult({
+        domain: data.domain,
+        status: data.status,
+        available: data.available,
+        fqdn: data.fqdn,
+        hosts: data.hosts,
+        publicationStatus: data.publicationStatus,
+        expiresAt: data.expiresAt,
+      });
     } catch (err: any) {
       setError("Erro de conexão. Verifique sua internet e tente novamente.");
     } finally {
