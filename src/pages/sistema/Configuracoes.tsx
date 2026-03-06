@@ -11,7 +11,7 @@ import { useGlobalConfig } from "@/contexts/GlobalConfigContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Upload, Type, Shield, Key, RefreshCw,
-  Save, Loader2, Image as ImageIcon, Lock, Smartphone
+  Save, Loader2, Image as ImageIcon, Lock, Smartphone, User
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
