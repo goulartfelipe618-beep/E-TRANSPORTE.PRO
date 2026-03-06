@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, RefreshCw, Loader2, ExternalLink, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, RefreshCw, Loader2, ExternalLink, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,7 +20,7 @@ interface WebsiteTemplate {
   created_at: string;
 }
 
-const emptyForm = { nome: "", preview_url: "", thumbnail_url: "", ativo: true, ordem: 0 };
+const emptyForm = { nome: "", preview_url: "", ativo: true, ordem: 0 };
 
 export default function MasterWebsiteTemplates() {
   const [templates, setTemplates] = useState<WebsiteTemplate[]>([]);
@@ -31,6 +31,10 @@ export default function MasterWebsiteTemplates() {
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const fetchTemplates = async () => {
@@ -48,6 +52,8 @@ export default function MasterWebsiteTemplates() {
   const openCreate = () => {
     setEditingId(null);
     setForm({ ...emptyForm });
+    setThumbnailFile(null);
+    setThumbnailPreview("");
     setDialogOpen(true);
   };
 
@@ -56,11 +62,41 @@ export default function MasterWebsiteTemplates() {
     setForm({
       nome: t.nome,
       preview_url: t.preview_url,
-      thumbnail_url: t.thumbnail_url,
       ativo: t.ativo,
       ordem: t.ordem,
     });
+    setThumbnailFile(null);
+    setThumbnailPreview(t.thumbnail_url || "");
     setDialogOpen(true);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Selecione uma imagem válida", variant: "destructive" });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande (máx 10MB)", variant: "destructive" });
+      return;
+    }
+    setThumbnailFile(file);
+    setThumbnailPreview(URL.createObjectURL(file));
+  };
+
+  const uploadThumbnail = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop() || "png";
+    const fileName = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("website-templates")
+      .upload(fileName, file, { contentType: file.type, upsert: true });
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+      return null;
+    }
+    const { data: urlData } = supabase.storage.from("website-templates").getPublicUrl(fileName);
+    return urlData.publicUrl;
   };
 
   const handleSave = async () => {
@@ -70,13 +106,24 @@ export default function MasterWebsiteTemplates() {
     }
     setSaving(true);
 
+    let thumbnailUrl = thumbnailPreview;
+
+    // Upload new file if selected
+    if (thumbnailFile) {
+      setUploading(true);
+      const url = await uploadThumbnail(thumbnailFile);
+      setUploading(false);
+      if (!url) { setSaving(false); return; }
+      thumbnailUrl = url;
+    }
+
     if (editingId) {
       const { error } = await supabase
         .from("website_templates")
         .update({
           nome: form.nome,
           preview_url: form.preview_url,
-          thumbnail_url: form.thumbnail_url,
+          thumbnail_url: thumbnailUrl,
           ativo: form.ativo,
           ordem: form.ordem,
           updated_at: new Date().toISOString(),
@@ -95,7 +142,7 @@ export default function MasterWebsiteTemplates() {
         .insert({
           nome: form.nome,
           preview_url: form.preview_url,
-          thumbnail_url: form.thumbnail_url,
+          thumbnail_url: thumbnailUrl,
           ativo: form.ativo,
           ordem: form.ordem,
         } as any);
@@ -225,11 +272,42 @@ export default function MasterWebsiteTemplates() {
               <Input value={form.preview_url} onChange={(e) => setForm((p) => ({ ...p, preview_url: e.target.value }))} placeholder="https://seusite.com/demo" />
             </div>
             <div>
-              <Label>URL da Imagem Scroll (imagem da página toda)</Label>
-              <Input value={form.thumbnail_url} onChange={(e) => setForm((p) => ({ ...p, thumbnail_url: e.target.value }))} placeholder="https://i.imgur.com/screenshot.png" />
-              {form.thumbnail_url && (
-                <div className="mt-2 rounded overflow-hidden border max-h-48 overflow-y-auto">
-                  <img src={form.thumbnail_url} alt="Preview" className="w-full" />
+              <Label>Imagem de Capa (scroll da página toda)</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              {thumbnailPreview ? (
+                <div className="mt-2 relative">
+                  <div className="rounded overflow-hidden border max-h-48 overflow-y-auto">
+                    <img src={thumbnailPreview} alt="Preview" className="w-full" />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                      <Upload className="h-3 w-3 mr-1" /> Trocar imagem
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      onClick={() => { setThumbnailFile(null); setThumbnailPreview(""); }}
+                    >
+                      <X className="h-3 w-3 mr-1" /> Remover
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="mt-2 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Clique para enviar a imagem</p>
+                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG ou WEBP (máx 10MB)</p>
                 </div>
               )}
             </div>
@@ -241,9 +319,9 @@ export default function MasterWebsiteTemplates() {
               <Switch checked={form.ativo} onCheckedChange={(v) => setForm((p) => ({ ...p, ativo: v }))} />
               <Label>Template ativo (visível para clientes)</Label>
             </div>
-            <Button onClick={handleSave} disabled={saving} className="w-full">
-              {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-              {editingId ? "Salvar Alterações" : "Criar Template"}
+            <Button onClick={handleSave} disabled={saving || uploading} className="w-full">
+              {(saving || uploading) ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              {uploading ? "Enviando imagem..." : editingId ? "Salvar Alterações" : "Criar Template"}
             </Button>
           </div>
         </DialogContent>
