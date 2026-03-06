@@ -220,6 +220,19 @@ export default function GruposReservas() {
             <DialogDescription>{selected?.id}</DialogDescription>
           </DialogHeader>
           {selected && (
+            <div className="flex justify-end -mt-2 mb-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => generateReservaPdf(mapGrupoToTransfer(selected), { projectName, logoUrl })}
+              >
+                <Download className="h-4 w-4" />
+                Baixar Confirmação (PDF)
+              </Button>
+            </div>
+          )}
+          {selected && (
             <div className="space-y-3 text-sm">
               <Detail label="Tipo de Veículo" value={veiculoMap[selected.tipo_veiculo || ""] || selected.tipo_veiculo || "—"} />
               <Detail label="Passageiros" value={String(selected.numero_passageiros ?? "—")} />
