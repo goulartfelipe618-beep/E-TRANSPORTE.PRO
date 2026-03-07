@@ -79,12 +79,12 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
   {
     label: "Principal",
     items: [
-      { title: "Home", icon: Home, page: "home", menuKey: "home" },
       {
-        title: "Dashboard",
+        title: "Painel",
         icon: LayoutDashboard,
-        menuKey: "dashboard",
+        menuKey: "painel",
         subItems: [
+          { title: "Home", page: "home", icon: Home, menuKey: "painel.home" },
           { title: "Métricas", page: "dashboard/metricas", icon: Activity, menuKey: "dashboard.metricas" },
           { title: "Abrangência", page: "dashboard/abrangencia", icon: MapPin, menuKey: "dashboard.abrangencia" },
         ],
