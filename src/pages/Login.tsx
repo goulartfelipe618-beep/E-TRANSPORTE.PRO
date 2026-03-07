@@ -123,13 +123,13 @@ export default function Login() {
       {/* Card */}
       <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/[0.08]" style={{ background: "#161616" }}>
         {/* Illustration header */}
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-56 overflow-hidden -mx-px -mt-px">
           <img
             src={loginIllustration}
             alt="Transporte Executivo"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
           />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #161616 0%, transparent 60%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #161616 0%, #16161600 70%)" }} />
         </div>
 
         {/* Form body */}
