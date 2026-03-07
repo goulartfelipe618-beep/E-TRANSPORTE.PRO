@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Building2, Users, Layers3, ScrollText, Car, UserPlus, UsersRound, Search, Filter } from "lucide-react";
+import { Building2, Users, Layers3, ScrollText, Car, UserPlus, UsersRound, Search, Filter, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
+import { Button } from "@/components/ui/button";
+import MasterComunicarDialog from "@/components/MasterComunicarDialog";
 
 type TransferRow = Tables<"solicitacoes_transfer">;
 type MotoristaRow = Tables<"solicitacoes_motorista">;
@@ -59,6 +61,8 @@ export default function MasterDashboard() {
   const [filterStatus, setFilterStatus] = useState<string>("todos");
   const [filterTenant, setFilterTenant] = useState<string>("todos");
   const [filterPeriodo, setFilterPeriodo] = useState<string>("todos");
+  const [comunicarOpen, setComunicarOpen] = useState(false);
+  const [comunicarPayload, setComunicarPayload] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -306,6 +310,7 @@ export default function MasterDashboard() {
                     <TableHead>Detalhes</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Data</TableHead>
+                    <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -332,6 +337,17 @@ export default function MasterDashboard() {
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                           {new Date(s.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
+                        <TableCell>
+                          <Button size="icon" variant="ghost" onClick={() => {
+                            setComunicarPayload({
+                              tipo: tipoLabels[s.tipo], nome: s.nome,
+                              tenant: s.tenant_nome, status: s.status, detalhes: s.detalhes,
+                            });
+                            setComunicarOpen(true);
+                          }}>
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -346,6 +362,13 @@ export default function MasterDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <MasterComunicarDialog
+        open={comunicarOpen}
+        onClose={() => setComunicarOpen(false)}
+        payload={comunicarPayload}
+        titulo="Comunicar sobre Solicitação"
+      />
     </div>
   );
 }

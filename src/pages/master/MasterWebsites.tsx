@@ -9,9 +9,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, RefreshCw, Loader2, Globe, ExternalLink, Pencil } from "lucide-react";
+import { Eye, RefreshCw, Loader2, Globe, ExternalLink, Pencil, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import MasterComunicarDialog from "@/components/MasterComunicarDialog";
 
 const STATUS_OPTIONS = [
   { value: "aguardando", label: "Aguardando", color: "bg-yellow-500" },
@@ -43,6 +44,8 @@ export default function MasterWebsites() {
   const [obsmaster, setObsmaster] = useState("");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const [comunicarOpen, setComunicarOpen] = useState(false);
+  const [comunicarPayload, setComunicarPayload] = useState<Record<string, unknown>>({});
 
   // Editable briefing fields
   const [editForm, setEditForm] = useState<any>({});
@@ -378,15 +381,36 @@ export default function MasterWebsites() {
                   <Label>Observações para o cliente</Label>
                   <Textarea placeholder="Ex: Domínio disponível, site em produção..." value={obsmaster} onChange={(e) => setObsmaster(e.target.value)} />
                 </div>
-                <Button onClick={handleSave} disabled={saving} className="w-full">
-                  {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-                  Salvar Alterações
-                </Button>
+                <div className="flex gap-2">
+                  <Button onClick={handleSave} disabled={saving} className="flex-1">
+                    {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                    Salvar Alterações
+                  </Button>
+                  <Button variant="outline" onClick={() => {
+                    setComunicarPayload({
+                      nome_empresa: selected.nome_empresa, dominio: selected.dominio,
+                      cidade_atuacao: selected.cidade_atuacao, whatsapp: selected.whatsapp,
+                      email_profissional: selected.email_profissional,
+                      status: STATUS_OPTIONS.find(o => o.value === selected.status)?.label || selected.status,
+                      estilo_desejado: selected.estilo_desejado, tenant: (selected as any).tenants?.nome,
+                    });
+                    setComunicarOpen(true);
+                  }}>
+                    <MessageSquare className="h-4 w-4 mr-1" /> Comunicar
+                  </Button>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      <MasterComunicarDialog
+        open={comunicarOpen}
+        onClose={() => setComunicarOpen(false)}
+        payload={comunicarPayload}
+        titulo="Comunicar sobre Solicitação de Website"
+      />
     </div>
   );
 }
