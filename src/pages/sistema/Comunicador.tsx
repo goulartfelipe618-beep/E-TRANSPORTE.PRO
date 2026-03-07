@@ -40,11 +40,12 @@ export default function SistemaComunicador() {
   const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
 
   // QR Code flow
-  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing" | "scanned" | "pending" | "done">("idle");
+  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing" | "confirming" | "connected" | "pending" | "done">("idle");
   const [qrBase64, setQrBase64] = useState("");
   const [instanceName, setInstanceName] = useState("");
   const [telefoneWhats, setTelefoneWhats] = useState("");
   const [solicitacao, setSolicitacao] = useState<SolicitacaoCom | null>(null);
+  const [webhookUrl, setWebhookUrl] = useState("");
 
   const fetchComunicadores = useCallback(async () => {
     setLoading(true);
@@ -127,6 +128,64 @@ export default function SistemaComunicador() {
       console.error("QR error:", e);
       toast.error(e.message || "Erro ao gerar QR Code");
       setQrStep("idle");
+    }
+  };
+
+  const handleConfirmAndRequest = async () => {
+    if (!telefoneWhats.trim()) {
+      toast.error("Informe o número de WhatsApp");
+      return;
+    }
+    setQrStep("confirming");
+    try {
+      // Check connection status
+      const { data, error } = await supabase.functions.invoke("evolution-proxy", {
+        body: { action: "check_status", instance_name: instanceName },
+      });
+      if (error) throw error;
+
+      const state = data?.instance?.state || data?.state || "";
+      if (state === "open" || state === "connected") {
+        // Auto-register comunicador
+        if (comunicadores.length >= MAX_COMUNICADORES) {
+          toast.error(`Máximo de ${MAX_COMUNICADORES} comunicadores atingido`);
+          setQrStep("showing");
+          return;
+        }
+        const { error: insertErr } = await supabase.from("comunicadores").insert({
+          nome: `WhatsApp ${comunicadores.length + 1}`,
+          webhook_url: webhookUrl.trim() || "",
+          descricao: `Instância: ${instanceName} | Tel: ${telefoneWhats}`,
+          ativo: true,
+          tenant_id: tenantId,
+        });
+        if (insertErr) throw insertErr;
+
+        // Also send the solicitation for master tracking
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("solicitacoes_comunicador").insert({
+            tenant_id: tenantId,
+            user_id: user.id,
+            nome_projeto: projectName,
+            telefone_whatsapp: telefoneWhats.trim(),
+            instance_name: instanceName,
+            status: "concluido",
+          } as any);
+        }
+
+        toast.success("WhatsApp conectado e comunicador registrado!");
+        setQrStep("connected");
+        setWebhookUrl("");
+        setTelefoneWhats("");
+        fetchComunicadores();
+      } else {
+        toast.error("WhatsApp ainda não conectado. Escaneie o QR Code e tente novamente.");
+        setQrStep("showing");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao confirmar conexão");
+      setQrStep("showing");
     }
   };
 
@@ -233,7 +292,7 @@ export default function SistemaComunicador() {
   };
 
   // Show completed state or existing comunicadores
-  const showComunicadores = qrStep === "done" || comunicadores.length > 0;
+  const showComunicadores = qrStep === "done" || qrStep === "connected" || comunicadores.length > 0;
 
   return (
     <div className="space-y-6">
@@ -257,7 +316,7 @@ export default function SistemaComunicador() {
       </div>
 
       {/* QR Code Connection Flow */}
-      {!showComunicadores && qrStep !== "pending" && (
+      {(!showComunicadores || qrStep === "connected" || qrStep === "confirming") && qrStep !== "pending" && (
         <Card className="border-none shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -305,13 +364,13 @@ export default function SistemaComunicador() {
                     </div>
                   )}
                   <p className="text-sm text-muted-foreground mt-3">
-                    Abra o WhatsApp → Menu → Dispositivos conectados → Conectar dispositivo → Escaneie este QR Code
+                    Abra o WhatsApp → Menu → Dispositivos conectados → Escaneie este QR Code
                   </p>
                 </div>
 
                 <div className="border-t pt-4 space-y-4">
                   <p className="text-sm font-medium text-center">
-                    Já escaneou o QR Code? Preencha o telefone e clique em <strong>Gerar Comunicador</strong>
+                    Já escaneou? Preencha os dados e confirme a conexão:
                   </p>
                   <div className="max-w-sm mx-auto space-y-3">
                     <div className="space-y-1">
@@ -322,11 +381,35 @@ export default function SistemaComunicador() {
                         placeholder="(00) 00000-0000"
                       />
                     </div>
-                    <Button className="w-full" onClick={handleRequestComunicador}>
-                      <MessageSquare className="h-4 w-4 mr-2" /> Gerar Comunicador
+                    <div className="space-y-1">
+                      <Label>URL do Webhook (opcional, pode editar depois)</Label>
+                      <Input
+                        value={webhookUrl}
+                        onChange={(e) => setWebhookUrl(e.target.value)}
+                        placeholder="https://n8n.seudominio.com/webhook/..."
+                      />
+                    </div>
+                    <Button className="w-full" onClick={handleConfirmAndRequest}>
+                      <CheckCircle className="h-4 w-4 mr-2" /> Confirmar Conexão e Registrar
                     </Button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {qrStep === "confirming" && (
+              <div className="text-center space-y-4 py-8">
+                <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+                <p className="text-sm text-muted-foreground">Verificando conexão com Evolution API...</p>
+              </div>
+            )}
+
+            {qrStep === "connected" && (
+              <div className="text-center space-y-4 py-8">
+                <CheckCircle className="h-16 w-16 mx-auto text-emerald-500" />
+                <p className="text-sm font-medium text-foreground">Comunicador registrado com sucesso!</p>
+                <p className="text-xs text-muted-foreground">Você pode configurar o webhook na lista abaixo.</p>
+                <Button variant="outline" onClick={() => setQrStep("idle")}>Conectar outro WhatsApp</Button>
               </div>
             )}
           </CardContent>
