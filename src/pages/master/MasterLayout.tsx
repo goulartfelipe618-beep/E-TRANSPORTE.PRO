@@ -77,6 +77,7 @@ export default function MasterLayout() {
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
       case "dominios": return <MasterDominios />;
+      case "emails": return <MasterEmails />;
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
       case "slides": return <MasterSlides />;
