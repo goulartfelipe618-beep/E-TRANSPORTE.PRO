@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RefreshCw, CheckCircle, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import MasterComunicarDialog from "@/components/MasterComunicarDialog";
 
 interface SolicitacaoComunicador {
   id: string;
@@ -23,6 +24,8 @@ export default function MasterComunicadorRequests() {
   const [items, setItems] = useState<SolicitacaoComunicador[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [comunicarOpen, setComunicarOpen] = useState(false);
+  const [comunicarPayload, setComunicarPayload] = useState<Record<string, unknown>>({});
 
   const fetchData = async () => {
     setLoading(true);
@@ -117,7 +120,17 @@ export default function MasterComunicadorRequests() {
                     <TableCell>
                       <Badge variant={statusVariant(item.status)}>{statusLabel(item.status)}</Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-1">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        setComunicarPayload({
+                          nome_projeto: item.nome_projeto, telefone_whatsapp: item.telefone_whatsapp,
+                          tenant: item.tenant_name, instance_name: item.instance_name,
+                          status: statusLabel(item.status),
+                        });
+                        setComunicarOpen(true);
+                      }}>
+                        <MessageSquare className="h-4 w-4" />
+                      </Button>
                       {item.status === "pendente" && (
                         <Button size="sm" onClick={() => handleConcluir(item)}>
                           <CheckCircle className="h-4 w-4 mr-1" /> Concluir
@@ -131,6 +144,13 @@ export default function MasterComunicadorRequests() {
           )}
         </CardContent>
       </Card>
+
+      <MasterComunicarDialog
+        open={comunicarOpen}
+        onClose={() => setComunicarOpen(false)}
+        payload={comunicarPayload}
+        titulo="Comunicar sobre Solicitação de Comunicador"
+      />
     </div>
   );
 }
