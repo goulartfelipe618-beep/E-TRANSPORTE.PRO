@@ -1347,6 +1347,89 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_dominio: {
+        Row: {
+          aceite_contrato: boolean
+          cep: string
+          cidade: string
+          complemento: string | null
+          cpf: string
+          created_at: string
+          ddd: string
+          dominio: string
+          email: string
+          endereco: string
+          id: string
+          nome_completo: string
+          numero: string
+          plano: string
+          ramal: string | null
+          status: string
+          telefone: string
+          tenant_id: string | null
+          uf: string
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          aceite_contrato?: boolean
+          cep: string
+          cidade: string
+          complemento?: string | null
+          cpf: string
+          created_at?: string
+          ddd: string
+          dominio: string
+          email: string
+          endereco: string
+          id?: string
+          nome_completo: string
+          numero: string
+          plano: string
+          ramal?: string | null
+          status?: string
+          telefone: string
+          tenant_id?: string | null
+          uf: string
+          updated_at?: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          aceite_contrato?: boolean
+          cep?: string
+          cidade?: string
+          complemento?: string | null
+          cpf?: string
+          created_at?: string
+          ddd?: string
+          dominio?: string
+          email?: string
+          endereco?: string
+          id?: string
+          nome_completo?: string
+          numero?: string
+          plano?: string
+          ramal?: string | null
+          status?: string
+          telefone?: string
+          tenant_id?: string | null
+          uf?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_dominio_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitacoes_grupos: {
         Row: {
           automacao_id: string | null
