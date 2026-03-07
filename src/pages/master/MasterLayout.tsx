@@ -30,6 +30,7 @@ const MENU_ITEMS = [
   { key: "tenants", label: "Tenants", icon: Building2 },
   { key: "users", label: "Usuários", icon: Users },
   { key: "comunicador_requests", label: "Sol. Comunicadores", icon: MessageSquare },
+  { key: "comunicador_master", label: "Comunicador", icon: Phone },
   { key: "menus", label: "Menus / Permissões", icon: MenuIcon },
   { key: "categories", label: "Cat. Automação", icon: Layers3 },
   { key: "network_categories", label: "Cat. Network", icon: Settings2 },
