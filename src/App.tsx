@@ -23,9 +23,24 @@ const App = () => {
   const [profileKey, setProfileKey] = useState(0);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setLoading(false);
+
+      // If token refresh fails (user deleted), force logout
+      if (_event === 'TOKEN_REFRESHED' && !session) {
+        window.location.reload();
+        return;
+      }
+
+      // Validate user still exists when session is present
+      if (session) {
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          await supabase.auth.signOut();
+          window.location.reload();
+        }
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -36,7 +51,7 @@ const App = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check role when session changes
+  // Check role when session changes + realtime auto-logout
   useEffect(() => {
     if (!session?.user) {
       setIsMaster(false);
@@ -72,8 +87,31 @@ const App = () => {
       )
       .subscribe();
 
+    // Periodic session validation (every 30s) — catches deleted users
+    const intervalId = setInterval(async () => {
+      const { error } = await supabase.auth.getUser();
+      if (error) {
+        await supabase.auth.signOut();
+        window.location.reload();
+      }
+    }, 30000);
+
+    // Also check on tab focus
+    const handleVisibility = async () => {
+      if (document.visibilityState === 'visible') {
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          await supabase.auth.signOut();
+          window.location.reload();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [session?.user?.id]);
 
