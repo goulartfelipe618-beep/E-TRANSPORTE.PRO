@@ -275,6 +275,7 @@ export default function EmailBusiness() {
   if (step === 0) {
     return (
       <div className="space-y-8 max-w-5xl mx-auto">
+        <EmailHeroCarousel />
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
             <Mail className="h-4 w-4" />
