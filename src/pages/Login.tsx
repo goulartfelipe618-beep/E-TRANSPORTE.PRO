@@ -116,40 +116,34 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 p-4 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-[10%] w-64 h-64 rounded-full bg-purple-500/10 blur-[100px]" />
-        <div className="absolute bottom-10 right-[10%] w-80 h-80 rounded-full bg-indigo-500/10 blur-[120px]" />
-        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white/40 rounded-full" />
-        <div className="absolute top-1/5 left-1/3 w-0.5 h-0.5 bg-white/30 rounded-full" />
-        <div className="absolute bottom-1/4 left-1/5 w-1 h-1 bg-white/20 rounded-full" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #141414 50%, #0d0d0d 100%)" }}>
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none' stroke='%23fff' stroke-width='0.5'/%3E%3C/svg%3E\")" }} />
 
       {/* Card */}
-      <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl shadow-black/40 bg-background">
+      <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/[0.08]" style={{ background: "#161616" }}>
         {/* Illustration header */}
-        <div className="relative h-52 overflow-hidden">
+        <div className="relative h-48 overflow-hidden">
           <img
             src={loginIllustration}
             alt="Transporte Executivo"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #161616 0%, transparent 60%)" }} />
         </div>
 
         {/* Form body */}
         <div className="px-8 pb-8 pt-2 space-y-6">
-          <h2 className="text-2xl font-bold text-foreground text-center">
+          <h2 className="text-2xl font-bold text-center" style={{ color: "#f0f0f0" }}>
             Faça seu Login
           </h2>
 
           {blocked && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center">
-              <p className="text-sm font-medium text-destructive">
+            <div className="rounded-xl border p-3 text-center" style={{ borderColor: "rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.08)" }}>
+              <p className="text-sm font-medium" style={{ color: "#ef4444" }}>
                 Acesso bloqueado por excesso de tentativas.
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs mt-1" style={{ color: "#888" }}>
                 Tente novamente em {blockMinutes} minutos.
               </p>
             </div>
@@ -158,68 +152,90 @@ export default function Login() {
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email */}
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#666" }} />
+              <input
                 type="email"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setBlocked(false); }}
                 autoComplete="email"
-                className="h-12 pl-10 rounded-full border-border bg-muted/50"
+                className="w-full h-12 pl-10 pr-4 rounded-lg text-sm outline-none transition-colors"
+                style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.1)", color: "#e0e0e0" }}
+                onFocus={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"}
+                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
               />
             </div>
 
             {/* Password */}
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#666" }} />
+              <input
                 type="password"
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
-                className="h-12 pl-10 rounded-full border-border bg-muted/50"
+                className="w-full h-12 pl-10 pr-4 rounded-lg text-sm outline-none transition-colors"
+                style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.1)", color: "#e0e0e0" }}
+                onFocus={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"}
+                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
               />
             </div>
 
             {/* Captcha */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <KeyRound className="h-4 w-4 text-muted-foreground shrink-0" />
+                <KeyRound className="h-4 w-4 shrink-0" style={{ color: "#666" }} />
                 <div
-                  className="select-none px-4 py-2 rounded-lg bg-muted border border-border font-mono text-base tracking-[0.3em] text-foreground font-bold italic"
-                  style={{ textDecoration: "line-through", textDecorationColor: "hsl(var(--muted-foreground) / 0.3)" }}
+                  className="select-none px-4 py-2 rounded-lg font-mono text-base tracking-[0.3em] font-bold italic"
+                  style={{
+                    background: "#1a1a1a",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#d0d0d0",
+                    textDecoration: "line-through",
+                    textDecorationColor: "rgba(255,255,255,0.15)",
+                  }}
                 >
                   {captchaCode}
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={refreshCaptcha} className="shrink-0">
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+                <button
+                  type="button"
+                  onClick={refreshCaptcha}
+                  className="shrink-0 p-2 rounded-lg transition-colors hover:bg-white/5"
+                >
+                  <RefreshCw className="h-4 w-4" style={{ color: "#888" }} />
+                </button>
               </div>
               <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#666" }} />
+                <input
                   placeholder="Digite o código acima"
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
-                  className="h-12 pl-10 rounded-full border-border bg-muted/50 font-mono tracking-widest"
+                  className="w-full h-12 pl-10 pr-4 rounded-lg text-sm font-mono tracking-widest outline-none transition-colors"
+                  style={{ background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.1)", color: "#e0e0e0" }}
                   maxLength={5}
                   autoComplete="off"
+                  onFocus={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
                 />
               </div>
             </div>
 
-            <Button
+            <button
               type="submit"
-              className="w-full h-12 text-base font-semibold rounded-full"
+              className="w-full h-12 text-sm font-semibold rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{ background: "#fff", color: "#0a0a0a" }}
               disabled={loading || captchaInput.length < 5 || blocked}
+              onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#e0e0e0"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
               Iniciar Sessão
-            </Button>
+            </button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground">
+          <p className="text-center text-xs" style={{ color: "#555" }}>
             © {new Date().getFullYear()} — Todos os direitos reservados.
           </p>
         </div>
