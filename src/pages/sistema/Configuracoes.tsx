@@ -375,6 +375,9 @@ export default function SistemaConfiguracoes() {
         </CardContent>
       </Card>
 
+      {/* Slides da Home */}
+      <HomeSlidesManager />
+
       <Separator />
 
       {/* Hard Refresh */}
