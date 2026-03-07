@@ -76,6 +76,7 @@ export default function MasterLayout() {
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
       case "comunicador_requests": return <MasterComunicadorRequests />;
+      case "comunicador_master": return <MasterComunicador />;
       default: return <MasterDashboard />;
     }
   };
