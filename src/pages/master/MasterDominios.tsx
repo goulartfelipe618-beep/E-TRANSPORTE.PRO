@@ -46,6 +46,8 @@ export default function MasterDominios() {
   const [filterStatus, setFilterStatus] = useState("todos");
   const [selected, setSelected] = useState<DomainRequest | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [comunicarOpen, setComunicarOpen] = useState(false);
+  const [comunicarPayload, setComunicarPayload] = useState<Record<string, unknown>>({});
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -172,6 +174,19 @@ export default function MasterDominios() {
               </div>
 
               <div className="flex gap-2 pt-2">
+                <Button variant="outline" className="flex-1 gap-2" onClick={() => {
+                  setComunicarPayload({
+                    dominio: selected.dominio, nome_completo: selected.nome_completo,
+                    email: selected.email, telefone: `(${selected.ddd}) ${selected.telefone}`,
+                    plano: selected.plano, valor: `R$ ${Number(selected.valor).toFixed(2).replace(".", ",")}`,
+                    cidade: selected.cidade, uf: selected.uf, status: STATUS_MAP[selected.status]?.label || selected.status,
+                  });
+                  setComunicarOpen(true);
+                }}>
+                  <MessageSquare className="h-4 w-4" /> Comunicar
+                </Button>
+              </div>
+              <div className="flex gap-2">
                 <Button variant="outline" className="flex-1 gap-2 text-emerald-600 border-emerald-600/30 hover:bg-emerald-50" disabled={updating} onClick={() => updateStatus(selected.id, "aprovado")}>
                   <CheckCircle className="h-4 w-4" /> Aprovar
                 </Button>
@@ -186,6 +201,13 @@ export default function MasterDominios() {
           )}
         </DialogContent>
       </Dialog>
+
+      <MasterComunicarDialog
+        open={comunicarOpen}
+        onClose={() => setComunicarOpen(false)}
+        payload={comunicarPayload}
+        titulo="Comunicar sobre Solicitação de Domínio"
+      />
     </div>
   );
 }
