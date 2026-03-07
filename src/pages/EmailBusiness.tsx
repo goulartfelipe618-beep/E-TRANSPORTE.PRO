@@ -1,13 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Mail, Globe, Shield, Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Star, Users, Zap, ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Mail, Globe, Shield, Star, Users, Zap, CheckCircle2, ArrowRight, ArrowLeft, ExternalLink, Loader2, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
@@ -19,44 +17,24 @@ import websiteSlide2 from "@/assets/website-slide-2.jpg";
 import websiteSlide3 from "@/assets/website-slide-3.jpg";
 
 const EMAIL_SLIDES = [
-  {
-    image: websiteSlide1,
-    title: "Seu E-mail Profissional",
-    subtitle: "Tenha um endereço como contato@suaempresa.com.br e transmita autoridade e credibilidade para hotéis e clientes executivos.",
-  },
-  {
-    image: websiteSlide2,
-    title: "Passe Confiança para Hotéis e Empresas",
-    subtitle: "Motoristas com e-mail profissional fecham mais contratos corporativos. Mostre que seu serviço é empresa, não bico.",
-  },
-  {
-    image: websiteSlide3,
-    title: "Saia do Gmail Comum",
-    subtitle: "Diferencie-se da concorrência com um e-mail exclusivo no seu domínio. Mais profissionalismo em cada mensagem enviada.",
-  },
+  { image: websiteSlide1, title: "Seu E-mail Profissional", subtitle: "Tenha um endereço como contato@suaempresa.com.br e transmita autoridade e credibilidade para hotéis e clientes executivos." },
+  { image: websiteSlide2, title: "Passe Confiança para Hotéis e Empresas", subtitle: "Motoristas com e-mail profissional fecham mais contratos corporativos. Mostre que seu serviço é empresa, não bico." },
+  { image: websiteSlide3, title: "Saia do Gmail Comum", subtitle: "Diferencie-se da concorrência com um e-mail exclusivo no seu domínio. Mais profissionalismo em cada mensagem enviada." },
 ];
 
 function EmailHeroCarousel() {
   const [current, setCurrent] = useState(0);
-
   useEffect(() => {
     const timer = setInterval(() => setCurrent((p) => (p + 1) % EMAIL_SLIDES.length), 6000);
     return () => clearInterval(timer);
   }, []);
-
   const prev = () => setCurrent((p) => (p - 1 + EMAIL_SLIDES.length) % EMAIL_SLIDES.length);
   const next = () => setCurrent((p) => (p + 1) % EMAIL_SLIDES.length);
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden mb-8" style={{ aspectRatio: "21/9", minHeight: 220 }}>
       {EMAIL_SLIDES.map((slide, i) => (
-        <div
-          key={i}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-700",
-            i === current ? "opacity-100 z-10" : "opacity-0 z-0"
-          )}
-        >
+        <div key={i} className={cn("absolute inset-0 transition-opacity duration-700", i === current ? "opacity-100 z-10" : "opacity-0 z-0")}>
           <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent flex flex-col justify-center px-6 md:px-12">
             <h2 className="text-white text-xl md:text-3xl font-bold drop-shadow-lg mb-2">{slide.title}</h2>
@@ -64,12 +42,8 @@ function EmailHeroCarousel() {
           </div>
         </div>
       ))}
-      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
-        <ChevronRight className="h-5 w-5" />
-      </button>
+      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition"><ChevronLeft className="h-5 w-5" /></button>
+      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition"><ChevronRight className="h-5 w-5" /></button>
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {EMAIL_SLIDES.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} className={cn("w-2.5 h-2.5 rounded-full transition", i === current ? "bg-white scale-110" : "bg-white/50")} />
@@ -80,36 +54,9 @@ function EmailHeroCarousel() {
 }
 
 const PLANS = [
-  {
-    id: "start",
-    name: "Motorista Start",
-    icon: Mail,
-    price: "14,90",
-    storage: "30 GB",
-    features: ["1 conta de e-mail profissional", "30 GB de armazenamento", "Domínio incluso por 1 ano", "Acesso pelo celular", "Antivírus e antispam"],
-    ideal: "Motorista individual",
-    highlight: false,
-  },
-  {
-    id: "pro",
-    name: "Executivo Pro",
-    icon: Star,
-    price: "19,90",
-    storage: "50 GB",
-    features: ["1 conta com 50 GB", "Domínio incluso", "Calendário e contatos sincronizados", "Suporte prioritário"],
-    ideal: "Quem atende hotéis e empresas",
-    highlight: true,
-  },
-  {
-    id: "frota",
-    name: "Frota",
-    icon: Users,
-    price: "49,90",
-    storage: "30 GB x5",
-    features: ["Até 5 contas de e-mail", "30 GB cada conta", "Domínio incluso", "Gestão centralizada"],
-    ideal: "Quem tem equipe",
-    highlight: false,
-  },
+  { id: "start", name: "Motorista Start", icon: Mail, price: "14,90", storage: "30 GB", features: ["1 conta de e-mail profissional", "30 GB de armazenamento", "Domínio incluso por 1 ano", "Acesso pelo celular", "Antivírus e antispam"], ideal: "Motorista individual", highlight: false },
+  { id: "pro", name: "Executivo Pro", icon: Star, price: "19,90", storage: "50 GB", features: ["1 conta com 50 GB", "Domínio incluso", "Calendário e contatos sincronizados", "Suporte prioritário"], ideal: "Quem atende hotéis e empresas", highlight: true },
+  { id: "frota", name: "Frota", icon: Users, price: "49,90", storage: "30 GB x5", features: ["Até 5 contas de e-mail", "30 GB cada conta", "Domínio incluso", "Gestão centralizada"], ideal: "Quem tem equipe", highlight: false },
 ];
 
 const BENEFITS = [
@@ -120,15 +67,14 @@ const BENEFITS = [
   "Integração com Google Business",
 ];
 
-interface EmailAccount {
+interface EmailSolicitation {
   id: string;
-  email: string;
-  senha: string;
-  plano: string;
-  espaco: string;
   status: string;
+  email_solicitado: string;
+  email_criado: string | null;
+  webmail_url: string | null;
+  plano: string;
   dominio: string;
-  webmail_url: string;
   created_at: string;
 }
 
@@ -137,136 +83,150 @@ export default function EmailBusiness() {
   const { toast } = useToast();
   const { setActivePage } = useActivePage();
   const [loading, setLoading] = useState(true);
-  const [accounts, setAccounts] = useState<EmailAccount[]>([]);
+  const [solicitations, setSolicitations] = useState<EmailSolicitation[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // Wizard state
-  const [step, setStep] = useState(0); // 0=landing, 1=dominio, 2=plano, 3=conta, 4=confirmacao
+  const [step, setStep] = useState(0);
   const [domainOption, setDomainOption] = useState<"novo" | "existente" | "">("");
   const [domain, setDomain] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [nomeEmpresa, setNomeEmpresa] = useState("");
   const [nomeEmail, setNomeEmail] = useState("contato");
-  const [senha, setSenha] = useState("");
 
   const emailPreview = domain ? `${nomeEmail}@${domain}` : `${nomeEmail}@suaempresa.com.br`;
 
-  // Load existing accounts from system_settings (lightweight approach)
   useEffect(() => {
     if (!tenantId) return;
     setLoading(true);
     supabase
-      .from("system_settings")
+      .from("solicitacoes_email")
       .select("*")
-      .eq("key", `email_accounts_${tenantId}`)
-      .single()
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
-        if (data?.value) {
-          try {
-            setAccounts(JSON.parse(data.value));
-          } catch { setAccounts([]); }
-        }
+        setSolicitations((data as EmailSolicitation[]) || []);
         setLoading(false);
       });
   }, [tenantId]);
 
-  const saveAccounts = async (newAccounts: EmailAccount[]) => {
-    if (!tenantId) return;
-    const key = `email_accounts_${tenantId}`;
-    const value = JSON.stringify(newAccounts);
-    const { data: existing } = await supabase.from("system_settings").select("id").eq("key", key).single();
-    if (existing) {
-      await supabase.from("system_settings").update({ value }).eq("key", key);
-    } else {
-      await supabase.from("system_settings").insert({ key, value });
-    }
-    setAccounts(newAccounts);
-  };
+  const activeEmails = solicitations.filter((s) => s.status === "ativo" && s.email_criado && s.webmail_url);
+  const pendingSolicitations = solicitations.filter((s) => s.status === "pendente" || s.status === "aprovada");
 
-  const handleFinish = async () => {
+  const handleSubmit = async () => {
+    if (!tenantId) return;
+    setSubmitting(true);
     const plan = PLANS.find((p) => p.id === selectedPlan);
-    const newAccount: EmailAccount = {
-      id: crypto.randomUUID(),
-      email: emailPreview,
-      senha,
-      plano: plan?.name || selectedPlan,
-      espaco: plan?.storage || "30 GB",
-      status: "ativo",
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSubmitting(false); return; }
+
+    const { error } = await supabase.from("solicitacoes_email").insert({
+      tenant_id: tenantId,
+      user_id: user.id,
+      nome_completo: nomeCompleto,
+      nome_empresa: nomeEmpresa,
       dominio: domain,
-      webmail_url: "https://webmail.locaweb.com.br",
-      created_at: new Date().toISOString(),
-    };
-    await saveAccounts([...accounts, newAccount]);
-    toast({ title: "E-mail criado!", description: `${emailPreview} está ativo.` });
-    setStep(0);
-    setDomainOption("");
-    setDomain("");
-    setSelectedPlan("");
-    setNomeCompleto("");
-    setNomeEmpresa("");
-    setNomeEmail("contato");
-    setSenha("");
+      email_solicitado: emailPreview,
+      plano: plan?.name || selectedPlan,
+      valor: plan?.price || "0",
+      status: "pendente",
+    });
+
+    if (error) {
+      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Solicitação enviada!", description: "Você será contatado via WhatsApp para prosseguir." });
+      // Reload
+      const { data } = await supabase.from("solicitacoes_email").select("*").eq("tenant_id", tenantId).order("created_at", { ascending: false });
+      setSolicitations((data as EmailSolicitation[]) || []);
+      setStep(0);
+      setDomainOption("");
+      setDomain("");
+      setSelectedPlan("");
+      setNomeCompleto("");
+      setNomeEmpresa("");
+      setNomeEmail("contato");
+    }
+    setSubmitting(false);
   };
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
-  // If accounts exist, show dashboard + table
-  if (accounts.length > 0 && step === 0) {
+  // Dashboard view: show active emails + pending solicitations
+  if ((activeEmails.length > 0 || pendingSolicitations.length > 0) && step === 0) {
     return (
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-foreground">E-mail Business</h1>
-            <p className="text-muted-foreground">Gerencie suas contas de e-mail profissional</p>
+            <p className="text-muted-foreground">Seus e-mails profissionais</p>
           </div>
           <Button onClick={() => setStep(1)} className="gap-2 w-full sm:w-auto">
-            <Mail className="h-4 w-4" /> Nova Conta
+            <Mail className="h-4 w-4" /> Nova Solicitação
           </Button>
         </div>
 
-        <Card className="border-none shadow-sm">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>E-mail</TableHead>
-                  <TableHead className="hidden sm:table-cell">Senha</TableHead>
-                  <TableHead>Plano</TableHead>
-                  <TableHead>Espaço</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {accounts.map((acc) => (
-                  <TableRow key={acc.id}>
-                    <TableCell className="font-mono text-sm max-w-[200px] truncate">{acc.email}</TableCell>
-                    <TableCell className="font-mono text-sm hidden sm:table-cell">••••••••</TableCell>
-                    <TableCell>{acc.plano}</TableCell>
-                    <TableCell>{acc.espaco}</TableCell>
-                    <TableCell>
-                      <Badge className={acc.status === "ativo" ? "bg-emerald-600 text-white" : "bg-destructive text-white"}>
-                        {acc.status === "ativo" ? "Ativo" : "Inativo"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
+        {/* Active emails */}
+        {activeEmails.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold text-foreground">Seus E-mails Ativos</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {activeEmails.map((email) => (
+                <Card key={email.id} className="border-none shadow-sm">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-5 w-5 text-primary" />
+                          <span className="font-mono font-bold text-foreground">{email.email_criado}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Plano: {email.plano}</p>
+                        <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200">
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> Ativo
+                        </Badge>
+                      </div>
                       <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(acc.webmail_url, "_blank")}
-                        className="gap-1"
+                        onClick={() => window.open(email.webmail_url!, "_blank")}
+                        className="gap-2 shrink-0"
                       >
-                        <ExternalLink className="h-3 w-3" /> Acessar Webmail
+                        <ExternalLink className="h-4 w-4" /> Acessar E-mail
                       </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Pending solicitations */}
+        {pendingSolicitations.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold text-foreground">Solicitações em Andamento</h2>
+            {pendingSolicitations.map((s) => (
+              <Card key={s.id} className="border-none shadow-sm">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="space-y-1">
+                      <p className="font-mono text-sm text-foreground">{s.email_solicitado}</p>
+                      <p className="text-sm text-muted-foreground">Plano: {s.plano} — Domínio: {s.dominio}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Enviada em {new Date(s.created_at).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+                    <Badge className={s.status === "aprovada" ? "bg-blue-500/15 text-blue-700" : "bg-amber-500/15 text-amber-700"}>
+                      <Clock className="h-3 w-3 mr-1" />
+                      {s.status === "aprovada" ? "Aprovada — Aguardando Ativação" : "Pendente"}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -278,8 +238,7 @@ export default function EmailBusiness() {
         <EmailHeroCarousel />
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-            <Mail className="h-4 w-4" />
-            E-mail Business
+            <Mail className="h-4 w-4" /> E-mail Business
           </div>
           <h1 className="text-3xl font-bold text-foreground">Seu e-mail profissional para fechar mais corridas</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -297,8 +256,7 @@ export default function EmailBusiness() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl mx-auto">
           {BENEFITS.map((b) => (
             <div key={b} className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-              <span>{b}</span>
+              <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /><span>{b}</span>
             </div>
           ))}
         </div>
@@ -321,9 +279,7 @@ export default function EmailBusiness() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {PLANS.map((plan) => (
               <Card key={plan.id} className={cn("relative transition-all hover:shadow-md", plan.highlight && "border-primary ring-1 ring-primary")}>
-                {plan.highlight && (
-                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">Mais vendido</Badge>
-                )}
+                {plan.highlight && <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">Mais vendido</Badge>}
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
                     <plan.icon className="h-5 w-5 text-primary" />
@@ -338,8 +294,7 @@ export default function EmailBusiness() {
                   <ul className="space-y-1.5">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                        <span>{f}</span>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" /><span>{f}</span>
                       </li>
                     ))}
                   </ul>
@@ -352,9 +307,7 @@ export default function EmailBusiness() {
 
         <div className="text-center">
           <Button size="lg" onClick={() => setStep(1)} className="gap-2">
-            <Mail className="h-4 w-4" />
-            Criar Meu E-mail Profissional
-            <ArrowRight className="h-4 w-4" />
+            <Mail className="h-4 w-4" /> Solicitar Meu E-mail Profissional <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -364,68 +317,36 @@ export default function EmailBusiness() {
   // Wizard steps
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      {/* Progress */}
       <div className="flex items-center gap-2">
-        {["Domínio", "Plano", "Conta", "Confirmação"].map((label, i) => (
+        {["Domínio", "Plano", "Dados", "Confirmação"].map((label, i) => (
           <div key={label} className="flex items-center gap-2 flex-1">
-            <div className={cn(
-              "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0",
-              i + 1 <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-            )}>
-              {i + 1}
-            </div>
+            <div className={cn("flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0", i + 1 <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{i + 1}</div>
             <span className={cn("text-xs hidden sm:inline", i + 1 <= step ? "text-foreground font-medium" : "text-muted-foreground")}>{label}</span>
             {i < 3 && <div className={cn("flex-1 h-0.5", i + 1 < step ? "bg-primary" : "bg-muted")} />}
           </div>
         ))}
       </div>
 
-      {/* Step 1: Domain */}
       {step === 1 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Globe className="h-5 w-5 text-primary" />
-              Escolha seu domínio
-            </CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Globe className="h-5 w-5 text-primary" />Escolha seu domínio</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label>Você já tem um domínio?</Label>
-              <RadioGroup
-                value={domainOption || undefined}
-                onValueChange={(v) => setDomainOption(v as "novo" | "existente")}
-                className="flex gap-4 mt-2"
-              >
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="novo" id="email-dom-novo" />
-                  <Label htmlFor="email-dom-novo">Quero registrar um novo</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="existente" id="email-dom-existente" />
-                  <Label htmlFor="email-dom-existente">Já tenho um domínio</Label>
-                </div>
+              <RadioGroup value={domainOption || undefined} onValueChange={(v) => setDomainOption(v as "novo" | "existente")} className="flex gap-4 mt-2">
+                <div className="flex items-center gap-2"><RadioGroupItem value="novo" id="email-dom-novo" /><Label htmlFor="email-dom-novo">Quero registrar um novo</Label></div>
+                <div className="flex items-center gap-2"><RadioGroupItem value="existente" id="email-dom-existente" /><Label htmlFor="email-dom-existente">Já tenho um domínio</Label></div>
               </RadioGroup>
             </div>
             {domainOption && (
               <div className="space-y-2">
                 <Label>{domainOption === "novo" ? "Nome desejado para o domínio" : "Informe seu domínio"}</Label>
                 <Input placeholder="suaempresa.com.br" value={domain} onChange={(e) => setDomain(e.target.value)} />
-                {domainOption === "existente" && (
-                  <p className="text-xs text-muted-foreground">Será necessário apontar o DNS para ativação.</p>
-                )}
+                {domainOption === "existente" && <p className="text-xs text-muted-foreground">Será necessário apontar o DNS para ativação.</p>}
                 {domainOption === "novo" && (
                   <div className="space-y-2">
                     <p className="text-xs text-muted-foreground">Pesquise a disponibilidade antes de continuar.</p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActivePage("dominios")}
-                      className="gap-2"
-                    >
-                      <Globe className="h-4 w-4" />
-                      Pesquisar Domínio
-                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setActivePage("dominios")} className="gap-2"><Globe className="h-4 w-4" />Pesquisar Domínio</Button>
                   </div>
                 )}
               </div>
@@ -438,31 +359,15 @@ export default function EmailBusiness() {
         </Card>
       )}
 
-      {/* Step 2: Plan */}
       {step === 2 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Star className="h-5 w-5 text-primary" />
-              Escolha seu plano
-            </CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Star className="h-5 w-5 text-primary" />Escolha seu plano</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {PLANS.map((plan) => (
-              <div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={cn(
-                  "flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all",
-                  selectedPlan === plan.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-primary/50"
-                )}
-              >
+              <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={cn("flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all", selectedPlan === plan.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-primary/50")}>
                 <div className="flex items-center gap-3">
                   <plan.icon className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="font-medium text-foreground">{plan.name}</p>
-                    <p className="text-xs text-muted-foreground">{plan.ideal}</p>
-                  </div>
+                  <div><p className="font-medium text-foreground">{plan.name}</p><p className="text-xs text-muted-foreground">{plan.ideal}</p></div>
                 </div>
                 <span className="font-bold text-foreground">R$ {plan.price}/mês</span>
               </div>
@@ -475,25 +380,13 @@ export default function EmailBusiness() {
         </Card>
       )}
 
-      {/* Step 3: Account */}
       {step === 3 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Shield className="h-5 w-5 text-primary" />
-              Criar conta de e-mail
-            </CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Shield className="h-5 w-5 text-primary" />Seus dados</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Nome completo</Label>
-                <Input value={nomeCompleto} onChange={(e) => setNomeCompleto(e.target.value)} placeholder="Felipe da Silva" />
-              </div>
-              <div className="space-y-2">
-                <Label>Nome da empresa</Label>
-                <Input value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} placeholder="Executivo Balneário" />
-              </div>
+              <div className="space-y-2"><Label>Nome completo</Label><Input value={nomeCompleto} onChange={(e) => setNomeCompleto(e.target.value)} placeholder="Felipe da Silva" /></div>
+              <div className="space-y-2"><Label>Nome da empresa</Label><Input value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} placeholder="Executivo Balneário" /></div>
             </div>
             <div className="space-y-2">
               <Label>Nome do e-mail</Label>
@@ -503,66 +396,48 @@ export default function EmailBusiness() {
               </div>
               <p className="text-xs text-muted-foreground">Sugestões: contato, reservas, financeiro</p>
             </div>
-            <div className="space-y-2">
-              <Label>Senha do e-mail</Label>
-              <Input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Mínimo 8 caracteres" />
-            </div>
-
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="pt-4 text-center">
                 <p className="text-xs text-muted-foreground mb-1">Seu e-mail será:</p>
                 <p className="text-lg font-mono font-bold text-primary">{emailPreview}</p>
               </CardContent>
             </Card>
-
             <div className="flex justify-between pt-2">
               <Button variant="outline" onClick={() => setStep(2)}><ArrowLeft className="h-4 w-4 mr-1" />Voltar</Button>
-              <Button disabled={!nomeCompleto || !nomeEmpresa || !nomeEmail || senha.length < 8} onClick={() => setStep(4)}>
-                Próximo<ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
+              <Button disabled={!nomeCompleto || !nomeEmpresa || !nomeEmail} onClick={() => setStep(4)}>Próximo<ArrowRight className="h-4 w-4 ml-1" /></Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Step 4: Confirmation */}
       {step === 4 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle2 className="h-5 w-5 text-primary" />
-              Confirme sua solicitação
-            </CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><CheckCircle2 className="h-5 w-5 text-primary" />Confirme sua solicitação</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between py-2 border-b border-border">
-                <span className="text-muted-foreground">Domínio</span>
-                <span className="font-medium text-foreground">{domain}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border">
-                <span className="text-muted-foreground">Plano</span>
-                <span className="font-medium text-foreground">{PLANS.find(p => p.id === selectedPlan)?.name}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border">
-                <span className="text-muted-foreground">Valor</span>
-                <span className="font-bold text-foreground">R$ {PLANS.find(p => p.id === selectedPlan)?.price}/mês</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border">
-                <span className="text-muted-foreground">E-mail</span>
-                <span className="font-mono font-medium text-primary">{emailPreview}</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-muted-foreground">Responsável</span>
-                <span className="font-medium text-foreground">{nomeCompleto}</span>
-              </div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Domínio</span><span className="font-medium text-foreground">{domain}</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Plano</span><span className="font-medium text-foreground">{PLANS.find(p => p.id === selectedPlan)?.name}</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Valor</span><span className="font-bold text-foreground">R$ {PLANS.find(p => p.id === selectedPlan)?.price}/mês</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">E-mail</span><span className="font-mono font-medium text-primary">{emailPreview}</span></div>
+              <div className="flex justify-between py-2"><span className="text-muted-foreground">Responsável</span><span className="font-medium text-foreground">{nomeCompleto}</span></div>
             </div>
+
+            <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+              <CardContent className="pt-4 text-sm text-amber-800 dark:text-amber-200">
+                <p className="font-medium mb-1">📋 Próximos passos:</p>
+                <ol className="list-decimal list-inside space-y-1 text-xs">
+                  <li>Sua solicitação será analisada pela equipe</li>
+                  <li>Entraremos em contato via WhatsApp para pagamento</li>
+                  <li>Após confirmação, seu e-mail será criado e ativado</li>
+                </ol>
+              </CardContent>
+            </Card>
 
             <div className="flex justify-between pt-2">
               <Button variant="outline" onClick={() => setStep(3)}><ArrowLeft className="h-4 w-4 mr-1" />Voltar</Button>
-              <Button onClick={handleFinish} className="gap-2">
-                <CheckCircle2 className="h-4 w-4" />
-                Confirmar e Ativar
+              <Button onClick={handleSubmit} disabled={submitting} className="gap-2">
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                Enviar Solicitação
               </Button>
             </div>
           </CardContent>
