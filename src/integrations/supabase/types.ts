@@ -577,6 +577,45 @@ export type Database = {
         }
         Relationships: []
       }
+      master_webhooks: {
+        Row: {
+          categoria: string
+          created_at: string
+          descricao: string | null
+          envio_ativo: boolean
+          id: string
+          nome: string
+          recebimento_ativo: boolean
+          updated_at: string
+          webhook_slug: string
+          webhook_url_envio: string | null
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          descricao?: string | null
+          envio_ativo?: boolean
+          id?: string
+          nome: string
+          recebimento_ativo?: boolean
+          updated_at?: string
+          webhook_slug?: string
+          webhook_url_envio?: string | null
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          descricao?: string | null
+          envio_ativo?: boolean
+          id?: string
+          nome?: string
+          recebimento_ativo?: boolean
+          updated_at?: string
+          webhook_slug?: string
+          webhook_url_envio?: string | null
+        }
+        Relationships: []
+      }
       motorista_veiculos: {
         Row: {
           ano: number
