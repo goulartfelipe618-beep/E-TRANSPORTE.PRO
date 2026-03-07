@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone,
+  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ import MasterAnotacoes from "./MasterAnotacoes";
 import MasterComunicadorRequests from "./MasterComunicadorRequests";
 import MasterDominios from "./MasterDominios";
 import MasterComunicador from "./MasterComunicador";
+import MasterSlides from "./MasterSlides";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -41,6 +42,7 @@ const MENU_ITEMS = [
   { key: "website_templates", label: "Modelos Website", icon: LayoutTemplate },
   { key: "websites", label: "Sol. Websites", icon: Globe },
   { key: "dominios", label: "Sol. Domínio", icon: Globe },
+  { key: "slides", label: "Slides", icon: ImageIcon },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
 
@@ -75,6 +77,7 @@ export default function MasterLayout() {
       case "dominios": return <MasterDominios />;
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
+      case "slides": return <MasterSlides />;
       case "comunicador_requests": return <MasterComunicadorRequests />;
       case "comunicador_master": return <MasterComunicador />;
       default: return <MasterDashboard />;
