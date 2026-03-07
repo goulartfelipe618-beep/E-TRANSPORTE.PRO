@@ -33,6 +33,7 @@ import {
   Mail,
   QrCode,
   Building2,
+  Home,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -78,6 +79,7 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
   {
     label: "Principal",
     items: [
+      { title: "Home", icon: Home, page: "home", menuKey: "home" },
       {
         title: "Dashboard",
         icon: LayoutDashboard,

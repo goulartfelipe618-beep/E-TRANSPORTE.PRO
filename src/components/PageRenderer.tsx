@@ -1,5 +1,7 @@
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 
+// Home
+import Home from "@/pages/Home";
 // Dashboard
 import DashboardMetricas from "@/pages/dashboard/Metricas";
 import DashboardAbrangencia from "@/pages/dashboard/Abrangencia";
@@ -47,6 +49,7 @@ import WebsitePage from "@/pages/Website";
 import DominiosPage from "@/pages/Dominios";
 
 const pageMap: Record<PageKey, React.ComponentType> = {
+  "home": Home,
   "dashboard/metricas": DashboardMetricas,
   "dashboard/abrangencia": DashboardAbrangencia,
   "transfer/solicitacoes": TransferSolicitacoes,

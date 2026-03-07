@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export type PageKey =
+  | "home"
   | "dashboard/metricas"
   | "dashboard/abrangencia"
   | "transfer/solicitacoes"
@@ -41,12 +42,12 @@ interface PageContextType {
 }
 
 const PageContext = createContext<PageContextType>({
-  activePage: "dashboard/metricas",
+  activePage: "home",
   setActivePage: () => {},
 });
 
 export function PageProvider({ children }: { children: ReactNode }) {
-  const [activePage, setActivePage] = useState<PageKey>("dashboard/metricas");
+  const [activePage, setActivePage] = useState<PageKey>("home");
   return (
     <PageContext.Provider value={{ activePage, setActivePage }}>
       {children}
