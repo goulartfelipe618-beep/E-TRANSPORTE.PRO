@@ -40,11 +40,12 @@ export default function SistemaComunicador() {
   const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
 
   // QR Code flow
-  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing" | "scanned" | "pending" | "done">("idle");
+  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing" | "confirming" | "connected" | "pending" | "done">("idle");
   const [qrBase64, setQrBase64] = useState("");
   const [instanceName, setInstanceName] = useState("");
   const [telefoneWhats, setTelefoneWhats] = useState("");
   const [solicitacao, setSolicitacao] = useState<SolicitacaoCom | null>(null);
+  const [webhookUrl, setWebhookUrl] = useState("");
 
   const fetchComunicadores = useCallback(async () => {
     setLoading(true);
@@ -127,6 +128,64 @@ export default function SistemaComunicador() {
       console.error("QR error:", e);
       toast.error(e.message || "Erro ao gerar QR Code");
       setQrStep("idle");
+    }
+  };
+
+  const handleConfirmAndRequest = async () => {
+    if (!telefoneWhats.trim()) {
+      toast.error("Informe o número de WhatsApp");
+      return;
+    }
+    setQrStep("confirming");
+    try {
+      // Check connection status
+      const { data, error } = await supabase.functions.invoke("evolution-proxy", {
+        body: { action: "check_status", instance_name: instanceName },
+      });
+      if (error) throw error;
+
+      const state = data?.instance?.state || data?.state || "";
+      if (state === "open" || state === "connected") {
+        // Auto-register comunicador
+        if (comunicadores.length >= MAX_COMUNICADORES) {
+          toast.error(`Máximo de ${MAX_COMUNICADORES} comunicadores atingido`);
+          setQrStep("showing");
+          return;
+        }
+        const { error: insertErr } = await supabase.from("comunicadores").insert({
+          nome: `WhatsApp ${comunicadores.length + 1}`,
+          webhook_url: webhookUrl.trim() || "",
+          descricao: `Instância: ${instanceName} | Tel: ${telefoneWhats}`,
+          ativo: true,
+          tenant_id: tenantId,
+        });
+        if (insertErr) throw insertErr;
+
+        // Also send the solicitation for master tracking
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("solicitacoes_comunicador").insert({
+            tenant_id: tenantId,
+            user_id: user.id,
+            nome_projeto: projectName,
+            telefone_whatsapp: telefoneWhats.trim(),
+            instance_name: instanceName,
+            status: "concluido",
+          } as any);
+        }
+
+        toast.success("WhatsApp conectado e comunicador registrado!");
+        setQrStep("connected");
+        setWebhookUrl("");
+        setTelefoneWhats("");
+        fetchComunicadores();
+      } else {
+        toast.error("WhatsApp ainda não conectado. Escaneie o QR Code e tente novamente.");
+        setQrStep("showing");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao confirmar conexão");
+      setQrStep("showing");
     }
   };
 
