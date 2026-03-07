@@ -24,24 +24,40 @@ Deno.serve(async (req) => {
 
     const res = await fetch(`https://brasilapi.com.br/api/registrobr/v1/${encodeURIComponent(sanitized)}`);
 
+    const statusMap: Record<string, string> = {
+      'AVAILABLE': 'Disponível',
+      'REGISTERED': 'Registrado',
+      'PUBLISHED': 'Publicado',
+      'WAITING_RELEASE': 'Aguardando liberação',
+      'EXPIRED': 'Expirado',
+      'PENDING': 'Pendente',
+      'INACTIVE': 'Inativo',
+      'SUSPENDED': 'Suspenso',
+    };
+
+    const translateStatus = (s: string) => statusMap[s?.toUpperCase()] || s || 'Desconhecido';
+
     if (res.status === 404) {
       return new Response(
-        JSON.stringify({ success: true, available: true, domain: sanitized, status: 'AVAILABLE' }),
+        JSON.stringify({ success: true, available: true, domain: sanitized, status: 'Disponível' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (res.ok) {
       const data = await res.json();
+      const rawStatus = (data.status_dns || data.status || '').toUpperCase();
+      const isAvailable = rawStatus === 'AVAILABLE' || rawStatus === 'WAITING_RELEASE' || rawStatus === 'EXPIRED';
+
       return new Response(
         JSON.stringify({
           success: true,
-          available: false,
+          available: isAvailable,
           domain: sanitized,
-          status: data.status_dns || data.status || 'REGISTERED',
+          status: translateStatus(rawStatus),
           fqdn: data.fqdn || null,
           hosts: data.hosts || [],
-          publicationStatus: data.publication_status || null,
+          publicationStatus: data.publication_status ? translateStatus(data.publication_status) : null,
           expiresAt: data.expires_at || null,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
