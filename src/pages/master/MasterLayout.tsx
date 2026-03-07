@@ -23,6 +23,7 @@ import MasterWebsiteTemplates from "./MasterWebsiteTemplates";
 import MasterAnotacoes from "./MasterAnotacoes";
 import MasterComunicadorRequests from "./MasterComunicadorRequests";
 import MasterDominios from "./MasterDominios";
+import MasterComunicador from "./MasterComunicador";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
