@@ -22,6 +22,7 @@ import MasterWebsites from "./MasterWebsites";
 import MasterWebsiteTemplates from "./MasterWebsiteTemplates";
 import MasterAnotacoes from "./MasterAnotacoes";
 import MasterComunicadorRequests from "./MasterComunicadorRequests";
+import MasterDominios from "./MasterDominios";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -37,6 +38,7 @@ const MENU_ITEMS = [
   { key: "security", label: "Segurança", icon: Shield },
   { key: "website_templates", label: "Modelos Website", icon: LayoutTemplate },
   { key: "websites", label: "Sol. Websites", icon: Globe },
+  { key: "dominios", label: "Sol. Domínio", icon: Globe },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
 
@@ -68,6 +70,7 @@ export default function MasterLayout() {
       case "apis": return <MasterApiConfig />;
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
+      case "dominios": return <MasterDominios />;
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
       case "comunicador_requests": return <MasterComunicadorRequests />;
