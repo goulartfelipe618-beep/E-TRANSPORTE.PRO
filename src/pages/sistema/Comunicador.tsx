@@ -364,13 +364,13 @@ export default function SistemaComunicador() {
                     </div>
                   )}
                   <p className="text-sm text-muted-foreground mt-3">
-                    Abra o WhatsApp → Menu → Dispositivos conectados → Conectar dispositivo → Escaneie este QR Code
+                    Abra o WhatsApp → Menu → Dispositivos conectados → Escaneie este QR Code
                   </p>
                 </div>
 
                 <div className="border-t pt-4 space-y-4">
                   <p className="text-sm font-medium text-center">
-                    Já escaneou o QR Code? Preencha o telefone e clique em <strong>Gerar Comunicador</strong>
+                    Já escaneou? Preencha os dados e confirme a conexão:
                   </p>
                   <div className="max-w-sm mx-auto space-y-3">
                     <div className="space-y-1">
@@ -381,11 +381,35 @@ export default function SistemaComunicador() {
                         placeholder="(00) 00000-0000"
                       />
                     </div>
-                    <Button className="w-full" onClick={handleRequestComunicador}>
-                      <MessageSquare className="h-4 w-4 mr-2" /> Gerar Comunicador
+                    <div className="space-y-1">
+                      <Label>URL do Webhook (opcional, pode editar depois)</Label>
+                      <Input
+                        value={webhookUrl}
+                        onChange={(e) => setWebhookUrl(e.target.value)}
+                        placeholder="https://n8n.seudominio.com/webhook/..."
+                      />
+                    </div>
+                    <Button className="w-full" onClick={handleConfirmAndRequest}>
+                      <CheckCircle className="h-4 w-4 mr-2" /> Confirmar Conexão e Registrar
                     </Button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {qrStep === "confirming" && (
+              <div className="text-center space-y-4 py-8">
+                <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+                <p className="text-sm text-muted-foreground">Verificando conexão com Evolution API...</p>
+              </div>
+            )}
+
+            {qrStep === "connected" && (
+              <div className="text-center space-y-4 py-8">
+                <CheckCircle className="h-16 w-16 mx-auto text-emerald-500" />
+                <p className="text-sm font-medium text-foreground">Comunicador registrado com sucesso!</p>
+                <p className="text-xs text-muted-foreground">Você pode configurar o webhook na lista abaixo.</p>
+                <Button variant="outline" onClick={() => setQrStep("idle")}>Conectar outro WhatsApp</Button>
               </div>
             )}
           </CardContent>
