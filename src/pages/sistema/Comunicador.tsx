@@ -292,7 +292,7 @@ export default function SistemaComunicador() {
   };
 
   // Show completed state or existing comunicadores
-  const showComunicadores = qrStep === "done" || comunicadores.length > 0;
+  const showComunicadores = qrStep === "done" || qrStep === "connected" || comunicadores.length > 0;
 
   return (
     <div className="space-y-6">
