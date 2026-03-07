@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon, Mail,
+  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon, Mail, Webhook,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,7 @@ import MasterDominios from "./MasterDominios";
 import MasterComunicador from "./MasterComunicador";
 import MasterSlides from "./MasterSlides";
 import MasterEmails from "./MasterEmails";
+import MasterWebhooks from "./MasterWebhooks";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -44,6 +45,7 @@ const MENU_ITEMS = [
   { key: "websites", label: "Sol. Websites", icon: Globe },
   { key: "dominios", label: "Sol. Domínio", icon: Globe },
   { key: "emails", label: "Sol. E-mails", icon: Mail },
+  { key: "webhooks", label: "Webhooks", icon: Webhook },
   { key: "slides", label: "Slides", icon: ImageIcon },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
@@ -83,6 +85,7 @@ export default function MasterLayout() {
       case "slides": return <MasterSlides />;
       case "comunicador_requests": return <MasterComunicadorRequests />;
       case "comunicador_master": return <MasterComunicador />;
+      case "webhooks": return <MasterWebhooks />;
       default: return <MasterDashboard />;
     }
   };
