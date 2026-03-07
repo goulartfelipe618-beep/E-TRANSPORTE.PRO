@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Mail, Globe, Shield, Star, Users, Zap, CheckCircle2, ArrowRight, ArrowLeft, ExternalLink, Loader2, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Mail, Globe, Shield, Star, Users, Zap, CheckCircle2, ArrowRight, ArrowLeft, ExternalLink, Loader2, ChevronLeft, ChevronRight, Clock, Minus, Plus, HardDrive } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +17,7 @@ import websiteSlide1 from "@/assets/website-slide-1.jpg";
 import websiteSlide2 from "@/assets/website-slide-2.jpg";
 import websiteSlide3 from "@/assets/website-slide-3.jpg";
 
+// --- Hero Carousel ---
 const EMAIL_SLIDES = [
   { image: websiteSlide1, title: "Seu E-mail Profissional", subtitle: "Tenha um endereço como contato@suaempresa.com.br e transmita autoridade e credibilidade para hotéis e clientes executivos." },
   { image: websiteSlide2, title: "Passe Confiança para Hotéis e Empresas", subtitle: "Motoristas com e-mail profissional fecham mais contratos corporativos. Mostre que seu serviço é empresa, não bico." },
@@ -53,10 +55,69 @@ function EmailHeroCarousel() {
   );
 }
 
-const PLANS = [
-  { id: "start", name: "Motorista Start", icon: Mail, price: "14,90", storage: "30 GB", features: ["1 conta de e-mail profissional", "30 GB de armazenamento", "Domínio incluso por 1 ano", "Acesso pelo celular", "Antivírus e antispam"], ideal: "Motorista individual", highlight: false },
-  { id: "pro", name: "Executivo Pro", icon: Star, price: "19,90", storage: "50 GB", features: ["1 conta com 50 GB", "Domínio incluso", "Calendário e contatos sincronizados", "Suporte prioritário"], ideal: "Quem atende hotéis e empresas", highlight: true },
-  { id: "frota", name: "Frota", icon: Users, price: "49,90", storage: "30 GB x5", features: ["Até 5 contas de e-mail", "30 GB cada conta", "Domínio incluso", "Gestão centralizada"], ideal: "Quem tem equipe", highlight: false },
+// --- Plans with dynamic qty ---
+interface PlanDef {
+  id: string;
+  name: string;
+  subtitle: string;
+  icon: typeof Mail;
+  pricePerAccount: number;
+  originalPrice: number;
+  discount: number;
+  storage: string;
+  defaultQty: number;
+  minQty: number;
+  maxQty: number;
+  features: string[];
+  highlight: boolean;
+}
+
+const PLANS: PlanDef[] = [
+  {
+    id: "go30",
+    name: "Email Go 30 GB",
+    subtitle: "E-mail profissional para negócios que estão começando",
+    icon: Mail,
+    originalPrice: 14.90,
+    pricePerAccount: 13.41,
+    discount: 10,
+    storage: "30 GB",
+    defaultQty: 2,
+    minQty: 1,
+    maxQty: 50,
+    features: ["Domínio grátis por 1 ano", "30 GB de armazenamento", "Sincronização de e-mails, calendário e contatos", "Acesso pelo celular", "Antivírus e antispam"],
+    highlight: false,
+  },
+  {
+    id: "go50",
+    name: "Email Go 50 GB",
+    subtitle: "Mais espaço de armazenamento para empresas em crescimento",
+    icon: Star,
+    originalPrice: 19.90,
+    pricePerAccount: 17.91,
+    discount: 10,
+    storage: "50 GB",
+    defaultQty: 2,
+    minQty: 1,
+    maxQty: 50,
+    features: ["Domínio grátis por 1 ano", "50 GB de armazenamento", "Sincronização de e-mails, calendário e contatos", "Suporte prioritário"],
+    highlight: true,
+  },
+  {
+    id: "locaweb15",
+    name: "Email Locaweb 15 GB",
+    subtitle: "Múltiplas contas de e-mail com o melhor custo-benefício",
+    icon: Users,
+    originalPrice: 6.90,
+    pricePerAccount: 6.21,
+    discount: 10,
+    storage: "15 GB",
+    defaultQty: 25,
+    minQty: 5,
+    maxQty: 100,
+    features: ["15 GB de armazenamento", "Ideal para equipes grandes", "Gestão centralizada"],
+    highlight: false,
+  },
 ];
 
 const BENEFITS = [
@@ -66,6 +127,33 @@ const BENEFITS = [
   "Passa imagem de empresa estruturada",
   "Integração com Google Business",
 ];
+
+function formatBRL(value: number) {
+  return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// --- Quantity Selector Component ---
+function QtySelector({ qty, min, max, onChange }: { qty: number; min: number; max: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={(e) => { e.stopPropagation(); onChange(Math.max(min, qty - 1)); }}
+        className="w-7 h-7 rounded-md border border-border flex items-center justify-center hover:bg-muted transition disabled:opacity-40"
+        disabled={qty <= min}
+      >
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+      <span className="w-8 text-center font-bold text-foreground text-sm">{qty}</span>
+      <button
+        onClick={(e) => { e.stopPropagation(); onChange(Math.min(max, qty + 1)); }}
+        className="w-7 h-7 rounded-md border border-border flex items-center justify-center hover:bg-muted transition disabled:opacity-40"
+        disabled={qty >= max}
+      >
+        <Plus className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
 
 interface EmailSolicitation {
   id: string;
@@ -91,11 +179,21 @@ export default function EmailBusiness() {
   const [domainOption, setDomainOption] = useState<"novo" | "existente" | "">("");
   const [domain, setDomain] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [planQtys, setPlanQtys] = useState<Record<string, number>>(() => {
+    const m: Record<string, number> = {};
+    PLANS.forEach((p) => { m[p.id] = p.defaultQty; });
+    return m;
+  });
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [nomeEmpresa, setNomeEmpresa] = useState("");
   const [nomeEmail, setNomeEmail] = useState("contato");
 
   const emailPreview = domain ? `${nomeEmail}@${domain}` : `${nomeEmail}@suaempresa.com.br`;
+
+  const selectedPlanDef = PLANS.find((p) => p.id === selectedPlan);
+  const selectedQty = selectedPlan ? (planQtys[selectedPlan] || 1) : 1;
+  const monthlyTotal = selectedPlanDef ? selectedPlanDef.pricePerAccount * selectedQty : 0;
+  const yearlyTotal = monthlyTotal * 12;
 
   useEffect(() => {
     if (!tenantId) return;
@@ -115,11 +213,12 @@ export default function EmailBusiness() {
   const pendingSolicitations = solicitations.filter((s) => s.status === "pendente" || s.status === "aprovada");
 
   const handleSubmit = async () => {
-    if (!tenantId) return;
+    if (!tenantId || !selectedPlanDef) return;
     setSubmitting(true);
-    const plan = PLANS.find((p) => p.id === selectedPlan);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSubmitting(false); return; }
+
+    const valorStr = `${formatBRL(monthlyTotal)}/mês (${selectedQty}x R$ ${formatBRL(selectedPlanDef.pricePerAccount)})`;
 
     const { error } = await supabase.from("solicitacoes_email").insert({
       tenant_id: tenantId,
@@ -128,8 +227,8 @@ export default function EmailBusiness() {
       nome_empresa: nomeEmpresa,
       dominio: domain,
       email_solicitado: emailPreview,
-      plano: plan?.name || selectedPlan,
-      valor: plan?.price || "0",
+      plano: `${selectedPlanDef.name} (${selectedQty} contas)`,
+      valor: valorStr,
       status: "pendente",
     });
 
@@ -137,13 +236,17 @@ export default function EmailBusiness() {
       toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Solicitação enviada!", description: "Você será contatado via WhatsApp para prosseguir." });
-      // Reload
       const { data } = await supabase.from("solicitacoes_email").select("*").eq("tenant_id", tenantId).order("created_at", { ascending: false });
       setSolicitations((data as EmailSolicitation[]) || []);
       setStep(0);
       setDomainOption("");
       setDomain("");
       setSelectedPlan("");
+      setPlanQtys(() => {
+        const m: Record<string, number> = {};
+        PLANS.forEach((p) => { m[p.id] = p.defaultQty; });
+        return m;
+      });
       setNomeCompleto("");
       setNomeEmpresa("");
       setNomeEmail("contato");
@@ -155,7 +258,7 @@ export default function EmailBusiness() {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
-  // Dashboard view: show active emails + pending solicitations
+  // Dashboard view
   if ((activeEmails.length > 0 || pendingSolicitations.length > 0) && step === 0) {
     return (
       <div className="space-y-6">
@@ -169,7 +272,6 @@ export default function EmailBusiness() {
           </Button>
         </div>
 
-        {/* Active emails */}
         {activeEmails.length > 0 && (
           <div className="space-y-3">
             <h2 className="text-lg font-semibold text-foreground">Seus E-mails Ativos</h2>
@@ -188,10 +290,7 @@ export default function EmailBusiness() {
                           <CheckCircle2 className="h-3 w-3 mr-1" /> Ativo
                         </Badge>
                       </div>
-                      <Button
-                        onClick={() => window.open(email.webmail_url!, "_blank")}
-                        className="gap-2 shrink-0"
-                      >
+                      <Button onClick={() => window.open(email.webmail_url!, "_blank")} className="gap-2 shrink-0">
                         <ExternalLink className="h-4 w-4" /> Acessar E-mail
                       </Button>
                     </div>
@@ -202,7 +301,6 @@ export default function EmailBusiness() {
           </div>
         )}
 
-        {/* Pending solicitations */}
         {pendingSolicitations.length > 0 && (
           <div className="space-y-3">
             <h2 className="text-lg font-semibold text-foreground">Solicitações em Andamento</h2>
@@ -213,9 +311,7 @@ export default function EmailBusiness() {
                     <div className="space-y-1">
                       <p className="font-mono text-sm text-foreground">{s.email_solicitado}</p>
                       <p className="text-sm text-muted-foreground">Plano: {s.plano} — Domínio: {s.dominio}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Enviada em {new Date(s.created_at).toLocaleDateString("pt-BR")}
-                      </p>
+                      <p className="text-xs text-muted-foreground">Enviada em {new Date(s.created_at).toLocaleDateString("pt-BR")}</p>
                     </div>
                     <Badge className={s.status === "aprovada" ? "bg-blue-500/15 text-blue-700" : "bg-amber-500/15 text-amber-700"}>
                       <Clock className="h-3 w-3 mr-1" />
@@ -274,41 +370,83 @@ export default function EmailBusiness() {
           </CardContent>
         </Card>
 
+        {/* Plans */}
         <div>
-          <h2 className="text-xl font-bold text-center text-foreground mb-4">Escolha seu plano</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {PLANS.map((plan) => (
-              <Card key={plan.id} className={cn("relative transition-all hover:shadow-md", plan.highlight && "border-primary ring-1 ring-primary")}>
-                {plan.highlight && <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">Mais vendido</Badge>}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <plan.icon className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">{plan.name}</CardTitle>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-3xl font-bold text-foreground">R$ {plan.price}</span>
-                    <span className="text-sm text-muted-foreground">/mês</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <ul className="space-y-1.5">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" /><span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="text-xs text-muted-foreground italic">Ideal para: {plan.ideal}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+          <h2 className="text-xl font-bold text-center text-foreground mb-6">Escolha seu plano</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {PLANS.map((plan) => {
+              const qty = planQtys[plan.id];
+              const monthTotal = plan.pricePerAccount * qty;
+              const yearTotal = monthTotal * 12;
 
-        <div className="text-center">
-          <Button size="lg" onClick={() => setStep(1)} className="gap-2">
-            <Mail className="h-4 w-4" /> Solicitar Meu E-mail Profissional <ArrowRight className="h-4 w-4" />
-          </Button>
+              return (
+                <Card key={plan.id} className={cn("relative transition-all hover:shadow-lg flex flex-col", plan.highlight && "border-primary ring-2 ring-primary/30")}>
+                  {plan.highlight && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1">Recomendado</Badge>
+                  )}
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <plan.icon className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-base">{plan.name}</CardTitle>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.subtitle}</p>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col space-y-4">
+                    {/* Price */}
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-sm text-muted-foreground line-through">R$ {formatBRL(plan.originalPrice)}</span>
+                        <Badge variant="secondary" className="text-xs">{plan.discount}% OFF</Badge>
+                      </div>
+                      <div className="mt-1">
+                        <span className="text-3xl font-bold text-foreground">R$ {formatBRL(plan.pricePerAccount)}</span>
+                        <span className="text-sm text-muted-foreground">/por conta</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1 font-medium">
+                        R$ {formatBRL(monthTotal)} por mês*
+                      </p>
+                    </div>
+
+                    {/* Qty selector */}
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-foreground">Contas de e-mail</span>
+                        <QtySelector
+                          qty={qty}
+                          min={plan.minQty}
+                          max={plan.maxQty}
+                          onChange={(v) => setPlanQtys((prev) => ({ ...prev, [plan.id]: v }))}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">Total por ano: <strong className="text-foreground">R$ {formatBRL(yearTotal)}</strong></p>
+                    </div>
+
+                    {/* Features */}
+                    <ul className="space-y-1.5 flex-1">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" /><span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* CTA */}
+                    <Button
+                      className="w-full gap-2"
+                      variant={plan.highlight ? "default" : "outline"}
+                      onClick={() => {
+                        setSelectedPlan(plan.id);
+                        setStep(1);
+                      }}
+                    >
+                      Contratar <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          <p className="text-xs text-center text-muted-foreground mt-4">* Pagamento anual e antecipado. ** Domínio grátis válido por 1 ano nas extensões .BR</p>
         </div>
       </div>
     );
@@ -361,17 +499,49 @@ export default function EmailBusiness() {
 
       {step === 2 && (
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Star className="h-5 w-5 text-primary" />Escolha seu plano</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            {PLANS.map((plan) => (
-              <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={cn("flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all", selectedPlan === plan.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-primary/50")}>
-                <div className="flex items-center gap-3">
-                  <plan.icon className="h-5 w-5 text-primary" />
-                  <div><p className="font-medium text-foreground">{plan.name}</p><p className="text-xs text-muted-foreground">{plan.ideal}</p></div>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Star className="h-5 w-5 text-primary" />Confirme seu plano</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            {PLANS.map((plan) => {
+              const qty = planQtys[plan.id];
+              const total = plan.pricePerAccount * qty;
+              return (
+                <div
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan.id)}
+                  className={cn(
+                    "p-4 rounded-lg border cursor-pointer transition-all space-y-3",
+                    selectedPlan === plan.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-primary/50"
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <plan.icon className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium text-foreground">{plan.name}</p>
+                        <p className="text-xs text-muted-foreground">{plan.storage} por conta</p>
+                      </div>
+                    </div>
+                    {plan.highlight && <Badge className="bg-primary text-primary-foreground text-xs">Recomendado</Badge>}
+                  </div>
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md p-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-foreground">Contas:</span>
+                    </div>
+                    <QtySelector
+                      qty={qty}
+                      min={plan.minQty}
+                      max={plan.maxQty}
+                      onChange={(v) => setPlanQtys((prev) => ({ ...prev, [plan.id]: v }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{qty}x R$ {formatBRL(plan.pricePerAccount)}</span>
+                    <span className="font-bold text-foreground">R$ {formatBRL(total)}/mês</span>
+                  </div>
                 </div>
-                <span className="font-bold text-foreground">R$ {plan.price}/mês</span>
-              </div>
-            ))}
+              );
+            })}
             <div className="flex justify-between pt-2">
               <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="h-4 w-4 mr-1" />Voltar</Button>
               <Button disabled={!selectedPlan} onClick={() => setStep(3)}>Próximo<ArrowRight className="h-4 w-4 ml-1" /></Button>
@@ -389,7 +559,7 @@ export default function EmailBusiness() {
               <div className="space-y-2"><Label>Nome da empresa</Label><Input value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} placeholder="Executivo Balneário" /></div>
             </div>
             <div className="space-y-2">
-              <Label>Nome do e-mail</Label>
+              <Label>Nome do e-mail principal</Label>
               <div className="flex items-center gap-1">
                 <Input value={nomeEmail} onChange={(e) => setNomeEmail(e.target.value)} placeholder="contato" className="max-w-[180px]" />
                 <span className="text-sm text-muted-foreground">@{domain || "suaempresa.com.br"}</span>
@@ -398,7 +568,7 @@ export default function EmailBusiness() {
             </div>
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="pt-4 text-center">
-                <p className="text-xs text-muted-foreground mb-1">Seu e-mail será:</p>
+                <p className="text-xs text-muted-foreground mb-1">E-mail principal:</p>
                 <p className="text-lg font-mono font-bold text-primary">{emailPreview}</p>
               </CardContent>
             </Card>
@@ -416,9 +586,11 @@ export default function EmailBusiness() {
           <CardContent className="space-y-4">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Domínio</span><span className="font-medium text-foreground">{domain}</span></div>
-              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Plano</span><span className="font-medium text-foreground">{PLANS.find(p => p.id === selectedPlan)?.name}</span></div>
-              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Valor</span><span className="font-bold text-foreground">R$ {PLANS.find(p => p.id === selectedPlan)?.price}/mês</span></div>
-              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">E-mail</span><span className="font-mono font-medium text-primary">{emailPreview}</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Plano</span><span className="font-medium text-foreground">{selectedPlanDef?.name}</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Contas de e-mail</span><span className="font-bold text-foreground">{selectedQty} contas</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Valor mensal</span><span className="font-bold text-foreground">R$ {formatBRL(monthlyTotal)}/mês</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">Valor anual</span><span className="font-bold text-primary">R$ {formatBRL(yearlyTotal)}/ano</span></div>
+              <div className="flex justify-between py-2 border-b border-border"><span className="text-muted-foreground">E-mail principal</span><span className="font-mono font-medium text-primary">{emailPreview}</span></div>
               <div className="flex justify-between py-2"><span className="text-muted-foreground">Responsável</span><span className="font-medium text-foreground">{nomeCompleto}</span></div>
             </div>
 
@@ -428,7 +600,7 @@ export default function EmailBusiness() {
                 <ol className="list-decimal list-inside space-y-1 text-xs">
                   <li>Sua solicitação será analisada pela equipe</li>
                   <li>Entraremos em contato via WhatsApp para pagamento</li>
-                  <li>Após confirmação, seu e-mail será criado e ativado</li>
+                  <li>Após confirmação, seus e-mails serão criados e ativados</li>
                 </ol>
               </CardContent>
             </Card>
