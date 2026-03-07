@@ -76,7 +76,18 @@ export default function MasterTenants() {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("tenants").delete().eq("id", id);
+    const { error } = await supabase.from("tenants").delete().eq("id", id);
+    if (error) {
+      console.error("Delete tenant error:", error);
+      toast({
+        title: "Erro ao excluir tenant",
+        description: error.message.includes("foreign key")
+          ? "Este tenant possui dados vinculados (solicitações, motoristas, etc). Desative-o ao invés de excluir, ou remova os dados vinculados primeiro."
+          : error.message,
+        variant: "destructive",
+      });
+      return;
+    }
     fetchTenants();
     toast({ title: "Tenant excluído" });
   };
