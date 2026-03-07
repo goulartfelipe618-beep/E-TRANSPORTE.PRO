@@ -14,10 +14,76 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import {
   Plus, Search, Eye, Pencil, Trash2, CheckCircle, Clock, AlertTriangle, XCircle,
   Building2, MapPin, Phone, CalendarClock, Camera, Send, ChevronRight, ChevronLeft, RefreshCw
 } from "lucide-react";
+
+import googleSlide1 from "@/assets/google-slide-1.jpg";
+import googleSlide2 from "@/assets/google-slide-2.jpg";
+import googleSlide3 from "@/assets/google-slide-3.jpg";
+
+const GOOGLE_SLIDES = [
+  {
+    image: googleSlide1,
+    title: "Coloque Sua Empresa no Google",
+    subtitle: "Crie seu perfil no Google Business Profile e apareça nas buscas quando clientes procurarem por transporte executivo na sua região.",
+  },
+  {
+    image: googleSlide2,
+    title: "Perfil Verificado no Google",
+    subtitle: "Motoristas com perfil verificado passam mais confiança. Hotéis e empresas encontram você diretamente no Google Maps.",
+  },
+  {
+    image: googleSlide3,
+    title: "Avaliações 5 Estrelas",
+    subtitle: "Receba avaliações dos seus clientes e construa uma reputação sólida. Mais estrelas significam mais corridas.",
+  },
+];
+
+function GoogleHeroCarousel() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent((p) => (p + 1) % GOOGLE_SLIDES.length), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const prev = () => setCurrent((p) => (p - 1 + GOOGLE_SLIDES.length) % GOOGLE_SLIDES.length);
+  const next = () => setCurrent((p) => (p + 1) % GOOGLE_SLIDES.length);
+
+  return (
+    <div className="relative w-full rounded-2xl overflow-hidden mb-6" style={{ aspectRatio: "21/9", minHeight: 220 }}>
+      {GOOGLE_SLIDES.map((slide, i) => (
+        <div
+          key={i}
+          className={cn(
+            "absolute inset-0 transition-opacity duration-700",
+            i === current ? "opacity-100 z-10" : "opacity-0 z-0"
+          )}
+        >
+          <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent flex flex-col justify-center px-6 md:px-12">
+            <h2 className="text-white text-xl md:text-3xl font-bold drop-shadow-lg mb-2">{slide.title}</h2>
+            <p className="text-white/85 text-sm md:text-base max-w-xl drop-shadow">{slide.subtitle}</p>
+          </div>
+        </div>
+      ))}
+      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+        <ChevronRight className="h-5 w-5" />
+      </button>
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {GOOGLE_SLIDES.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} className={cn("w-2.5 h-2.5 rounded-full transition", i === current ? "bg-white scale-110" : "bg-white/50")} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const ETAPAS = [
   { num: 1, title: "Informações Básicas", icon: Building2 },
@@ -429,6 +495,7 @@ export default function GoogleBusiness() {
 
   return (
     <div className="space-y-6">
+      <GoogleHeroCarousel />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Google Business Profile</h1>
