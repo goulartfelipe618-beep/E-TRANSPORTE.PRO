@@ -38,6 +38,7 @@ const MENU_ITEMS = [
   { key: "security", label: "Segurança", icon: Shield },
   { key: "website_templates", label: "Modelos Website", icon: LayoutTemplate },
   { key: "websites", label: "Sol. Websites", icon: Globe },
+  { key: "dominios", label: "Sol. Domínio", icon: Globe },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
 
