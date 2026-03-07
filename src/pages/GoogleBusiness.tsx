@@ -495,6 +495,7 @@ export default function GoogleBusiness() {
 
   return (
     <div className="space-y-6">
+      <GoogleHeroCarousel />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Google Business Profile</h1>
