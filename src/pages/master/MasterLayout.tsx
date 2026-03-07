@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon,
+  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon, Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ import MasterComunicadorRequests from "./MasterComunicadorRequests";
 import MasterDominios from "./MasterDominios";
 import MasterComunicador from "./MasterComunicador";
 import MasterSlides from "./MasterSlides";
+import MasterEmails from "./MasterEmails";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -42,6 +43,7 @@ const MENU_ITEMS = [
   { key: "website_templates", label: "Modelos Website", icon: LayoutTemplate },
   { key: "websites", label: "Sol. Websites", icon: Globe },
   { key: "dominios", label: "Sol. Domínio", icon: Globe },
+  { key: "emails", label: "Sol. E-mails", icon: Mail },
   { key: "slides", label: "Slides", icon: ImageIcon },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
@@ -75,6 +77,7 @@ export default function MasterLayout() {
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
       case "dominios": return <MasterDominios />;
+      case "emails": return <MasterEmails />;
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
       case "slides": return <MasterSlides />;
