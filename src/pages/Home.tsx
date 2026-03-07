@@ -55,6 +55,7 @@ export default function Home() {
           title: s.titulo,
           subtitle: s.subtitulo,
         })));
+        setCurrent(0);
       }
     };
     load();
@@ -75,7 +76,7 @@ export default function Home() {
         <div className="relative h-[260px] sm:h-[340px] md:h-[400px]">
           {slides.map((slide, i) => (
             <div
-              key={i}
+              key={`slide-${i}-${slide.title}`}
               className={`absolute inset-0 transition-opacity duration-700 ${i === current ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
@@ -101,7 +102,7 @@ export default function Home() {
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           {slides.map((_, i) => (
-            <button key={i} onClick={() => setCurrent(i)} className={`h-2.5 rounded-full transition-all ${i === current ? "w-8 bg-white" : "w-2.5 bg-white/50"}`} />
+            <button key={`dot-${i}`} onClick={() => setCurrent(i)} className={`h-2.5 rounded-full transition-all ${i === current ? "w-8 bg-white" : "w-2.5 bg-white/50"}`} />
           ))}
         </div>
       </div>
