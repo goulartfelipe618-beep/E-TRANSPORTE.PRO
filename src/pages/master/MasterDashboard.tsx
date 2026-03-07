@@ -362,6 +362,13 @@ export default function MasterDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <MasterComunicarDialog
+        open={comunicarOpen}
+        onClose={() => setComunicarOpen(false)}
+        payload={comunicarPayload}
+        titulo="Comunicar sobre Solicitação"
+      />
     </div>
   );
 }
