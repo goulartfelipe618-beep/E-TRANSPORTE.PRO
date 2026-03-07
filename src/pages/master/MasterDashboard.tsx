@@ -310,6 +310,7 @@ export default function MasterDashboard() {
                     <TableHead>Detalhes</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Data</TableHead>
+                    <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -335,6 +336,17 @@ export default function MasterDashboard() {
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                           {new Date(s.created_at).toLocaleDateString("pt-BR")}
+                        </TableCell>
+                        <TableCell>
+                          <Button size="icon" variant="ghost" onClick={() => {
+                            setComunicarPayload({
+                              tipo: tipoLabels[s.tipo], nome: s.nome,
+                              tenant: s.tenant_nome, status: s.status, detalhes: s.detalhes,
+                            });
+                            setComunicarOpen(true);
+                          }}>
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
