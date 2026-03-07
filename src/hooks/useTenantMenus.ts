@@ -44,7 +44,11 @@ export function useTenantMenus() {
    * Menu keys use dots: "dashboard.metricas"
    * If no config exists (enabledMenus is null), everything is allowed.
    */
+  // Essential menus always enabled
+  const ESSENTIAL_KEYS = new Set(["painel", "painel.home", "home"]);
+
   const isMenuEnabled = (menuKey: string): boolean => {
+    if (ESSENTIAL_KEYS.has(menuKey)) return true;
     if (enabledMenus === null) return true;
     return enabledMenus.has(menuKey);
   };
