@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate,
+  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
