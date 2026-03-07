@@ -70,6 +70,7 @@ export default function MasterLayout() {
       case "apis": return <MasterApiConfig />;
       case "security": return <MasterSecurity />;
       case "websites": return <MasterWebsites />;
+      case "dominios": return <MasterDominios />;
       case "website_templates": return <MasterWebsiteTemplates />;
       case "anotacoes": return <MasterAnotacoes />;
       case "comunicador_requests": return <MasterComunicadorRequests />;
