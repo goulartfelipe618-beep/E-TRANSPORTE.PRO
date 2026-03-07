@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Building2, Users, Layers3, ScrollText, Car, UserPlus, UsersRound, Search, Filter } from "lucide-react";
+import { Building2, Users, Layers3, ScrollText, Car, UserPlus, UsersRound, Search, Filter, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
+import { Button } from "@/components/ui/button";
+import MasterComunicarDialog from "@/components/MasterComunicarDialog";
 
 type TransferRow = Tables<"solicitacoes_transfer">;
 type MotoristaRow = Tables<"solicitacoes_motorista">;
