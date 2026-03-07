@@ -316,7 +316,7 @@ export default function SistemaComunicador() {
       </div>
 
       {/* QR Code Connection Flow */}
-      {!showComunicadores && qrStep !== "pending" && (
+      {(!showComunicadores || qrStep === "connected" || qrStep === "confirming") && qrStep !== "pending" && (
         <Card className="border-none shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
