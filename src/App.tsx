@@ -53,6 +53,28 @@ const App = () => {
         setIsMaster(data?.role === "master_admin");
         setRoleLoading(false);
       });
+
+    // Realtime: auto-logout when user_role is deleted
+    const channel = supabase
+      .channel("user-role-watch")
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "user_roles",
+          filter: `user_id=eq.${session.user.id}`,
+        },
+        async () => {
+          await supabase.auth.signOut();
+          window.location.reload();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [session?.user?.id]);
 
   if (loading || (session && roleLoading)) {
