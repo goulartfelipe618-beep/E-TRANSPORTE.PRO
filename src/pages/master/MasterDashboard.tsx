@@ -61,6 +61,8 @@ export default function MasterDashboard() {
   const [filterStatus, setFilterStatus] = useState<string>("todos");
   const [filterTenant, setFilterTenant] = useState<string>("todos");
   const [filterPeriodo, setFilterPeriodo] = useState<string>("todos");
+  const [comunicarOpen, setComunicarOpen] = useState(false);
+  const [comunicarPayload, setComunicarPayload] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     const fetchAll = async () => {
