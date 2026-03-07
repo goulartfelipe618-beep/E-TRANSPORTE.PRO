@@ -14,6 +14,7 @@ import {
   Save, Loader2, Image as ImageIcon, Lock, Smartphone, User
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import HomeSlidesManager from "@/components/HomeSlidesManager";
 
 const FONTS = [
   "Poppins", "Inter", "Roboto", "Open Sans", "Montserrat",
