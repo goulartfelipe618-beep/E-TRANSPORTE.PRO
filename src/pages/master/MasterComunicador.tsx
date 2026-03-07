@@ -9,8 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   RefreshCw, Save, Trash2, Plus, MessageSquare, Webhook, Pencil, Lock,
-  QrCode, Loader2,
+  QrCode, Loader2, CheckCircle,
 } from "lucide-react";
+import { Input as InputUI } from "@/components/ui/input";
+import { Label as LabelUI } from "@/components/ui/label";
 
 interface Comunicador {
   id: string;
@@ -29,9 +31,10 @@ export default function MasterComunicador() {
   const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
 
   // QR Code flow
-  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing">("idle");
+  const [qrStep, setQrStep] = useState<"idle" | "generating" | "showing" | "confirming" | "connected">("idle");
   const [qrBase64, setQrBase64] = useState("");
   const [instanceName, setInstanceName] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("");
 
   const fetchComunicadores = useCallback(async () => {
     setLoading(true);
@@ -75,6 +78,44 @@ export default function MasterComunicador() {
       console.error("QR error:", e);
       toast.error(e.message || "Erro ao gerar QR Code");
       setQrStep("idle");
+    }
+  };
+
+  const handleConfirmConnection = async () => {
+    setQrStep("confirming");
+    try {
+      const { data, error } = await supabase.functions.invoke("evolution-proxy", {
+        body: { action: "check_status", instance_name: instanceName },
+      });
+      if (error) throw error;
+
+      const state = data?.instance?.state || data?.state || "";
+      if (state === "open" || state === "connected") {
+        // Auto-register comunicador
+        if (comunicadores.length >= MAX_COMUNICADORES) {
+          toast.error(`Máximo de ${MAX_COMUNICADORES} comunicadores atingido`);
+          setQrStep("showing");
+          return;
+        }
+        const { error: insertErr } = await supabase.from("comunicadores").insert({
+          nome: `WhatsApp ${comunicadores.length + 1}`,
+          webhook_url: webhookUrl.trim() || "",
+          descricao: `Instância: ${instanceName}`,
+          ativo: true,
+          tenant_id: null,
+        });
+        if (insertErr) throw insertErr;
+        toast.success("WhatsApp conectado e comunicador registrado!");
+        setQrStep("connected");
+        setWebhookUrl("");
+        fetchComunicadores();
+      } else {
+        toast.error("WhatsApp ainda não conectado. Escaneie o QR Code e tente novamente.");
+        setQrStep("showing");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao confirmar conexão");
+      setQrStep("showing");
     }
   };
 
@@ -180,25 +221,52 @@ export default function MasterComunicador() {
             </div>
           )}
           {qrStep === "showing" && (
-            <div className="text-center space-y-4">
-              {qrBase64 ? (
-                <img
-                  src={qrBase64.startsWith("data:") ? qrBase64 : `data:image/png;base64,${qrBase64}`}
-                  alt="QR Code WhatsApp"
-                  className="mx-auto w-64 h-64 rounded-xl border"
-                />
-              ) : (
-                <div className="mx-auto w-64 h-64 rounded-xl border flex items-center justify-center">
-                  <p className="text-muted-foreground text-sm">QR não disponível</p>
+            <div className="space-y-6">
+              <div className="text-center">
+                {qrBase64 ? (
+                  <img
+                    src={qrBase64.startsWith("data:") ? qrBase64 : `data:image/png;base64,${qrBase64}`}
+                    alt="QR Code WhatsApp"
+                    className="mx-auto w-64 h-64 rounded-xl border"
+                  />
+                ) : (
+                  <div className="mx-auto w-64 h-64 rounded-xl border flex items-center justify-center">
+                    <p className="text-muted-foreground text-sm">QR não disponível</p>
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground mt-3">
+                  Abra o WhatsApp → Menu → Dispositivos conectados → Escaneie este QR Code
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Instância: <span className="font-mono">{instanceName}</span>
+                </p>
+              </div>
+              <div className="border-t pt-4 max-w-sm mx-auto space-y-3">
+                <p className="text-sm font-medium text-center">
+                  Já escaneou? Preencha o webhook e confirme:
+                </p>
+                <div className="space-y-1">
+                  <LabelUI>URL do Webhook (opcional agora, pode editar depois)</LabelUI>
+                  <InputUI value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://n8n.seudominio.com/webhook/..." />
                 </div>
-              )}
-              <p className="text-sm text-muted-foreground">
-                Abra o WhatsApp → Menu → Dispositivos conectados → Escaneie este QR Code
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Instância: <span className="font-mono">{instanceName}</span>
-              </p>
-              <Button variant="outline" onClick={() => setQrStep("idle")}>Gerar Novo QR</Button>
+                <Button className="w-full" onClick={handleConfirmConnection}>
+                  <CheckCircle className="h-4 w-4 mr-2" /> Confirmar Conexão e Registrar
+                </Button>
+                <Button variant="outline" className="w-full" onClick={() => setQrStep("idle")}>Gerar Novo QR</Button>
+              </div>
+            </div>
+          )}
+          {qrStep === "confirming" && (
+            <div className="text-center space-y-4 py-8">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+              <p className="text-sm text-muted-foreground">Verificando conexão...</p>
+            </div>
+          )}
+          {qrStep === "connected" && (
+            <div className="text-center space-y-4 py-8">
+              <CheckCircle className="h-16 w-16 mx-auto text-emerald-500" />
+              <p className="text-sm font-medium text-foreground">Comunicador registrado com sucesso!</p>
+              <Button variant="outline" onClick={() => setQrStep("idle")}>Conectar outro WhatsApp</Button>
             </div>
           )}
         </CardContent>
