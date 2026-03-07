@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,67 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   Globe, ArrowRight, ArrowLeft, Send, ExternalLink, CheckCircle2, Clock,
-  Loader2, Eye, Pencil, LayoutTemplate, Upload, X,
+  Loader2, Eye, Pencil, LayoutTemplate, Upload, X, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
+import websiteSlide1 from "@/assets/website-slide-1.jpg";
+import websiteSlide2 from "@/assets/website-slide-2.jpg";
+import websiteSlide3 from "@/assets/website-slide-3.jpg";
+
+/* ────────── Website Hero Slides ────────── */
+const WEBSITE_SLIDES = [
+  { image: websiteSlide1, title: "Crie Seu Site Profissional", subtitle: "Tenha presença online com um site exclusivo para transporte executivo. Design premium e responsivo." },
+  { image: websiteSlide2, title: "100% Responsivo e Moderno", subtitle: "Seu site funciona perfeitamente em celular, tablet e computador. Formulário de orçamento integrado." },
+  { image: websiteSlide3, title: "Destaque-se no Mercado", subtitle: "Motoristas com site próprio transmitem mais credibilidade e conquistam mais clientes." },
+];
+
+function WebsiteHeroCarousel() {
+  const [current, setCurrent] = useState(0);
+  const next = useCallback(() => setCurrent((c) => (c + 1) % WEBSITE_SLIDES.length), []);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + WEBSITE_SLIDES.length) % WEBSITE_SLIDES.length), []);
+
+  useEffect(() => {
+    const timer = setInterval(next, 6000);
+    return () => clearInterval(timer);
+  }, [next]);
+
+  return (
+    <div className="relative rounded-xl overflow-hidden shadow-lg">
+      <div className="relative h-[200px] sm:h-[280px] md:h-[340px]">
+        {WEBSITE_SLIDES.map((slide, i) => (
+          <div
+            key={`ws-slide-${i}`}
+            className={`absolute inset-0 transition-opacity duration-700 ${i === current ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          >
+            <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight max-w-xl">
+                {slide.title}
+              </h2>
+              <p className="text-sm sm:text-base text-white/80 mt-2 max-w-lg">
+                {slide.subtitle}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white rounded-lg p-2 transition-colors">
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white rounded-lg p-2 transition-colors">
+        <ChevronRight className="h-5 w-5" />
+      </button>
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        {WEBSITE_SLIDES.map((_, i) => (
+          <button key={`ws-dot-${i}`} onClick={() => setCurrent(i)} className={`h-2.5 rounded-full transition-all ${i === current ? "w-8 bg-white" : "w-2.5 bg-white/50"}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ────────── Constants ────────── */
 const TIPOS_SERVICO = [
