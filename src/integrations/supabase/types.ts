@@ -1510,6 +1510,68 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_email: {
+        Row: {
+          created_at: string
+          dominio: string
+          email_criado: string | null
+          email_solicitado: string
+          id: string
+          nome_completo: string
+          nome_empresa: string
+          observacoes: string | null
+          plano: string
+          status: string
+          tenant_id: string | null
+          updated_at: string
+          user_id: string
+          valor: string
+          webmail_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          dominio: string
+          email_criado?: string | null
+          email_solicitado: string
+          id?: string
+          nome_completo: string
+          nome_empresa: string
+          observacoes?: string | null
+          plano: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id: string
+          valor: string
+          webmail_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          dominio?: string
+          email_criado?: string | null
+          email_solicitado?: string
+          id?: string
+          nome_completo?: string
+          nome_empresa?: string
+          observacoes?: string | null
+          plano?: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string
+          valor?: string
+          webmail_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_email_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitacoes_grupos: {
         Row: {
           automacao_id: string | null
