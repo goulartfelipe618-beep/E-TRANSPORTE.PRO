@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Building2, Menu as MenuIcon, Settings2,
   ListChecks, ScrollText, KeyRound, LogOut, ChevronLeft, ChevronRight, Layers3, Shield,
-  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon,
+  Sun, Moon, Globe, StickyNote, X, MessageSquare, LayoutTemplate, Phone, Image as ImageIcon, Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,7 @@ const MENU_ITEMS = [
   { key: "website_templates", label: "Modelos Website", icon: LayoutTemplate },
   { key: "websites", label: "Sol. Websites", icon: Globe },
   { key: "dominios", label: "Sol. Domínio", icon: Globe },
+  { key: "emails", label: "Sol. E-mails", icon: Mail },
   { key: "slides", label: "Slides", icon: ImageIcon },
   { key: "anotacoes", label: "Anotações", icon: StickyNote },
 ];
