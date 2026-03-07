@@ -566,6 +566,9 @@ export default function WebsitePage() {
   if (phase === "gallery") {
     return (
       <div className="space-y-6">
+        {/* Hero Carousel */}
+        <WebsiteHeroCarousel />
+
         <div>
           <h1 className="text-2xl font-bold text-foreground">Website</h1>
           <p className="text-muted-foreground">Escolha o modelo ideal para o seu site profissional.</p>
