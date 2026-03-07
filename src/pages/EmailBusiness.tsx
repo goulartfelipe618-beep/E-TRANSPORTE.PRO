@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +7,77 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Mail, Globe, Shield, Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Star, Users, Zap, ExternalLink, Loader2 } from "lucide-react";
+import { Mail, Globe, Shield, Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Star, Users, Zap, ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenantId } from "@/hooks/useTenantId";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useActivePage } from "@/contexts/PageContext";
+
+import websiteSlide1 from "@/assets/website-slide-1.jpg";
+import websiteSlide2 from "@/assets/website-slide-2.jpg";
+import websiteSlide3 from "@/assets/website-slide-3.jpg";
+
+const EMAIL_SLIDES = [
+  {
+    image: websiteSlide1,
+    title: "Seu E-mail Profissional",
+    subtitle: "Tenha um endereço como contato@suaempresa.com.br e transmita autoridade e credibilidade para hotéis e clientes executivos.",
+  },
+  {
+    image: websiteSlide2,
+    title: "Passe Confiança para Hotéis e Empresas",
+    subtitle: "Motoristas com e-mail profissional fecham mais contratos corporativos. Mostre que seu serviço é empresa, não bico.",
+  },
+  {
+    image: websiteSlide3,
+    title: "Saia do Gmail Comum",
+    subtitle: "Diferencie-se da concorrência com um e-mail exclusivo no seu domínio. Mais profissionalismo em cada mensagem enviada.",
+  },
+];
+
+function EmailHeroCarousel() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent((p) => (p + 1) % EMAIL_SLIDES.length), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const prev = () => setCurrent((p) => (p - 1 + EMAIL_SLIDES.length) % EMAIL_SLIDES.length);
+  const next = () => setCurrent((p) => (p + 1) % EMAIL_SLIDES.length);
+
+  return (
+    <div className="relative w-full rounded-2xl overflow-hidden mb-8" style={{ aspectRatio: "21/9", minHeight: 220 }}>
+      {EMAIL_SLIDES.map((slide, i) => (
+        <div
+          key={i}
+          className={cn(
+            "absolute inset-0 transition-opacity duration-700",
+            i === current ? "opacity-100 z-10" : "opacity-0 z-0"
+          )}
+        >
+          <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent flex flex-col justify-center px-6 md:px-12">
+            <h2 className="text-white text-xl md:text-3xl font-bold drop-shadow-lg mb-2">{slide.title}</h2>
+            <p className="text-white/85 text-sm md:text-base max-w-xl drop-shadow">{slide.subtitle}</p>
+          </div>
+        </div>
+      ))}
+      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+        <ChevronRight className="h-5 w-5" />
+      </button>
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {EMAIL_SLIDES.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} className={cn("w-2.5 h-2.5 rounded-full transition", i === current ? "bg-white scale-110" : "bg-white/50")} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const PLANS = [
   {
