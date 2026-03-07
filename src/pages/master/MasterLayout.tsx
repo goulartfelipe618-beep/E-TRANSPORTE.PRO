@@ -24,6 +24,7 @@ import MasterAnotacoes from "./MasterAnotacoes";
 import MasterComunicadorRequests from "./MasterComunicadorRequests";
 import MasterDominios from "./MasterDominios";
 import MasterComunicador from "./MasterComunicador";
+import MasterSlides from "./MasterSlides";
 
 const MENU_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
