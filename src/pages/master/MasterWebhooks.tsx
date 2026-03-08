@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -19,12 +22,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Plus, Trash2, Edit, RefreshCw, Webhook, Copy, Check, ExternalLink,
+  Plus, Trash2, Edit, RefreshCw, Webhook, Copy, Check, ExternalLink, MessageSquare, Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-/* ───── Categorias fixas do sistema (serviços de solicitação do admin) ───── */
+/* ───── Categorias fixas do sistema ───── */
 const SYSTEM_CATEGORIES = [
   { value: "website", label: "Criação de Website" },
   { value: "dominio", label: "Registro de Domínio" },
@@ -33,6 +36,12 @@ const SYSTEM_CATEGORIES = [
   { value: "usuario", label: "Criação de Usuário" },
   { value: "google_business", label: "Conta Google Business" },
 ];
+
+interface AutoComunicarConfig {
+  comunicador_id?: string;
+  saudacao?: string;
+  mensagem_adicional?: string;
+}
 
 interface WebhookRow {
   id: string;
@@ -43,8 +52,18 @@ interface WebhookRow {
   recebimento_ativo: boolean;
   webhook_url_envio: string | null;
   envio_ativo: boolean;
+  auto_comunicar: boolean;
+  auto_comunicar_config: AutoComunicarConfig;
   created_at: string;
   updated_at: string;
+}
+
+interface Comunicador {
+  id: string;
+  nome: string;
+  webhook_url: string;
+  descricao: string | null;
+  ativo: boolean;
 }
 
 export default function MasterWebhooks() {
@@ -59,11 +78,16 @@ export default function MasterWebhooks() {
   const [descricao, setDescricao] = useState("");
   const [webhookUrlEnvio, setWebhookUrlEnvio] = useState("");
   const [envioAtivo, setEnvioAtivo] = useState(false);
+  const [autoComunicar, setAutoComunicar] = useState(false);
+  const [autoComunicarConfig, setAutoComunicarConfig] = useState<AutoComunicarConfig>({});
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Dynamic categories from automation_categories
+  // Dynamic categories
   const [dynamicCategories, setDynamicCategories] = useState<{ value: string; label: string }[]>([]);
+
+  // Comunicadores for auto-comunicar
+  const [comunicadores, setComunicadores] = useState<Comunicador[]>([]);
 
   const { toast } = useToast();
 
@@ -84,16 +108,22 @@ export default function MasterWebhooks() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [{ data: wh }, { data: cats }] = await Promise.all([
+    const [{ data: wh }, { data: cats }, { data: comuns }] = await Promise.all([
       supabase.from("master_webhooks").select("*").order("created_at", { ascending: false }),
       supabase.from("automation_categories").select("slug, nome").eq("ativo", true),
+      supabase.from("comunicadores").select("*").eq("ativo", true).is("tenant_id", null).order("created_at"),
     ]);
-    if (wh) setRows(wh as WebhookRow[]);
+    if (wh) setRows(wh.map((r: any) => ({
+      ...r,
+      auto_comunicar: r.auto_comunicar ?? false,
+      auto_comunicar_config: (r.auto_comunicar_config && typeof r.auto_comunicar_config === "object") ? r.auto_comunicar_config : {},
+    })) as WebhookRow[]);
     if (cats) {
       setDynamicCategories(
         (cats as any[]).map((c) => ({ value: c.slug, label: c.nome }))
       );
     }
+    if (comuns) setComunicadores(comuns as Comunicador[]);
     setLoading(false);
   };
 
@@ -109,6 +139,8 @@ export default function MasterWebhooks() {
     setDescricao("");
     setWebhookUrlEnvio("");
     setEnvioAtivo(false);
+    setAutoComunicar(false);
+    setAutoComunicarConfig({});
   };
 
   const openEdit = (r: WebhookRow) => {
@@ -118,6 +150,8 @@ export default function MasterWebhooks() {
     setDescricao(r.descricao || "");
     setWebhookUrlEnvio(r.webhook_url_envio || "");
     setEnvioAtivo(r.envio_ativo);
+    setAutoComunicar(r.auto_comunicar);
+    setAutoComunicarConfig(r.auto_comunicar_config || {});
     setDialogOpen(true);
   };
 
@@ -130,6 +164,8 @@ export default function MasterWebhooks() {
       descricao: descricao.trim() || null,
       webhook_url_envio: webhookUrlEnvio.trim() || null,
       envio_ativo: envioAtivo,
+      auto_comunicar: autoComunicar,
+      auto_comunicar_config: autoComunicar ? autoComunicarConfig : {},
     };
 
     if (editing) {
@@ -165,6 +201,11 @@ export default function MasterWebhooks() {
     setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, envio_ativo: val } : r)));
   };
 
+  const handleToggleAutoComunicar = async (row: WebhookRow, val: boolean) => {
+    await supabase.from("master_webhooks").update({ auto_comunicar: val }).eq("id", row.id);
+    setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, auto_comunicar: val } : r)));
+  };
+
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("master_webhooks").delete().eq("id", id);
     if (error) {
@@ -184,6 +225,18 @@ export default function MasterWebhooks() {
 
   const getCatLabel = (val: string) =>
     allCategories.find((c) => c.value === val)?.label || val;
+
+  const selectedComunicadorName = comunicadores.find(c => c.id === autoComunicarConfig.comunicador_id)?.nome;
+
+  // Preview of auto message
+  const autoMessagePreview = useMemo(() => {
+    if (!autoComunicar) return "";
+    const parts: string[] = [];
+    if (autoComunicarConfig.saudacao?.trim()) parts.push(autoComunicarConfig.saudacao.trim());
+    parts.push("\n📋 *Dados da solicitação serão inseridos aqui automaticamente*");
+    if (autoComunicarConfig.mensagem_adicional?.trim()) parts.push("\n" + autoComunicarConfig.mensagem_adicional.trim());
+    return parts.join("\n");
+  }, [autoComunicar, autoComunicarConfig]);
 
   return (
     <div className="space-y-6">
@@ -223,6 +276,7 @@ export default function MasterWebhooks() {
                   <TableHead>URL de Recebimento</TableHead>
                   <TableHead className="text-center">Recebimento</TableHead>
                   <TableHead className="text-center">Envio</TableHead>
+                  <TableHead className="text-center">Auto Comunicar</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -272,6 +326,21 @@ export default function MasterWebhooks() {
                         )}
                       </div>
                     </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <Switch
+                          checked={r.auto_comunicar}
+                          onCheckedChange={(v) => handleToggleAutoComunicar(r, v)}
+                          disabled={!r.auto_comunicar_config?.comunicador_id}
+                        />
+                        {r.auto_comunicar && r.auto_comunicar_config?.comunicador_id && (
+                          <Badge variant="default" className="text-[10px]">
+                            <Zap className="h-2.5 w-2.5 mr-0.5" />
+                            Auto
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => openEdit(r)}>
@@ -314,7 +383,7 @@ export default function MasterWebhooks() {
           <DialogHeader>
             <DialogTitle>{editing ? "Editar Webhook" : "Novo Webhook"}</DialogTitle>
             <DialogDescription>
-              Configure o webhook de recebimento e envio de dados.
+              Configure o webhook de recebimento, envio e comunicação automática.
             </DialogDescription>
           </DialogHeader>
 
@@ -344,9 +413,6 @@ export default function MasterWebhooks() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                As categorias são os serviços de solicitação do painel do administrador.
-              </p>
             </div>
 
             {/* Descrição */}
@@ -360,7 +426,7 @@ export default function MasterWebhooks() {
               />
             </div>
 
-            {/* URL de recebimento (somente leitura quando editando) */}
+            {/* URL de recebimento */}
             {editing && (
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -409,6 +475,92 @@ export default function MasterWebhooks() {
               <p className="text-xs text-muted-foreground">
                 Quando ativado, os dados recebidos serão automaticamente enviados para esta URL.
               </p>
+            </div>
+
+            {/* ───── Auto Comunicar ───── */}
+            <div className="space-y-3 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <label className="text-sm font-medium">Comunicação Automática</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {autoComunicar ? "Ativo" : "Inativo"}
+                  </span>
+                  <Switch checked={autoComunicar} onCheckedChange={setAutoComunicar} />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Quando ativado, toda solicitação recebida será automaticamente enviada via comunicador com a mensagem predefinida abaixo.
+              </p>
+
+              {autoComunicar && (
+                <div className="space-y-3 pl-2 border-l-2 border-primary/30">
+                  {/* Selecionar comunicador */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Comunicador</Label>
+                    {comunicadores.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        Nenhum comunicador ativo disponível. Configure no menu Comunicador.
+                      </p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {comunicadores.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => setAutoComunicarConfig(prev => ({ ...prev, comunicador_id: c.id }))}
+                            className={`w-full text-left border rounded-lg p-2.5 transition-colors text-sm ${
+                              autoComunicarConfig.comunicador_id === c.id
+                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                : "border-border hover:border-primary/50"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-foreground">{c.nome}</span>
+                              {autoComunicarConfig.comunicador_id === c.id && (
+                                <Badge variant="default" className="text-xs">Selecionado</Badge>
+                              )}
+                            </div>
+                            {c.descricao && <p className="text-xs text-muted-foreground mt-0.5">{c.descricao}</p>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Saudação */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Mensagem de Saudação</Label>
+                    <Textarea
+                      value={autoComunicarConfig.saudacao || ""}
+                      onChange={(e) => setAutoComunicarConfig(prev => ({ ...prev, saudacao: e.target.value }))}
+                      placeholder="Ex: Olá, recebemos uma nova solicitação:"
+                      rows={2}
+                    />
+                  </div>
+
+                  {/* Mensagem adicional */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Mensagem Final (após os dados)</Label>
+                    <Textarea
+                      value={autoComunicarConfig.mensagem_adicional || ""}
+                      onChange={(e) => setAutoComunicarConfig(prev => ({ ...prev, mensagem_adicional: e.target.value }))}
+                      placeholder="Ex: Entre em contato o mais rápido possível."
+                      rows={2}
+                    />
+                  </div>
+
+                  {/* Preview */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Pré-visualização</Label>
+                    <div className="border border-border rounded-lg p-3 bg-muted/30 text-xs whitespace-pre-wrap font-mono max-h-32 overflow-y-auto text-foreground">
+                      {autoMessagePreview || <span className="text-muted-foreground italic">Configure a mensagem acima</span>}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
