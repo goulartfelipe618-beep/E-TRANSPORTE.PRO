@@ -579,6 +579,8 @@ export type Database = {
       }
       master_webhooks: {
         Row: {
+          auto_comunicar: boolean
+          auto_comunicar_config: Json
           categoria: string
           created_at: string
           descricao: string | null
@@ -591,6 +593,8 @@ export type Database = {
           webhook_url_envio: string | null
         }
         Insert: {
+          auto_comunicar?: boolean
+          auto_comunicar_config?: Json
           categoria: string
           created_at?: string
           descricao?: string | null
@@ -603,6 +607,8 @@ export type Database = {
           webhook_url_envio?: string | null
         }
         Update: {
+          auto_comunicar?: boolean
+          auto_comunicar_config?: Json
           categoria?: string
           created_at?: string
           descricao?: string | null
