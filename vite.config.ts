@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type ServerOptions } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
@@ -11,11 +11,10 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    allowedHosts: ["sistema.e-transporte.pro", ".e-transporte.pro", ".lovable.app"],
+    allowedHosts: "all" as unknown as ServerOptions["allowedHosts"],
   },
   preview: {
-    host: true,
-    allowedHosts: ["sistema.e-transporte.pro", ".e-transporte.pro", ".lovable.app"],
+    allowedHosts: true as const,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
