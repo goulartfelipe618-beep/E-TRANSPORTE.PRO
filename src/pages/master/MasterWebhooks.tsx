@@ -247,7 +247,7 @@ export default function MasterWebhooks() {
       .from("master_webhooks")
       .update({
         auto_comunicar: autoConfigEnabled,
-        auto_comunicar_config: configToSave,
+        auto_comunicar_config: configToSave as any,
       })
       .eq("id", autoConfigRow.id);
 
