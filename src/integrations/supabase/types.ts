@@ -541,6 +541,33 @@ export type Database = {
         }
         Relationships: []
       }
+      master_files: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          storage_path: string
+          tamanho: number
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          storage_path: string
+          tamanho?: number
+          tipo?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          storage_path?: string
+          tamanho?: number
+          tipo?: string
+        }
+        Relationships: []
+      }
       master_slides: {
         Row: {
           ativo: boolean
