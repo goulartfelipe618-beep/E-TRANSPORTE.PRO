@@ -62,23 +62,32 @@ export function ProfileSetupDialog({ userId, onComplete }: ProfileSetupDialogPro
       return;
     }
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        nome_completo: nomeCompleto.trim(),
-        telefone: telefone.trim(),
-        email: email.trim(),
-        setup_complete: true,
-      })
-      .eq("user_id", userId);
+    // Retry logic to handle transient lock errors
+    let attempts = 0;
+    let lastError: any = null;
+    while (attempts < 3) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          nome_completo: nomeCompleto.trim(),
+          telefone: telefone.trim(),
+          email: email.trim(),
+          setup_complete: true,
+        })
+        .eq("user_id", userId);
 
-    if (error) {
-      toast({ title: "Erro ao salvar perfil", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Perfil configurado com sucesso!" });
-      setOpen(false);
-      onComplete();
+      if (!error) {
+        toast({ title: "Perfil configurado com sucesso!" });
+        setOpen(false);
+        onComplete();
+        setSaving(false);
+        return;
+      }
+      lastError = error;
+      attempts++;
+      await new Promise(r => setTimeout(r, 500 * attempts));
     }
+    toast({ title: "Erro ao salvar perfil", description: lastError?.message, variant: "destructive" });
     setSaving(false);
   };
 
