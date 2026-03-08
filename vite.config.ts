@@ -11,11 +11,11 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    allowedHosts: true,
+    allowedHosts: ["sistema.e-transporte.pro", ".e-transporte.pro", ".lovable.app"],
   },
   preview: {
     host: true,
-    allowedHosts: true,
+    allowedHosts: ["sistema.e-transporte.pro", ".e-transporte.pro", ".lovable.app"],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
