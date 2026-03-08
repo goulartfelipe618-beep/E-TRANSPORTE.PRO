@@ -11,11 +11,11 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    allowedHosts: "all",
+    allowedHosts: true,
   },
   preview: {
     host: true,
-    allowedHosts: "all",
+    allowedHosts: true,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
