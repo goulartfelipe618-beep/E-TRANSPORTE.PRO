@@ -1811,6 +1811,71 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_taxi: {
+        Row: {
+          cliente_email: string | null
+          cliente_nome: string | null
+          cliente_origem: string | null
+          cliente_telefone: string | null
+          codigo: string | null
+          created_at: string
+          data_servico: string | null
+          endereco_destino: string | null
+          endereco_origem: string | null
+          horario: string | null
+          id: string
+          numero_passageiros: number | null
+          observacoes: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_servico?: string | null
+          endereco_destino?: string | null
+          endereco_origem?: string | null
+          horario?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_servico?: string | null
+          endereco_destino?: string | null
+          endereco_origem?: string | null
+          horario?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_taxi_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitacoes_transfer: {
         Row: {
           automacao_id: string | null
