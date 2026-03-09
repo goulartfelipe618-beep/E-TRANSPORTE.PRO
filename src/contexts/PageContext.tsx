@@ -34,7 +34,8 @@ export type PageKey =
   | "anotacoes"
   | "documentacao"
   | "website"
-  | "dominios";
+  | "dominios"
+  | "taxi/solicitacoes";
 
 interface PageContextType {
   activePage: PageKey;
