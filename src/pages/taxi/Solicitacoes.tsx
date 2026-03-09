@@ -389,15 +389,20 @@ export default function TaxiSolicitacoes() {
         <ComunicarDialog
           open={!!comunicando}
           onClose={() => setComunicando(null)}
-          context={{
-            nome: comunicando.cliente_nome || "",
-            telefone: comunicando.cliente_telefone || "",
-            origem: comunicando.endereco_origem || "",
-            destino: comunicando.endereco_destino || "",
-            data: comunicando.data_servico || "",
-            horario: comunicando.horario || "",
+          payload={{
+            tipo: "Taxi",
             codigo: comunicando.codigo || "",
+            cliente_nome: comunicando.cliente_nome || "",
+            cliente_telefone: comunicando.cliente_telefone || "",
+            cliente_email: comunicando.cliente_email || "",
+            endereco_origem: comunicando.endereco_origem || "",
+            endereco_destino: comunicando.endereco_destino || "",
+            data_servico: comunicando.data_servico || "",
+            horario: comunicando.horario || "",
+            numero_passageiros: String(comunicando.numero_passageiros ?? ""),
+            status: comunicando.status,
           }}
+          titulo={`Taxi ${comunicando.codigo || ""} — ${comunicando.cliente_nome || ""}`}
         />
       )}
     </div>
