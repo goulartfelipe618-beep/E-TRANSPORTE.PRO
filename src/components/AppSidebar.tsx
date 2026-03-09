@@ -34,6 +34,7 @@ import {
   QrCode,
   Building2,
   Home,
+  CarTaxiFront,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
@@ -122,6 +123,14 @@ const menuSections: { label: string; items: MenuItem[] }[] = [
         ],
       },
       { title: "Veículos", icon: Car, page: "veiculos", menuKey: "veiculos" },
+      {
+        title: "Taxi",
+        icon: CarTaxiFront,
+        menuKey: "taxi",
+        subItems: [
+          { title: "Solicitações", page: "taxi/solicitacoes" as PageKey, icon: ClipboardList, menuKey: "taxi.solicitacoes" },
+        ],
+      },
     ],
   },
   {
