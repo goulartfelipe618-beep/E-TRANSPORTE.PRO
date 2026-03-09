@@ -41,9 +41,6 @@ const ALL_MENUS: MenuDef[] = [
   { key: "motoristas.agendamentos", label: "Agendamentos", parent: "motoristas" },
   // Veículos
   { key: "veiculos", label: "Veículos" },
-  // Taxi
-  { key: "taxi", label: "Taxi" },
-  { key: "taxi.solicitacoes", label: "Solicitações", parent: "taxi" },
   // Campanhas
   { key: "campanhas", label: "Campanhas" },
   { key: "campanhas.ativos", label: "Ativos", parent: "campanhas" },

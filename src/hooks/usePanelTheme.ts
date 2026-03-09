@@ -21,14 +21,6 @@ export function usePanelTheme(storageKey: string) {
     } else {
       root.classList.remove("dark");
     }
-    // Update browser tab color
-    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "theme-color";
-      document.head.appendChild(meta);
-    }
-    meta.content = isDark ? "#131a2b" : "#f5f6f8";
     try {
       localStorage.setItem(storageKey, isDark ? "dark" : "light");
     } catch {}

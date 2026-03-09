@@ -22,39 +22,33 @@ export function ProfileSetupDialog({ userId, onComplete }: ProfileSetupDialogPro
   const { toast } = useToast();
 
   useEffect(() => {
-    let cancelled = false;
-    const checkProfile = async () => {
-      setLoading(true);
-      // Small delay to avoid competing with other auth requests on mount
-      await new Promise(r => setTimeout(r, 500));
-      if (cancelled) return;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (cancelled) return;
-
-      if (!data) {
-        await supabase.from("profiles").insert({
-          user_id: userId,
-          email: "",
-          setup_complete: false,
-        });
-        setOpen(true);
-      } else if (!data.setup_complete) {
-        setNomeCompleto((data as any).nome_completo || "");
-        setTelefone((data as any).telefone || "");
-        setEmail((data as any).email || "");
-        setOpen(true);
-      }
-      setLoading(false);
-    };
     checkProfile();
-    return () => { cancelled = true; };
   }, [userId]);
+
+  const checkProfile = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!data) {
+      // No profile exists yet, create one
+      await supabase.from("profiles").insert({
+        user_id: userId,
+        email: "",
+        setup_complete: false,
+      });
+      setOpen(true);
+    } else if (!data.setup_complete) {
+      setNomeCompleto((data as any).nome_completo || "");
+      setTelefone((data as any).telefone || "");
+      setEmail((data as any).email || "");
+      setOpen(true);
+    }
+    setLoading(false);
+  };
 
   const handleSave = async () => {
     if (!nomeCompleto.trim() || !telefone.trim() || !email.trim()) {
@@ -62,32 +56,23 @@ export function ProfileSetupDialog({ userId, onComplete }: ProfileSetupDialogPro
       return;
     }
     setSaving(true);
-    // Retry logic to handle transient lock errors
-    let attempts = 0;
-    let lastError: any = null;
-    while (attempts < 3) {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          nome_completo: nomeCompleto.trim(),
-          telefone: telefone.trim(),
-          email: email.trim(),
-          setup_complete: true,
-        })
-        .eq("user_id", userId);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        nome_completo: nomeCompleto.trim(),
+        telefone: telefone.trim(),
+        email: email.trim(),
+        setup_complete: true,
+      })
+      .eq("user_id", userId);
 
-      if (!error) {
-        toast({ title: "Perfil configurado com sucesso!" });
-        setOpen(false);
-        onComplete();
-        setSaving(false);
-        return;
-      }
-      lastError = error;
-      attempts++;
-      await new Promise(r => setTimeout(r, 500 * attempts));
+    if (error) {
+      toast({ title: "Erro ao salvar perfil", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Perfil configurado com sucesso!" });
+      setOpen(false);
+      onComplete();
     }
-    toast({ title: "Erro ao salvar perfil", description: lastError?.message, variant: "destructive" });
     setSaving(false);
   };
 

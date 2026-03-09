@@ -17,14 +17,13 @@ export function useUserRole(): UserRoleData {
 
   useEffect(() => {
     const fetch = async () => {
-      // Use getSession instead of getUser to avoid lock contention
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { setIsLoading(false); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setIsLoading(false); return; }
 
       const { data } = await supabase
         .from("user_roles")
         .select("role, tenant_id")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (data) {

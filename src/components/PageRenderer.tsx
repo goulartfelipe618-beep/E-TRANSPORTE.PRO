@@ -47,8 +47,6 @@ import Anotacoes from "@/pages/Anotacoes";
 import Documentacao from "@/pages/Documentacao";
 import WebsitePage from "@/pages/Website";
 import DominiosPage from "@/pages/Dominios";
-// Taxi
-import TaxiSolicitacoes from "@/pages/taxi/Solicitacoes";
 
 const pageMap: Record<PageKey, React.ComponentType> = {
   "home": Home,
@@ -85,7 +83,6 @@ const pageMap: Record<PageKey, React.ComponentType> = {
   "documentacao": Documentacao,
   "website": WebsitePage,
   "dominios": DominiosPage,
-  "taxi/solicitacoes": TaxiSolicitacoes,
 };
 
 export function PageRenderer() {

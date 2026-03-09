@@ -50,21 +50,7 @@ export function useTenantMenus() {
   const isMenuEnabled = (menuKey: string): boolean => {
     if (ESSENTIAL_KEYS.has(menuKey)) return true;
     if (enabledMenus === null) return true;
-    // Direct match
-    if (enabledMenus.has(menuKey)) return true;
-    // If this is a sub-key (e.g. "marketing.qrcode"), check if parent ("marketing") is enabled
-    // and the sub-key itself has no explicit entry (implicit allow from parent)
-    const dotIdx = menuKey.indexOf(".");
-    if (dotIdx > 0) {
-      const parent = menuKey.substring(0, dotIdx);
-      // If the parent is enabled and there's no explicit entry for this sub-key, allow it
-      if (enabledMenus.has(parent) && !enabledMenus.has(menuKey)) {
-        // Check if ANY sub-key of this parent exists in config — if not, all subs are implicitly allowed
-        const hasExplicitSubs = Array.from(enabledMenus).some((k) => k.startsWith(parent + "."));
-        if (!hasExplicitSubs) return true;
-      }
-    }
-    return false;
+    return enabledMenus.has(menuKey);
   };
 
   return { isMenuEnabled, loading };
