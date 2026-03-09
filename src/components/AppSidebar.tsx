@@ -34,6 +34,7 @@ import {
   QrCode,
   Building2,
   Home,
+  CarTaxiFront,
 } from "lucide-react";
 import { useActivePage, PageKey } from "@/contexts/PageContext";
 import {
