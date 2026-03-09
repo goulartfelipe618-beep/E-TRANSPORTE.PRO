@@ -79,7 +79,7 @@ export default function TaxiSolicitacoes() {
       .from("solicitacoes_taxi" as any)
       .select("*")
       .order("created_at", { ascending: false });
-    if (!error && data) setSolicitacoes(data as SolicitacaoTaxi[]);
+    if (!error && data) setSolicitacoes(data as unknown as SolicitacaoTaxi[]);
     setLoading(false);
   };
 
