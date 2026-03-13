@@ -199,15 +199,23 @@ export default function AutomacoesPage() {
   }, []);
 
   const fetchAutomacoes = async () => {
-    const { data } = await supabase
+    if (!tenantId) {
+      setLoading(false);
+      return;
+    }
+    const { data, error } = await supabase
       .from("automacoes")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Erro ao buscar automações:", error.message);
+    }
     if (data) setAutomacoes(data.map((a: any) => ({ ...a, mapping: (a.mapping as Record<string, string>) || {} })));
     setLoading(false);
   };
 
-  useEffect(() => { fetchAutomacoes(); }, []);
+  useEffect(() => { fetchAutomacoes(); }, [tenantId]);
 
   const handleCreate = async () => {
     if (!newName.trim() || !newTipo) return;
