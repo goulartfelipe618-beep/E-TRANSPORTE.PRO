@@ -541,6 +541,33 @@ export type Database = {
         }
         Relationships: []
       }
+      master_files: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          storage_path: string
+          tamanho: number
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          storage_path: string
+          tamanho?: number
+          tipo?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          storage_path?: string
+          tamanho?: number
+          tipo?: string
+        }
+        Relationships: []
+      }
       master_slides: {
         Row: {
           ativo: boolean
@@ -579,6 +606,8 @@ export type Database = {
       }
       master_webhooks: {
         Row: {
+          auto_comunicar: boolean
+          auto_comunicar_config: Json
           categoria: string
           created_at: string
           descricao: string | null
@@ -591,6 +620,8 @@ export type Database = {
           webhook_url_envio: string | null
         }
         Insert: {
+          auto_comunicar?: boolean
+          auto_comunicar_config?: Json
           categoria: string
           created_at?: string
           descricao?: string | null
@@ -603,6 +634,8 @@ export type Database = {
           webhook_url_envio?: string | null
         }
         Update: {
+          auto_comunicar?: boolean
+          auto_comunicar_config?: Json
           categoria?: string
           created_at?: string
           descricao?: string | null
@@ -1771,6 +1804,71 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "solicitacoes_motorista_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitacoes_taxi: {
+        Row: {
+          cliente_email: string | null
+          cliente_nome: string | null
+          cliente_origem: string | null
+          cliente_telefone: string | null
+          codigo: string | null
+          created_at: string
+          data_servico: string | null
+          endereco_destino: string | null
+          endereco_origem: string | null
+          horario: string | null
+          id: string
+          numero_passageiros: number | null
+          observacoes: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_servico?: string | null
+          endereco_destino?: string | null
+          endereco_origem?: string | null
+          horario?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cliente_email?: string | null
+          cliente_nome?: string | null
+          cliente_origem?: string | null
+          cliente_telefone?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_servico?: string | null
+          endereco_destino?: string | null
+          endereco_origem?: string | null
+          horario?: string | null
+          id?: string
+          numero_passageiros?: number | null
+          observacoes?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_taxi_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
