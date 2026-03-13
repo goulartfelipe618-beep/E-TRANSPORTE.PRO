@@ -23,7 +23,7 @@ export default function DashboardAbrangencia() {
   const [markers, setMarkers] = useState<MapMarker[]>([]);
 
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     const load = async () => {
       setLoading(true);
       const [rt, rg] = await Promise.all([

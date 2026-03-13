@@ -203,7 +203,7 @@ export default function GoogleBusiness() {
   }, []);
 
   const fetchProfiles = async () => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     setLoading(true);
     const { data } = await supabase
       .from("google_business_profiles")

@@ -196,7 +196,7 @@ export default function EmailBusiness() {
   const yearlyTotal = monthlyTotal * 12;
 
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     setLoading(true);
     supabase
       .from("solicitacoes_email")
