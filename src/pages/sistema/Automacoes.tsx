@@ -218,7 +218,7 @@ export default function AutomacoesPage() {
   useEffect(() => { fetchAutomacoes(); }, [tenantId]);
 
   const handleCreate = async () => {
-    if (!newName.trim() || !newTipo) return;
+    if (!newName.trim() || !newTipo || !tenantId) return;
     setCreating(true);
     const { error } = await supabase.from("automacoes").insert({ nome: newName.trim(), tipo: newTipo, tenant_id: tenantId });
     if (error) {
