@@ -118,7 +118,7 @@ export default function NetworkPage() {
   };
 
   const fetchContacts = async () => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     setLoading(true);
     const { data } = await supabase
       .from("network_contacts")

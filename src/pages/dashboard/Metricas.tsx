@@ -41,7 +41,7 @@ export default function DashboardMetricas() {
   const [motoristasCad, setMotoristasCad] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     const load = async () => {
       setLoading(true);
       const [st, sg, sm, rt, rg, mc] = await Promise.all([

@@ -304,7 +304,7 @@ export default function WebsitePage() {
 
   // Fetch existing briefing
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) { setLoading(false); return; }
     setLoading(true);
     supabase
       .from("website_briefings")

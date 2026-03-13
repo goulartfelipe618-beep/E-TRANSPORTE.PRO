@@ -41,7 +41,7 @@ export default function Home() {
 
   // Load custom slides from DB
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) return; // Home doesn't have loading state, safe
     const load = async () => {
       const { data } = await supabase
         .from("home_slides")
