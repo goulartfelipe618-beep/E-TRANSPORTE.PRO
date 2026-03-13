@@ -745,11 +745,7 @@ function AutomacaoDetail({
             </div>
           </CardHeader>
           <CardContent>
-             {!selectedTest ? (
-              <p className="text-muted-foreground text-sm">
-                Selecione um teste recebido para visualizar as variáveis disponíveis e configurar o mapeamento.
-              </p>
-            ) : isDynamic ? (
+             {isDynamic ? (
               /* ── Dynamic category mapping from master config ── */
               <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
                 {dynamicCategory.campos.length > 0 ? (
