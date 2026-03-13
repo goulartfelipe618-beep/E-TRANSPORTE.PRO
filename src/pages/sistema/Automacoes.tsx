@@ -514,40 +514,49 @@ function AutomacaoDetail({
           {field.label}
           {isImageField && <span className="ml-1 text-xs text-muted-foreground">(📷 Imagem)</span>}
         </label>
-        <Select
-          value={mapping[field.key] || ""}
-          onValueChange={(v) => handleSetVar(field.key, v)}
-        >
-          <SelectTrigger className="h-9">
-            <SelectValue placeholder="Selecione a variável..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__clear__">
-              <span className="text-muted-foreground">— Nenhuma —</span>
-            </SelectItem>
-            {availableVars
-              .filter((v) => {
-                const val = resolveValue(selectedTest!.payload, v);
-                return typeof val !== "object" || val === null;
-              })
-              .map((v) => (
-                <SelectItem key={v} value={v}>
-                  <span className="font-mono text-xs">{v}</span>
-                  <span className="ml-2 text-muted-foreground text-xs">
-                    = {String(resolveValue(selectedTest!.payload, v) ?? "")}
-                  </span>
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+        {selectedTest ? (
+          <Select
+            value={mapping[field.key] || ""}
+            onValueChange={(v) => handleSetVar(field.key, v)}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Selecione a variável..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__clear__">
+                <span className="text-muted-foreground">— Nenhuma —</span>
+              </SelectItem>
+              {availableVars
+                .filter((v) => {
+                  const val = resolveValue(selectedTest.payload, v);
+                  return typeof val !== "object" || val === null;
+                })
+                .map((v) => (
+                  <SelectItem key={v} value={v}>
+                    <span className="font-mono text-xs">{v}</span>
+                    <span className="ml-2 text-muted-foreground text-xs">
+                      = {String(resolveValue(selectedTest.payload, v) ?? "")}
+                    </span>
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Input
+            placeholder="Digite o caminho da variável (ex: nome, dados.email)"
+            value={mapping[field.key] || ""}
+            onChange={(e) => handleSetVar(field.key, e.target.value || "__clear__")}
+            className="h-9 font-mono text-xs"
+          />
+        )}
         {mapping[field.key] && (
           <p className="text-xs text-muted-foreground">
             Mapeado para: <code className="bg-muted px-1 rounded">{mapping[field.key]}</code>
-            {!isImageField && (
+            {!isImageField && selectedTest && (
               <>
                 {" → "}
                 <span className="text-foreground font-medium">
-                  {String(resolveValue(selectedTest!.payload, mapping[field.key]) ?? "—")}
+                  {String(resolveValue(selectedTest.payload, mapping[field.key]) ?? "—")}
                 </span>
               </>
             )}
