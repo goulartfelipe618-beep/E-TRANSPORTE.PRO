@@ -10,20 +10,37 @@ Após configurar o deploy, o site fica em:
 
 ## Subir o código para o GitHub (primeira vez)
 
-No PowerShell, na pasta do projeto:
+**Erro 403 “denied to felipegoulart06-lab”?** O Windows estava a usar outra conta. O remoto já está com o utilizador certo no URL:
+
+`https://goulartfelipe618-beep@github.com/goulartfelipe618-beep/LANDING_PAGE.git`
+
+### Opção A — script (recomendado)
+
+1. Instale o **GitHub CLI** (se ainda não tiver): `winget install GitHub.cli`
+2. No PowerShell, na pasta do projeto:
+
+```powershell
+cd "c:\Users\55479\Desktop\landing page e-transporte.pro"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\push-github.ps1
+```
+
+3. Quando abrir o browser em **github.com/login/device**, faça login com **`goulartfelipe618-beep`** (não com felipegoulart06-lab).
+
+### Opção B — manual
 
 ```powershell
 git init
 git branch -M main
 git add .
 git commit -m "Landing E-Transporte.pro + deploy GitHub Pages"
-git remote add origin https://github.com/goulartfelipe618-beep/LANDING_PAGE.git
+git remote add origin https://goulartfelipe618-beep@github.com/goulartfelipe618-beep/LANDING_PAGE.git
+gh auth login --web
+gh auth setup-git
 git push -u origin main
 ```
 
-Se o remoto já existir e der erro, use: `git remote set-url origin https://github.com/goulartfelipe618-beep/LANDING_PAGE.git`
-
-O GitHub vai pedir login: use **Personal Access Token** (não a senha da conta) ou **GitHub CLI** (`gh auth login`).
+Use **Personal Access Token** como “palavra-passe” se o Git pedir (não a senha da conta).
 
 ---
 
