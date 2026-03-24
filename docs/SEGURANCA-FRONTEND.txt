@@ -1,0 +1,32 @@
+Segurança do site e DevTools (F12)
+==================================
+
+1) O que NÃO é possível
+   Qualquer segredo que o navegador precise para funcionar (URL de API, chave pública,
+   token enviado num header) acaba no JavaScript ou nos pedidos HTTP. Uma pessoa com F12
+   (aba Rede, Código-fonte, Depuração) consegue ver isso. Bloquear atalhos ou desativar
+   o menu de contexto não protege dados — só atrapalha utilizadores legítimos.
+
+2) O que ESTE projeto faz
+   - URLs do webhook n8n saem do código-fonte e vêm do ficheiro .env (VITE_N8N_*),
+     para não ficarem no repositório Git e para cada ambiente ter o seu valor.
+   - Em build de produção, o Vite remove chamadas a console.* e debugger do bundle.
+   - A página define referrer strict-origin-when-cross-origin para reduzir vazamento
+     do URL completo em pedidos cross-origin.
+
+3) Atenção: variáveis VITE_*
+   No Vite, tudo com prefixo VITE_ é embutido no JavaScript da build. Quem inspecionar
+   o ficheiro .js em produção ainda pode ver o URL do webhook. Isto é normal em SPAs.
+
+4) Recomendação forte para dados verdadeiramente sensíveis
+   - Não coloque API keys secretas no front-end.
+   - Coloque um endpoint no VOSSO servidor (ex.: POST /api/chat) que:
+     * valida origem / rate limit / captcha se necessário;
+     * chama o n8n ou outro backend com credenciais só no servidor;
+     * devolve só a resposta ao browser.
+   Assim o utilizador só vê o URL do vosso domínio, não o do n8n nem tokens internos.
+
+5) Outras boas práticas
+   - HTTPS em produção; cabeçalhos de segurança (CSP, etc.) configurados no servidor
+     ou na CDN, não só no HTML.
+   - Nunca commite .env; use .env.example sem segredos.
