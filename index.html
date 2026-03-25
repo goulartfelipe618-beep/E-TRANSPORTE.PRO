@@ -938,21 +938,22 @@
             <input
               class="field__input city-combo__filter"
               id="lead-cidade-filter"
-              type="search"
+              type="text"
               autocomplete="off"
               placeholder="Buscar cidade…"
               aria-label="Filtrar cidades"
+              aria-controls="lead-cidade-list"
+              aria-autocomplete="list"
               disabled
             />
-            <select
-              class="field__input city-combo__select"
-              id="lead-cidade"
-              name="cidade"
-              size="6"
-              required
-              disabled
-              aria-label="Lista de cidades do estado selecionado"
-            ></select>
+            <input type="hidden" id="lead-cidade" name="cidade" value="" />
+            <div
+              class="city-combo__list"
+              id="lead-cidade-list"
+              role="listbox"
+              aria-label="Lista de cidades"
+              hidden
+            ></div>
           </div>
           <div class="field field--full">
             <label class="field__label" for="lead-empresa">Nome da empresa <span class="field__optional">(opcional)</span></label>

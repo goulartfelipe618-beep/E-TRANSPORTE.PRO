@@ -347,8 +347,12 @@
     var errEl = document.getElementById("lead-form-error");
     var selEstado = document.getElementById("lead-estado");
     var selCidade = document.getElementById("lead-cidade");
+    var cityListEl = document.getElementById("lead-cidade-list");
     var filterCidade = document.getElementById("lead-cidade-filter");
     var cityField = root.querySelector("[data-city-field]");
+    var selectedCidadeNome = "";
+    var syncingCityFilter = false;
+    var cityFilterTimer = null;
     var fonteOutroWrap = root.querySelector("[data-fonte-outro]");
     var fonteOutroInput = document.getElementById("lead-fonte-outro-text");
     var submitBtn = document.getElementById("lead-submit");
@@ -476,30 +480,60 @@
       if (!cityField || !selCidade || !filterCidade) return;
       if (!on) {
         cityField.hidden = true;
-        selCidade.innerHTML = "";
-        selCidade.disabled = true;
+        selCidade.value = "";
         selCidade.removeAttribute("required");
+        selectedCidadeNome = "";
         filterCidade.value = "";
         filterCidade.disabled = true;
+        if (cityListEl) {
+          cityListEl.innerHTML = "";
+          cityListEl.hidden = true;
+        }
         municipiosFull = [];
         municipiosCache = [];
         return;
       }
       cityField.hidden = false;
       filterCidade.disabled = false;
-      selCidade.disabled = false;
       selCidade.setAttribute("required", "");
     }
 
-    function fillCidades(list) {
-      if (!selCidade) return;
-      selCidade.innerHTML = "";
+    function selectCity(id, nome) {
+      if (!selCidade || !filterCidade) return;
+      selCidade.value = String(id);
+      selectedCidadeNome = nome || "";
+      syncingCityFilter = true;
+      filterCidade.value = nome || "";
+      syncingCityFilter = false;
+      clearError();
+    }
+
+    function renderCityList(list) {
+      if (!cityListEl) return;
+      cityListEl.innerHTML = "";
+      if (!list.length) {
+        var empty = document.createElement("p");
+        empty.className = "city-combo__empty";
+        empty.setAttribute("role", "status");
+        empty.textContent = "Nenhuma cidade encontrada para esta busca.";
+        cityListEl.appendChild(empty);
+        cityListEl.hidden = false;
+        return;
+      }
       list.forEach(function (m) {
-        var opt = document.createElement("option");
-        opt.value = String(m.id);
-        opt.textContent = m.nome;
-        selCidade.appendChild(opt);
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "city-combo__option";
+        btn.setAttribute("role", "option");
+        btn.setAttribute("data-id", String(m.id));
+        btn.textContent = m.nome;
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          selectCity(m.id, m.nome);
+        });
+        cityListEl.appendChild(btn);
       });
+      cityListEl.hidden = false;
     }
 
     function applyCidadeFilter() {
@@ -512,7 +546,7 @@
           return m.nome.toLowerCase().indexOf(q) !== -1;
         });
       }
-      fillCidades(municipiosCache);
+      renderCityList(municipiosCache);
     }
 
     if (selEstado) {
@@ -522,10 +556,14 @@
         setCityEnabled(false);
         if (!id) return;
 
-        selCidade.innerHTML = '<option value="">Carregando cidades…</option>';
+        selCidade.value = "";
+        selectedCidadeNome = "";
+        if (cityListEl) {
+          cityListEl.innerHTML = "";
+          cityListEl.hidden = true;
+        }
         cityField.hidden = false;
         filterCidade.disabled = true;
-        selCidade.disabled = true;
 
         fetch(ibgeMunicipiosUrl(id))
           .then(function (r) {
@@ -540,7 +578,7 @@
             filterCidade.value = "";
             filterCidade.disabled = false;
             setCityEnabled(true);
-            fillCidades(municipiosCache);
+            renderCityList(municipiosCache);
             if (filterCidade) filterCidade.focus();
           })
           .catch(function () {
@@ -552,7 +590,13 @@
 
     if (filterCidade) {
       filterCidade.addEventListener("input", function () {
-        applyCidadeFilter();
+        if (syncingCityFilter) return;
+        selCidade.value = "";
+        selectedCidadeNome = "";
+        window.clearTimeout(cityFilterTimer);
+        cityFilterTimer = window.setTimeout(function () {
+          applyCidadeFilter();
+        }, 180);
       });
     }
 
@@ -633,8 +677,19 @@
         if (selEstado && selEstado.selectedIndex >= 0) {
           estadoLabel = selEstado.options[selEstado.selectedIndex].textContent || "";
         }
-        var cidadeOpt = selCidade && selCidade.options[selCidade.selectedIndex];
-        var cidadeNome = cidadeOpt ? cidadeOpt.textContent : "";
+        var cidadeNome = "";
+        if (selCidade && selCidade.value) {
+          cidadeNome = selectedCidadeNome;
+          if (!cidadeNome && municipiosFull.length) {
+            var cid = String(selCidade.value);
+            for (var ci = 0; ci < municipiosFull.length; ci++) {
+              if (String(municipiosFull[ci].id) === cid) {
+                cidadeNome = municipiosFull[ci].nome;
+                break;
+              }
+            }
+          }
+        }
         var fonteEl = root.querySelector('input[name="fonte"]:checked');
         var fonte = fonteEl ? fonteEl.value : "";
         var fonteOutro = (fonteOutroInput && fonteOutroInput.value.trim()) || "";
