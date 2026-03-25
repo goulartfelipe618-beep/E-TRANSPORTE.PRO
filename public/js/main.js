@@ -424,6 +424,7 @@
         }
       }
       if (!estadosLoaded) loadEstados();
+      if (dialog) dialog.scrollTop = 0;
       window.requestAnimationFrame(function () {
         var nome = document.getElementById("lead-nome");
         if (nome) nome.focus();
@@ -444,9 +445,18 @@
     function resetFormView() {
       if (form) form.hidden = false;
       if (successEl) successEl.hidden = true;
-      if (submitBtn) submitBtn.disabled = false;
-      if (submitLabel) submitLabel.hidden = false;
-      if (submitWait) submitWait.hidden = true;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute("aria-busy");
+      }
+      if (submitLabel) {
+        submitLabel.hidden = false;
+        submitLabel.removeAttribute("aria-hidden");
+      }
+      if (submitWait) {
+        submitWait.hidden = true;
+        submitWait.setAttribute("aria-hidden", "true");
+      }
     }
 
     function loadEstados() {
@@ -506,6 +516,9 @@
       filterCidade.value = nome || "";
       syncingCityFilter = false;
       clearError();
+      if (cityListEl) {
+        cityListEl.hidden = true;
+      }
     }
 
     function renderCityList(list) {
@@ -598,7 +611,17 @@
           applyCidadeFilter();
         }, 180);
       });
+      filterCidade.addEventListener("focus", function () {
+        if (!municipiosFull.length || !cityListEl) return;
+        applyCidadeFilter();
+      });
     }
+
+    root.addEventListener("click", function (e) {
+      if (!cityField || !cityListEl || cityListEl.hidden) return;
+      if (cityField.contains(e.target)) return;
+      cityListEl.hidden = true;
+    });
 
     document.querySelectorAll("[data-open-lead-modal]").forEach(function (btn) {
       btn.addEventListener("click", function (e) {
@@ -752,23 +775,50 @@
           ambiente_n8n: ambienteN8n,
         };
 
-        if (submitBtn) submitBtn.disabled = true;
-        if (submitLabel) submitLabel.hidden = true;
-        if (submitWait) submitWait.hidden = false;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.setAttribute("aria-busy", "true");
+        }
+        if (submitLabel) {
+          submitLabel.hidden = true;
+          submitLabel.setAttribute("aria-hidden", "true");
+        }
+        if (submitWait) {
+          submitWait.hidden = false;
+          submitWait.removeAttribute("aria-hidden");
+        }
 
         function finishSuccess(message) {
           if (form) form.hidden = true;
           if (successEl) successEl.hidden = false;
           if (successMsg) successMsg.textContent = message;
-          if (submitBtn) submitBtn.disabled = false;
-          if (submitLabel) submitLabel.hidden = false;
-          if (submitWait) submitWait.hidden = true;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute("aria-busy");
+          }
+          if (submitLabel) {
+            submitLabel.hidden = false;
+            submitLabel.removeAttribute("aria-hidden");
+          }
+          if (submitWait) {
+            submitWait.hidden = true;
+            submitWait.setAttribute("aria-hidden", "true");
+          }
         }
 
         function releaseSubmitUi() {
-          if (submitBtn) submitBtn.disabled = false;
-          if (submitLabel) submitLabel.hidden = false;
-          if (submitWait) submitWait.hidden = true;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute("aria-busy");
+          }
+          if (submitLabel) {
+            submitLabel.hidden = false;
+            submitLabel.removeAttribute("aria-hidden");
+          }
+          if (submitWait) {
+            submitWait.hidden = true;
+            submitWait.setAttribute("aria-hidden", "true");
+          }
         }
 
         fetch(webhookUrl, {
