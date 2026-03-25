@@ -376,7 +376,7 @@
                 <li>Responsabilidade de compliance com a lei e com as políticas do WhatsApp é da operação.</li>
               </ol>
               <p class="promo-stack__hint">Para quem quer conversão com estrutura, não só texto solto.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Falar sobre Disparador</a>
+              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero disparar mensagens no WhatsApp</a>
             </div>
           </article>
 
@@ -626,7 +626,9 @@
             <h2 id="cta-heading">Pronto para organizar sua operação?</h2>
             <p class="section__sub">Use o botão para solicitar acesso no painel oficial — retornamos com os próximos passos.</p>
           </div>
-          <a class="btn btn--primary btn--lg" href="https://e-transporte.pro/solicitar-acesso" data-cta-primary rel="noopener noreferrer">Solicitar acesso</a>
+          <button type="button" class="btn btn--primary btn--lg" data-open-lead-modal data-cta-primary>
+            Conhecer plataforma gratuitamente
+          </button>
         </div>
       </div>
     </section>
@@ -884,6 +886,122 @@
       <p>© <span id="year"></span> E-Transporte.pro. Todos os direitos reservados.</p>
     </div>
   </footer>
+
+  <div
+    class="lead-modal"
+    id="lead-modal"
+    hidden
+    data-lead-modal
+    role="presentation"
+  >
+    <div class="lead-modal__backdrop" data-lead-modal-close tabindex="-1" aria-hidden="true"></div>
+    <div
+      class="lead-modal__dialog glass glass--strong"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lead-modal-title"
+      tabindex="-1"
+    >
+      <button type="button" class="lead-modal__close" data-lead-modal-close aria-label="Fechar formulário">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <div class="lead-modal__header">
+        <p class="lead-modal__eyebrow">E-Transporte.pro</p>
+        <h2 id="lead-modal-title">Conheça a plataforma</h2>
+        <p class="lead-modal__lede">Preencha os dados abaixo. Em seguida abriremos seu e-mail para enviar — ou use o resumo na área de transferência se o navegador limitar o tamanho.</p>
+      </div>
+
+      <form class="lead-modal__form" id="lead-form" novalidate>
+        <div class="lead-modal__grid">
+          <div class="field">
+            <label class="field__label" for="lead-nome">Nome completo *</label>
+            <input class="field__input" id="lead-nome" name="nome" type="text" autocomplete="name" required maxlength="120" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="lead-email">Melhor e-mail *</label>
+            <input class="field__input" id="lead-email" name="email" type="email" autocomplete="email" required maxlength="120" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="lead-tel">Telefone para contato *</label>
+            <input class="field__input" id="lead-tel" name="telefone" type="tel" autocomplete="tel" required maxlength="32" placeholder="DDD + número" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="lead-estado">Estado (UF) *</label>
+            <select class="field__input" id="lead-estado" name="estado" required aria-describedby="lead-estado-hint">
+              <option value="">Carregando estados…</option>
+            </select>
+            <span id="lead-estado-hint" class="field__hint">Dados oficiais do IBGE.</span>
+          </div>
+          <div class="field field--full city-field" data-city-field hidden>
+            <label class="field__label" for="lead-cidade-filter">Cidade *</label>
+            <p class="field__hint field__hint--above">Selecione o estado primeiro. Depois busque ou role a lista.</p>
+            <input
+              class="field__input city-combo__filter"
+              id="lead-cidade-filter"
+              type="search"
+              autocomplete="off"
+              placeholder="Buscar cidade…"
+              aria-label="Filtrar cidades"
+              disabled
+            />
+            <select
+              class="field__input city-combo__select"
+              id="lead-cidade"
+              name="cidade"
+              size="8"
+              required
+              disabled
+              aria-label="Lista de cidades do estado selecionado"
+            ></select>
+          </div>
+          <div class="field field--full">
+            <label class="field__label" for="lead-empresa">Nome da empresa <span class="field__optional">(opcional)</span></label>
+            <input class="field__input" id="lead-empresa" name="empresa" type="text" maxlength="160" autocomplete="organization" />
+          </div>
+          <fieldset class="lead-modal__fieldset field--full">
+            <legend class="field__label">De onde nos encontrou? *</legend>
+            <div class="lead-modal__radios">
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="google" required /> Google</label>
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="linkedin" /> LinkedIn</label>
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="facebook" /> Facebook</label>
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="instagram" /> Instagram</label>
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="indicacao" /> Indicação</label>
+              <label class="lead-modal__radio"><input type="radio" name="fonte" value="outro" /> Outro</label>
+            </div>
+            <div class="field lead-modal__fonte-outro" data-fonte-outro hidden>
+              <label class="field__label" for="lead-fonte-outro-text">Especifique *</label>
+              <input class="field__input" id="lead-fonte-outro-text" name="fonte_outro" type="text" maxlength="120" />
+            </div>
+          </fieldset>
+          <div class="field field--full">
+            <label class="field__label" for="lead-msg">Mensagem <span class="field__optional">(opcional)</span></label>
+            <textarea class="field__input field__textarea" id="lead-msg" name="mensagem" rows="3" maxlength="800" placeholder="Conte brevemente sua operação ou dúvida"></textarea>
+          </div>
+        </div>
+
+        <p class="lead-modal__error" id="lead-form-error" role="alert" hidden></p>
+
+        <div class="lead-modal__actions">
+          <button type="button" class="btn btn--ghost" data-lead-modal-close>Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="lead-submit">
+            <span class="lead-modal__submit-label">Enviar por e-mail</span>
+            <span class="lead-modal__submit-wait" hidden aria-hidden="true">Preparando…</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="lead-modal__success" id="lead-success" hidden>
+        <p class="lead-modal__success-title">Quase lá</p>
+        <p class="lead-modal__success-text" id="lead-success-msg"></p>
+        <button type="button" class="btn btn--primary" data-lead-modal-close>Fechar</button>
+      </div>
+
+      <p class="field--honeypot" aria-hidden="true">
+        <label for="lead-website">Website</label>
+        <input type="text" id="lead-website" name="website" tabindex="-1" autocomplete="off" />
+      </p>
+    </div>
+  </div>
 
   <div id="axus-root"></div>
   <script src="js/main.js" defer></script>

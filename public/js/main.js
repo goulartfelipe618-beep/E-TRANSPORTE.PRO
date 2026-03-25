@@ -334,4 +334,414 @@
       }, 400);
     });
   });
+
+  /* Modal lead + IBGE (estado → municípios) */
+  (function initLeadModal() {
+    var root = document.querySelector("[data-lead-modal]");
+    if (!root) return;
+
+    var dialog = root.querySelector(".lead-modal__dialog");
+    var form = document.getElementById("lead-form");
+    var successEl = document.getElementById("lead-success");
+    var successMsg = document.getElementById("lead-success-msg");
+    var errEl = document.getElementById("lead-form-error");
+    var selEstado = document.getElementById("lead-estado");
+    var selCidade = document.getElementById("lead-cidade");
+    var filterCidade = document.getElementById("lead-cidade-filter");
+    var cityField = root.querySelector("[data-city-field]");
+    var fonteOutroWrap = root.querySelector("[data-fonte-outro]");
+    var fonteOutroInput = document.getElementById("lead-fonte-outro-text");
+    var submitBtn = document.getElementById("lead-submit");
+    var submitLabel = submitBtn && submitBtn.querySelector(".lead-modal__submit-label");
+    var submitWait = submitBtn && submitBtn.querySelector(".lead-modal__submit-wait");
+
+    var estadosLoaded = false;
+    var municipiosCache = [];
+    var municipiosFull = [];
+    var lastFocus = null;
+
+    var IBGE_ESTADOS = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
+    function ibgeMunicipiosUrl(estadoId) {
+      return "https://servicodados.ibge.gov.br/api/v1/localidades/estados/" + estadoId + "/municipios?orderBy=nome";
+    }
+
+    function showError(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
+
+    function clearError() {
+      if (!errEl) return;
+      errEl.textContent = "";
+      errEl.hidden = true;
+    }
+
+    function getFocusables() {
+      if (!dialog) return [];
+      return Array.prototype.slice
+        .call(
+          dialog.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        )
+        .filter(function (el) {
+          return el.offsetParent !== null || el === dialog;
+        });
+    }
+
+    function openModal() {
+      lastFocus = document.activeElement;
+      root.removeAttribute("hidden");
+      root.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+      clearError();
+      if (form) form.hidden = false;
+      if (successEl) successEl.hidden = true;
+      if (form) {
+        form.reset();
+        setCityEnabled(false);
+        if (fonteOutroWrap) fonteOutroWrap.hidden = true;
+        if (fonteOutroInput) {
+          fonteOutroInput.removeAttribute("required");
+          fonteOutroInput.value = "";
+        }
+      }
+      if (!estadosLoaded) loadEstados();
+      window.requestAnimationFrame(function () {
+        var nome = document.getElementById("lead-nome");
+        if (nome) nome.focus();
+      });
+    }
+
+    function closeModal() {
+      root.classList.remove("is-open");
+      root.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        try {
+          lastFocus.focus();
+        } catch (e2) {}
+      }
+    }
+
+    function resetFormView() {
+      if (form) form.hidden = false;
+      if (successEl) successEl.hidden = true;
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitLabel) submitLabel.hidden = false;
+      if (submitWait) submitWait.hidden = true;
+    }
+
+    function loadEstados() {
+      if (!selEstado) return;
+      selEstado.innerHTML = '<option value="">Carregando estados…</option>';
+      selEstado.disabled = true;
+      fetch(IBGE_ESTADOS)
+        .then(function (r) {
+          if (!r.ok) throw new Error("ibge");
+          return r.json();
+        })
+        .then(function (data) {
+          estadosLoaded = true;
+          selEstado.innerHTML = '<option value="">Selecione o estado</option>';
+          data.forEach(function (uf) {
+            var opt = document.createElement("option");
+            opt.value = String(uf.id);
+            opt.textContent = uf.nome + " (" + uf.sigla + ")";
+            opt.setAttribute("data-sigla", uf.sigla);
+            selEstado.appendChild(opt);
+          });
+          selEstado.disabled = false;
+        })
+        .catch(function () {
+          selEstado.innerHTML = '<option value="">Erro ao carregar</option>';
+          showError("Não foi possível carregar os estados (IBGE). Verifique a conexão e tente de novo.");
+        });
+    }
+
+    function setCityEnabled(on) {
+      if (!cityField || !selCidade || !filterCidade) return;
+      if (!on) {
+        cityField.hidden = true;
+        selCidade.innerHTML = "";
+        selCidade.disabled = true;
+        selCidade.removeAttribute("required");
+        filterCidade.value = "";
+        filterCidade.disabled = true;
+        municipiosFull = [];
+        municipiosCache = [];
+        return;
+      }
+      cityField.hidden = false;
+      filterCidade.disabled = false;
+      selCidade.disabled = false;
+      selCidade.setAttribute("required", "");
+    }
+
+    function fillCidades(list) {
+      if (!selCidade) return;
+      selCidade.innerHTML = "";
+      list.forEach(function (m) {
+        var opt = document.createElement("option");
+        opt.value = String(m.id);
+        opt.textContent = m.nome;
+        selCidade.appendChild(opt);
+      });
+    }
+
+    function applyCidadeFilter() {
+      var q = (filterCidade && filterCidade.value.trim().toLowerCase()) || "";
+      if (!municipiosFull.length) return;
+      if (!q) {
+        municipiosCache = municipiosFull.slice();
+      } else {
+        municipiosCache = municipiosFull.filter(function (m) {
+          return m.nome.toLowerCase().indexOf(q) !== -1;
+        });
+      }
+      fillCidades(municipiosCache);
+    }
+
+    if (selEstado) {
+      selEstado.addEventListener("change", function () {
+        clearError();
+        var id = selEstado.value;
+        setCityEnabled(false);
+        if (!id) return;
+
+        selCidade.innerHTML = '<option value="">Carregando cidades…</option>';
+        cityField.hidden = false;
+        filterCidade.disabled = true;
+        selCidade.disabled = true;
+
+        fetch(ibgeMunicipiosUrl(id))
+          .then(function (r) {
+            if (!r.ok) throw new Error("ibge");
+            return r.json();
+          })
+          .then(function (data) {
+            municipiosFull = data.map(function (m) {
+              return { id: m.id, nome: m.nome };
+            });
+            municipiosCache = municipiosFull.slice();
+            filterCidade.value = "";
+            filterCidade.disabled = false;
+            setCityEnabled(true);
+            fillCidades(municipiosCache);
+            if (filterCidade) filterCidade.focus();
+          })
+          .catch(function () {
+            showError("Não foi possível carregar as cidades deste estado. Tente outro estado ou atualize a página.");
+            setCityEnabled(false);
+          });
+      });
+    }
+
+    if (filterCidade) {
+      filterCidade.addEventListener("input", function () {
+        applyCidadeFilter();
+      });
+    }
+
+    document.querySelectorAll("[data-open-lead-modal]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        resetFormView();
+        openModal();
+      });
+    });
+
+    root.querySelectorAll("[data-lead-modal-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        closeModal();
+      });
+    });
+
+    root.addEventListener("click", function (e) {
+      if (e.target === root.querySelector(".lead-modal__backdrop")) closeModal();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && root.classList.contains("is-open")) {
+        e.preventDefault();
+        closeModal();
+      }
+      if (e.key === "Tab" && root.classList.contains("is-open") && dialog) {
+        var focusables = getFocusables();
+        if (focusables.length === 0) return;
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    root.querySelectorAll('input[name="fonte"]').forEach(function (radio) {
+      radio.addEventListener("change", function () {
+        var outro = root.querySelector('input[name="fonte"]:checked') && root.querySelector('input[name="fonte"]:checked').value === "outro";
+        if (fonteOutroWrap) {
+          fonteOutroWrap.hidden = !outro;
+        }
+        if (fonteOutroInput) {
+          if (outro) {
+            fonteOutroInput.setAttribute("required", "");
+            fonteOutroInput.focus();
+          } else {
+            fonteOutroInput.removeAttribute("required");
+            fonteOutroInput.value = "";
+          }
+        }
+      });
+    });
+
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearError();
+
+        var hp = document.getElementById("lead-website");
+        if (hp && hp.value) {
+          closeModal();
+          return;
+        }
+
+        var nome = (document.getElementById("lead-nome") && document.getElementById("lead-nome").value.trim()) || "";
+        var email = (document.getElementById("lead-email") && document.getElementById("lead-email").value.trim()) || "";
+        var tel = (document.getElementById("lead-tel") && document.getElementById("lead-tel").value.trim()) || "";
+        var empresa = (document.getElementById("lead-empresa") && document.getElementById("lead-empresa").value.trim()) || "";
+        var msg = (document.getElementById("lead-msg") && document.getElementById("lead-msg").value.trim()) || "";
+        var estadoId = selEstado && selEstado.value;
+        var estadoLabel = "";
+        if (selEstado && selEstado.selectedIndex >= 0) {
+          estadoLabel = selEstado.options[selEstado.selectedIndex].textContent || "";
+        }
+        var cidadeOpt = selCidade && selCidade.options[selCidade.selectedIndex];
+        var cidadeNome = cidadeOpt ? cidadeOpt.textContent : "";
+        var fonteEl = root.querySelector('input[name="fonte"]:checked');
+        var fonte = fonteEl ? fonteEl.value : "";
+        var fonteOutro = (fonteOutroInput && fonteOutroInput.value.trim()) || "";
+
+        if (!nome || !email || !tel) {
+          showError("Preencha nome, e-mail e telefone.");
+          return;
+        }
+        if (!estadoId) {
+          showError("Selecione o estado.");
+          return;
+        }
+        if (!selCidade || !selCidade.value) {
+          showError("Selecione a cidade na lista.");
+          return;
+        }
+        if (!fonte) {
+          showError("Indique como nos encontrou.");
+          return;
+        }
+        if (fonte === "outro" && !fonteOutro) {
+          showError("Especifique a origem em “Outro”.");
+          return;
+        }
+
+        var fonteLabel = fonte;
+        if (fonte === "google") fonteLabel = "Google";
+        else if (fonte === "linkedin") fonteLabel = "LinkedIn";
+        else if (fonte === "facebook") fonteLabel = "Facebook";
+        else if (fonte === "instagram") fonteLabel = "Instagram";
+        else if (fonte === "indicacao") fonteLabel = "Indicação";
+        else if (fonte === "outro") fonteLabel = "Outro: " + fonteOutro;
+
+        var bodyLines = [
+          "Nome: " + nome,
+          "E-mail: " + email,
+          "Telefone: " + tel,
+          "Estado: " + estadoLabel,
+          "Cidade: " + cidadeNome,
+          "Empresa: " + (empresa || "—"),
+          "Como nos encontrou: " + fonteLabel,
+          "",
+          "Mensagem:",
+          msg || "—",
+        ];
+        var body = bodyLines.join("\n");
+        var subject = "Contato — Conhecer plataforma E-Transporte.pro";
+        var mail = "contato@e-transporte.pro";
+        var maxBody = 1750;
+        var tipPaste =
+          "O texto completo do formulário foi copiado para a área de transferência. Cole (Ctrl+V) no corpo do e-mail se ele vier vazio.";
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitLabel) submitLabel.hidden = true;
+        if (submitWait) submitWait.hidden = false;
+
+        function finishSuccess(message) {
+          if (form) form.hidden = true;
+          if (successEl) successEl.hidden = false;
+          if (successMsg) successMsg.textContent = message;
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitLabel) submitLabel.hidden = false;
+          if (submitWait) submitWait.hidden = true;
+        }
+
+        function tryMailto(b, preferClipboard) {
+          if (b.length <= maxBody) {
+            window.location.href =
+              "mailto:" + mail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(b);
+            finishSuccess(
+              "Se o e-mail não abrir, envie manualmente para contato@e-transporte.pro."
+            );
+            return;
+          }
+          if (preferClipboard && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(b)
+              .then(function () {
+                window.location.href =
+                  "mailto:" +
+                  mail +
+                  "?subject=" +
+                  encodeURIComponent(subject) +
+                  "&body=" +
+                  encodeURIComponent(tipPaste);
+                finishSuccess(
+                  "Seu cliente de e-mail deve abrir. O texto completo foi copiado — cole (Ctrl+V) no corpo se vier vazio."
+                );
+              })
+              .catch(function () {
+                window.location.href =
+                  "mailto:" +
+                  mail +
+                  "?subject=" +
+                  encodeURIComponent(subject) +
+                  "&body=" +
+                  encodeURIComponent(b.slice(0, maxBody) + "\n\n[Texto truncado — reduza a mensagem opcional.]");
+                finishSuccess(
+                  "Se o texto estiver incompleto, envie outro e-mail ou ligue para o suporte."
+                );
+              });
+            return;
+          }
+          window.location.href =
+            "mailto:" +
+            mail +
+            "?subject=" +
+            encodeURIComponent(subject) +
+            "&body=" +
+            encodeURIComponent(b.slice(0, maxBody) + "\n\n[Texto truncado — reduza a mensagem opcional.]");
+          finishSuccess(
+            "Se o texto estiver incompleto, envie outro e-mail ou ligue para o suporte."
+          );
+        }
+
+        window.setTimeout(function () {
+          tryMailto(body, body.length > maxBody);
+        }, 120);
+      });
+    }
+  })();
 })();
