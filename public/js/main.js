@@ -107,56 +107,6 @@
   }
   initReveals();
 
-  function setButtonLoading(btn, loading) {
-    if (!btn) return;
-    if (loading) {
-      btn.dataset.loading = "true";
-      btn.setAttribute("disabled", "disabled");
-      var sp = document.createElement("span");
-      sp.className = "btn__spinner";
-      sp.setAttribute("aria-hidden", "true");
-      btn.insertBefore(sp, btn.firstChild);
-    } else {
-      delete btn.dataset.loading;
-      btn.removeAttribute("disabled");
-      var old = btn.querySelector(".btn__spinner");
-      if (old) old.remove();
-    }
-  }
-
-  /* Formulário: honeypot, mensagem de sucesso na seção, redirect GET sem spam field */
-  var leadForm = document.querySelector(".lead-form");
-  if (leadForm) {
-    leadForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (!leadForm.action) return;
-
-      var hp = leadForm.querySelector('[name="company_site"]');
-      if (hp && hp.value.replace(/\s/g, "") !== "") {
-        return;
-      }
-
-      var submitBtn = leadForm.querySelector("[data-cta-submit]");
-      var successEl = document.getElementById("lead-success");
-
-      setButtonLoading(submitBtn, true);
-
-      var fd = new FormData(leadForm);
-      fd.delete("company_site");
-      var q = new URLSearchParams(fd).toString();
-      var url = leadForm.action + (leadForm.action.indexOf("?") >= 0 ? "&" : "?") + q;
-
-      if (successEl) {
-        successEl.hidden = false;
-        successEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
-      }
-
-      window.setTimeout(function () {
-        window.location.href = url;
-      }, 2200);
-    });
-  }
-
   /* Carrossel de planos: scroll horizontal no viewport + setas (sem transform; evita cliques bloqueados) */
   var plansRoot = document.querySelector("[data-plans-carousel]");
   if (plansRoot) {

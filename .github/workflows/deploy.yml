@@ -36,8 +36,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Caminho do site em GitHub Pages (nome do repositório)
-          VITE_BASE_PATH: /LANDING_PAGE/
+          # Domínio próprio na raiz (https://e-transporte.pro). Para preview só em github.io/REPO use /REPO/
+          VITE_BASE_PATH: /
           # Opcional: definir em Settings → Secrets and variables → Actions
           # para o chat Áxus funcionar em produção
           VITE_N8N_WEBHOOK_TEST: ${{ secrets.VITE_N8N_WEBHOOK_TEST }}

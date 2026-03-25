@@ -1,10 +1,19 @@
 # E-Transporte.pro — Landing
 
-## Site publicado (GitHub Pages)
+## Site em produção
 
-Após configurar o deploy, o site fica em:
+- **https://e-transporte.pro**
+- **https://www.e-transporte.pro** (use redirecionamento no DNS ou no hosting para apontar `www` → apex ou o inverso; URL canónica no HTML: `https://e-transporte.pro/`)
+
+---
+
+## Espelho no GitHub Pages (opcional)
+
+Se o deploy automático publicar também no GitHub:
 
 **https://goulartfelipe618-beep.github.io/LANDING_PAGE/**
+
+(Com **domínio próprio** ligado no GitHub Pages, o build usa `VITE_BASE_PATH=/` no workflow.)
 
 ---
 
@@ -49,9 +58,8 @@ Use **Personal Access Token** como “palavra-passe” se o Git pedir (não a se
 1. Abra o repositório: [LANDING_PAGE](https://github.com/goulartfelipe618-beep/LANDING_PAGE)
 2. **Settings** → **Pages**
 3. Em **Build and deployment** → **Source**: escolha **GitHub Actions** (não “Deploy from a branch”)
-4. Faça um push qualquer na branch `main` (ou **Actions** → workflow **Deploy GitHub Pages** → **Run workflow**)
-
-A cada `git push` na `main`, o site é gerado de novo e publicado em alguns minutos.
+4. Para **domínio próprio** (`e-transporte.pro`): **Settings** → **Pages** → **Custom domain** e ficheiro DNS conforme a documentação do GitHub.
+5. Faça um push na branch `main` (ou **Actions** → **Deploy GitHub Pages** → **Run workflow**)
 
 ---
 
@@ -67,7 +75,7 @@ git push
 
 ## Chat Áxus (opcional)
 
-Para o webhook funcionar no site do GitHub, crie secrets no repositório: **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+Para o webhook funcionar na build do GitHub Actions, crie secrets: **Settings** → **Secrets and variables** → **Actions**:
 
 - `VITE_N8N_WEBHOOK_TEST`
 - `VITE_N8N_WEBHOOK_PROD`
@@ -83,7 +91,14 @@ npm install
 npm run dev
 ```
 
-Build com o mesmo caminho do GitHub Pages:
+Build igual à produção (base na raiz do domínio):
+
+```powershell
+npm run build
+npm run preview
+```
+
+Build antiga só para path de repositório GitHub (sem domínio próprio):
 
 ```powershell
 $env:VITE_BASE_PATH="/LANDING_PAGE/"; npm run build; npm run preview

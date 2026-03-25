@@ -1782,6 +1782,18 @@ button:focus-visible,
   font-weight: 600;
 }
 
+/* Bloco FREE + CTA (âncora #captura) */
+.solicitar-acesso-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#captura,
+#free-detalhes {
+  scroll-margin-top: 5.5rem;
+}
+
 /* CTA */
 .cta-banner__inner {
   display: flex;

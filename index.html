@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>E-Transporte.pro — Gestão para motorista executivo e taxista</title>
   <meta name="description" content="E-Transporte.pro para motorista executivo e taxista: solicitações, reservas, cadastro e marketing. Planos Seed a Apex; FREE com limites. Solicite acesso." />
+  <!-- Domínio: https://e-transporte.pro (canónico) e https://www.e-transporte.pro — configure redirecionamento www no DNS/host -->
   <link rel="canonical" href="https://e-transporte.pro/" />
 
   <meta property="og:type" content="website" />
@@ -47,7 +52,7 @@
           <li><a href="#funcionalidades">Funcionalidades</a></li>
           <li><a href="#o-painel">O painel</a></li>
           <li><a href="#planos">Planos</a></li>
-          <li><a href="#teste-gratis">Teste grátis</a></li>
+          <li><a href="#captura">Teste grátis</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
         <div class="nav__actions">
@@ -66,7 +71,7 @@
         <li><a href="#funcionalidades">Funcionalidades</a></li>
         <li><a href="#o-painel">O painel</a></li>
         <li><a href="#planos">Planos</a></li>
-        <li><a href="#teste-gratis">Teste grátis</a></li>
+        <li><a href="#captura">Teste grátis</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a class="btn btn--ghost btn--block" href="https://e-transporte.pro/">Entrar na conta</a></li>
         <li><a class="btn btn--primary btn--block btn--nav-cta" href="#captura">Solicitar acesso</a></li>
@@ -583,9 +588,9 @@
       </div>
     </section>
 
-    <section class="section section--alt" id="free-detalhes" aria-labelledby="free-heading">
-      <div class="container">
-        <div class="free-block glass glass--strong reveal" data-reveal>
+    <section class="section section--alt solicitar-acesso-wrap" id="captura" aria-labelledby="free-heading">
+      <div class="container solicitar-acesso-stack">
+        <div class="free-block glass glass--strong reveal" data-reveal id="free-detalhes">
           <header class="section__head section__head--tight">
             <h2 id="free-heading">FREE — regras explícitas</h2>
             <p class="section__sub">Transparência sobre o que libera e o que pede upgrade.</p>
@@ -615,52 +620,14 @@
           </div>
           <p class="free-close"><strong>Você vê o sistema inteiro antes de investir.</strong></p>
         </div>
-      </div>
-    </section>
 
-    <section class="section cta-banner" id="captura" aria-labelledby="cta-heading">
-      <div class="container">
-        <div class="cta-banner__inner glass glass--hero reveal" data-reveal>
+        <div class="cta-banner__inner glass glass--hero reveal" data-reveal aria-labelledby="cta-heading">
           <div class="cta-banner__text">
             <h2 id="cta-heading">Pronto para organizar sua operação?</h2>
-            <p class="section__sub">Deixe seus dados — retornamos com acesso e próximos passos.</p>
+            <p class="section__sub">Use o botão para solicitar acesso no painel oficial — retornamos com os próximos passos.</p>
           </div>
-          <a class="btn btn--primary btn--lg" href="https://e-transporte.pro/solicitar-acesso" data-cta-primary>Solicitar acesso</a>
+          <a class="btn btn--primary btn--lg" href="https://e-transporte.pro/solicitar-acesso" data-cta-primary rel="noopener noreferrer">Solicitar acesso</a>
         </div>
-        <form class="lead-form glass reveal" data-reveal action="https://e-transporte.pro/solicitar-acesso" method="get" aria-label="Solicitar acesso — formulário enxuto">
-          <p class="lead-form__title">Ou preencha e envie pelo site</p>
-          <div class="lead-form__success" id="lead-success" hidden role="status" aria-live="polite">
-            <p><strong>Solicitação recebida.</strong> Redirecionando em instantes — confira também seu e-mail.</p>
-          </div>
-          <div class="field field--honeypot" aria-hidden="true">
-            <label class="field__label">Empresa (não preencher)</label>
-            <input class="field__input" type="text" name="company_site" tabindex="-1" autocomplete="off" />
-          </div>
-          <div class="lead-form__grid">
-            <label class="field">
-              <span class="field__label">Nome</span>
-              <input class="field__input" type="text" name="nome" autocomplete="name" required />
-            </label>
-            <label class="field">
-              <span class="field__label">E-mail</span>
-              <input class="field__input" type="email" name="email" autocomplete="email" required />
-            </label>
-            <label class="field">
-              <span class="field__label">Telefone</span>
-              <input class="field__input" type="tel" name="telefone" autocomplete="tel" />
-            </label>
-            <label class="field">
-              <span class="field__label">Tipo de operação</span>
-              <select class="field__input" name="tipo" required>
-                <option value="">Selecione</option>
-                <option value="executivo">Motorista executivo</option>
-                <option value="taxi">Taxista</option>
-                <option value="frota">Pequena frota / operador</option>
-              </select>
-            </label>
-          </div>
-          <button class="btn btn--primary" type="submit" data-cta-submit>Solicitar acesso</button>
-        </form>
       </div>
     </section>
 
@@ -864,7 +831,7 @@
           <li><a href="#funcionalidades">Funcionalidades</a></li>
           <li><a href="#o-painel">O painel</a></li>
           <li><a href="#planos">Planos</a></li>
-          <li><a href="#teste-gratis">Teste grátis</a></li>
+          <li><a href="#captura">Teste grátis</a></li>
           <li><a href="#faq">FAQ</a></li>
           <li><a href="https://e-transporte.pro/">Entrar na conta</a></li>
         </ul>
@@ -874,7 +841,7 @@
         <ul class="footer__links">
           <li><a href="https://e-transporte.pro/termos">Termos de uso</a></li>
           <li><a href="https://e-transporte.pro/privacidade">Privacidade</a></li>
-          <li><a href="https://e-transporte.pro/solicitar-acesso">Solicitar acesso</a></li>
+          <li><a href="#captura">Solicitar acesso</a></li>
         </ul>
       </div>
       <div class="footer__col">
