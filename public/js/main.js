@@ -360,6 +360,18 @@
     var municipiosFull = [];
     var lastFocus = null;
 
+    /** n8n: teste fora do domínio oficial; produção em e-transporte.pro */
+    var N8N_WEBHOOK_PROD = "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
+    var N8N_WEBHOOK_TEST = "https://n8n.e-transporte.pro/webhook-test/eb54332d-b6ee-4922-99af-c4266c73b44c";
+
+    function resolveN8nWebhookUrl() {
+      var h = (window.location.hostname || "").toLowerCase();
+      if (h === "e-transporte.pro" || h === "www.e-transporte.pro") {
+        return N8N_WEBHOOK_PROD;
+      }
+      return N8N_WEBHOOK_TEST;
+    }
+
     var IBGE_ESTADOS = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
     function ibgeMunicipiosUrl(estadoId) {
       return "https://servicodados.ibge.gov.br/api/v1/localidades/estados/" + estadoId + "/municipios?orderBy=nome";
@@ -656,24 +668,34 @@
         else if (fonte === "indicacao") fonteLabel = "Indicação";
         else if (fonte === "outro") fonteLabel = "Outro: " + fonteOutro;
 
-        var bodyLines = [
-          "Nome: " + nome,
-          "E-mail: " + email,
-          "Telefone: " + tel,
-          "Estado: " + estadoLabel,
-          "Cidade: " + cidadeNome,
-          "Empresa: " + (empresa || "—"),
-          "Como nos encontrou: " + fonteLabel,
-          "",
-          "Mensagem:",
-          msg || "—",
-        ];
-        var body = bodyLines.join("\n");
-        var subject = "Contato — Conhecer plataforma E-Transporte.pro";
-        var mail = "contato@e-transporte.pro";
-        var maxBody = 1750;
-        var tipPaste =
-          "O texto completo do formulário foi copiado para a área de transferência. Cole (Ctrl+V) no corpo do e-mail se ele vier vazio.";
+        var estadoOptSel = selEstado && selEstado.options[selEstado.selectedIndex];
+        var estadoSigla = estadoOptSel ? estadoOptSel.getAttribute("data-sigla") || "" : "";
+        var cidadeId = selCidade && selCidade.value ? String(selCidade.value) : "";
+
+        var webhookUrl = resolveN8nWebhookUrl();
+        var ambienteN8n = webhookUrl.indexOf("webhook-test") !== -1 ? "teste" : "producao";
+
+        var payload = {
+          nome: nome,
+          email: email,
+          telefone: tel,
+          estado_id: estadoId,
+          estado_texto: estadoLabel,
+          estado_sigla: estadoSigla,
+          cidade_id: cidadeId,
+          cidade_nome: cidadeNome,
+          empresa: empresa,
+          fonte: fonte,
+          fonte_label: fonteLabel,
+          fonte_outro: fonte === "outro" ? fonteOutro : "",
+          mensagem: msg,
+          origem_url: window.location.href,
+          origem_host: window.location.hostname || "",
+          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+          idioma_navegador: typeof navigator !== "undefined" ? navigator.language || "" : "",
+          enviado_em_iso: new Date().toISOString(),
+          ambiente_n8n: ambienteN8n,
+        };
 
         if (submitBtn) submitBtn.disabled = true;
         if (submitLabel) submitLabel.hidden = true;
@@ -688,59 +710,37 @@
           if (submitWait) submitWait.hidden = true;
         }
 
-        function tryMailto(b, preferClipboard) {
-          if (b.length <= maxBody) {
-            window.location.href =
-              "mailto:" + mail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(b);
-            finishSuccess(
-              "Se o e-mail não abrir, envie manualmente para contato@e-transporte.pro."
-            );
-            return;
-          }
-          if (preferClipboard && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard
-              .writeText(b)
-              .then(function () {
-                window.location.href =
-                  "mailto:" +
-                  mail +
-                  "?subject=" +
-                  encodeURIComponent(subject) +
-                  "&body=" +
-                  encodeURIComponent(tipPaste);
-                finishSuccess(
-                  "Seu cliente de e-mail deve abrir. O texto completo foi copiado — cole (Ctrl+V) no corpo se vier vazio."
-                );
-              })
-              .catch(function () {
-                window.location.href =
-                  "mailto:" +
-                  mail +
-                  "?subject=" +
-                  encodeURIComponent(subject) +
-                  "&body=" +
-                  encodeURIComponent(b.slice(0, maxBody) + "\n\n[Texto truncado — reduza a mensagem opcional.]");
-                finishSuccess(
-                  "Se o texto estiver incompleto, envie outro e-mail ou ligue para o suporte."
-                );
-              });
-            return;
-          }
-          window.location.href =
-            "mailto:" +
-            mail +
-            "?subject=" +
-            encodeURIComponent(subject) +
-            "&body=" +
-            encodeURIComponent(b.slice(0, maxBody) + "\n\n[Texto truncado — reduza a mensagem opcional.]");
-          finishSuccess(
-            "Se o texto estiver incompleto, envie outro e-mail ou ligue para o suporte."
-          );
+        function releaseSubmitUi() {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitLabel) submitLabel.hidden = false;
+          if (submitWait) submitWait.hidden = true;
         }
 
-        window.setTimeout(function () {
-          tryMailto(body, body.length > maxBody);
-        }, 120);
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json, text/plain, */*",
+          },
+          body: JSON.stringify(payload),
+          credentials: "omit",
+          mode: "cors",
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("http_" + r.status);
+            return r.text();
+          })
+          .then(function () {
+            finishSuccess(
+              "Obrigado! Entraremos em contato pelo e-mail ou telefone informados em breve."
+            );
+          })
+          .catch(function () {
+            showError(
+              "Não foi possível enviar agora. Verifique a conexão ou tente de novo em instantes. Se persistir, escreva para contato@e-transporte.pro."
+            );
+            releaseSubmitUi();
+          });
       });
     }
   })();
