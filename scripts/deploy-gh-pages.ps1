@@ -83,7 +83,11 @@ try {
 finally {
   # remove worktree (mesmo se houver erro)
   if (Test-Path -Path $TempWorkDir) {
-    & git worktree remove $TempWorkDir --force | Out-Null
+    try {
+      & git worktree remove $TempWorkDir --force | Out-Null
+    } catch {
+      Write-Host "Aviso: não foi possível remover worktree temporário automaticamente (pode ser permissão/bloqueio do Windows). Temp: $TempWorkDir" -ForegroundColor Yellow
+    }
   }
 }
 
