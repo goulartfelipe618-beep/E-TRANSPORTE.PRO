@@ -2612,11 +2612,14 @@ button:focus-visible,
   transition:
     opacity 0.5s var(--ease),
     transform 0.5s var(--ease);
+  /* Quando invisível, não deve capturar cliques por cima de outros elementos. */
+  pointer-events: none;
 }
 
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 .reveal--delay {
@@ -2628,6 +2631,7 @@ button:focus-visible,
     opacity: 1;
     transform: none;
     transition: none;
+    pointer-events: auto;
   }
 
   .bento__card:hover,

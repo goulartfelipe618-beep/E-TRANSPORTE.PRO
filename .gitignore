@@ -5,3 +5,6 @@ dist
 .env
 .env.*
 !.env.example
+
+# Cursor / agent helper files (não versionar)
+AGENTS.md
