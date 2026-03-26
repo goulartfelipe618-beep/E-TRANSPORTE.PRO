@@ -54,19 +54,21 @@
   }
 
   /* Entrar na conta (sempre abrir em nova guia, sem recarregar) */
-  document
-    .querySelectorAll('a[href^="https://app.e-transporte.pro"]')
-    .forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        // Se o usuário pediu abrir de forma especial (ctrl/cmd etc), deixa o browser decidir.
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        // Apenas clique principal (evita tocar em middle/right click).
-        if (typeof e.button === "number" && e.button !== 0) return;
-        // Evita que algum listener inesperado force "page reload".
-        e.preventDefault();
-        window.open(a.href, "_blank", "noopener,noreferrer");
-      });
-    });
+  // Delegação: funciona mesmo se o DOM/atributos mudarem entre ambientes.
+  document.addEventListener("click", function (e) {
+    if (!e.target || !e.target.closest) return;
+    var a = e.target.closest('a[href^="https://app.e-transporte.pro"]');
+    if (!a) return;
+
+    // Se o usuário pediu abrir de forma especial (ctrl/cmd etc), deixa o browser decidir.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    // Apenas clique principal (evita tocar em middle/right click).
+    if (typeof e.button === "number" && e.button !== 0) return;
+
+    // Impede o comportamento padrão (que em alguns cenários recarrega a página ao invés de abrir).
+    e.preventDefault();
+    window.open(a.href, "_blank", "noopener,noreferrer");
+  });
 
   /* Accordion FAQ (um painel aberto por vez no mesmo grupo) */
   document.querySelectorAll("[data-accordion-trigger]").forEach(function (btn) {
