@@ -27,5 +27,10 @@ gh auth setup-git
 Set-Location $Root
 Write-Host "`n=== git push ===`n" -ForegroundColor Cyan
 git push -u origin main
+git push -u e-transporte main
+
+Write-Host "`n=== Deploy GitHub Pages (sem Actions) ===`n" -ForegroundColor Cyan
+# Publica dist/ na branch gh-pages do repo E-TRANSPORTE.PRO
+& "$Root\\scripts\\deploy-gh-pages.ps1" -RemoteName "e-transporte" -BranchName "gh-pages"
 
 Write-Host "`nDone. Se o push falhar, confirme em github.com que estás logado como goulartfelipe618-beep.`n" -ForegroundColor Green
