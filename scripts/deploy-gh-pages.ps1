@@ -78,7 +78,7 @@ try {
   Write-Host "Enviando branch '$BranchName' para remoto '$RemoteName'..." -ForegroundColor Cyan
   & git push $RemoteName $BranchName | Out-Null
 
-  Write-Host "Deploy concluído: $RemoteName:$BranchName" -ForegroundColor Green
+  Write-Host "Deploy concluído: ${RemoteName}:$BranchName" -ForegroundColor Green
 }
 finally {
   # remove worktree (mesmo se houver erro)
