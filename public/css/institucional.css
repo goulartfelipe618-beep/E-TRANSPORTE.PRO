@@ -114,6 +114,12 @@ img {
   color: #ffffff;
 }
 
+.menu button.menu__cta {
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+}
+
 .menu .menu__cta:hover,
 .menu .menu__cta:focus-visible {
   color: #ffffff;
