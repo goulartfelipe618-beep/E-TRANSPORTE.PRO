@@ -31,9 +31,23 @@ body {
 
 body {
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 16px;
   background: radial-gradient(circle at top, #121725 0%, var(--bg) 45%);
   color: var(--text);
   line-height: 1.6;
+}
+
+p,
+li,
+a,
+span,
+td,
+th,
+label,
+input,
+textarea,
+button {
+  font-size: 1rem;
 }
 
 a {
@@ -91,13 +105,18 @@ img {
 
 .menu a {
   color: var(--muted);
-  font-size: 0.92rem;
 }
 
 .menu .menu__cta {
   min-width: 172px;
   height: 44px;
   white-space: nowrap;
+  color: #ffffff;
+}
+
+.menu .menu__cta:hover,
+.menu .menu__cta:focus-visible {
+  color: #ffffff;
 }
 
 .menu a:hover,
@@ -154,7 +173,6 @@ img {
   border: 1px solid rgba(232, 163, 23, 0.35);
   border-radius: 999px;
   color: var(--accent);
-  font-size: 0.8rem;
   margin-bottom: 14px;
 }
 
@@ -173,8 +191,11 @@ h2 {
   font-size: clamp(1.4rem, 2.6vw, 2rem);
 }
 
+h3 {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
 p.lead {
-  font-size: 1.02rem;
   color: var(--muted);
   margin: 0 0 16px;
 }
@@ -255,12 +276,10 @@ p.lead {
 
 .kpi span {
   color: var(--muted);
-  font-size: 0.85rem;
 }
 
 .tag {
   display: inline-block;
-  font-size: 0.76rem;
   padding: 3px 9px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -333,12 +352,10 @@ td {
 th {
   color: #d9dfef;
   background: rgba(255, 255, 255, 0.03);
-  font-size: 0.88rem;
 }
 
 td {
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .cta {
@@ -364,7 +381,6 @@ td {
 .footer li,
 .footer a {
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .footer ul {
@@ -395,7 +411,6 @@ td {
 
 .meta {
   color: var(--muted);
-  font-size: 0.82rem;
 }
 
 .mobile-toggle {
