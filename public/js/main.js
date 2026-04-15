@@ -2,6 +2,10 @@
   "use strict";
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var saveData = !!(conn && conn.saveData);
+  var lowCpu = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4;
+  var lowPerfMode = reduceMotion || saveData || lowCpu;
 
   var yearEl = document.getElementById("year");
   if (yearEl) {
@@ -77,6 +81,12 @@
   /* Reveal por seção (exceto hero) + stagger 60ms */
   function initReveals() {
     var sections = document.querySelectorAll("main > section:not(.hero)");
+    if (lowPerfMode) {
+      document.querySelectorAll("[data-reveal]").forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
     sections.forEach(function (section) {
       var items = section.querySelectorAll("[data-reveal]");
       if (!items.length) return;

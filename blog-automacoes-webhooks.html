@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automações e webhooks com segurança | Blog E-Transporte.pro</title>
+  <meta name="description" content="Post técnico institucional sobre automações e webhooks para integração segura entre marketing e operação." />
+  <link rel="stylesheet" href="/css/institucional.css" />
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="/">E-Transporte<span>.pro</span></a><nav class="menu"><a href="/blog.html">← Voltar ao blog</a></nav></div></header>
+  <main class="section">
+    <article class="container card">
+      <p class="meta">Publicado no Blog Institucional • Tecnologia</p>
+      <h1>Automações e webhooks: como integrar com eficiência e segurança</h1>
+      <p class="lead">A automação correta conecta marketing e operação sem criar caos técnico. O segredo está em mapeamento, testes e governança de payload.</p>
+
+      <h2>1) Defina o objetivo por fluxo</h2>
+      <p>Antes de integrar, separe os objetivos: captação (campanhas), operação (transfer/grupos), cadastro (motoristas) e comunicação. Cada fluxo precisa de regras próprias.</p>
+
+      <h2>2) Mapeie campos de forma explícita</h2>
+      <p>No módulo de automações, o mapeamento de campos impede ambiguidade na passagem de dados. Isso reduz falhas silenciosas e melhora a previsibilidade em produção.</p>
+
+      <h2>3) Teste antes de ativar</h2>
+      <p>Testes de webhook não são luxo: são camada mínima para evitar quebra de atendimento por payload incompleto, mal formatado ou incompatível.</p>
+
+      <h2>4) Trate segurança como requisito</h2>
+      <ul class="list">
+        <li>Não publicar chaves de integração em páginas públicas.</li>
+        <li>Separar ambientes de teste e produção.</li>
+        <li>Monitorar respostas de erro e revisar eventos críticos.</li>
+        <li>Documentar ownership de cada automação ativa.</li>
+      </ul>
+
+      <h2>5) Resultado esperado</h2>
+      <p>Quando bem implementadas, as automações criam um funil contínuo: campanha gera lead, lead gera solicitação, solicitação vira reserva e a operação executa com contexto.</p>
+    </article>
+  </main>
+  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+  <script src="/js/site.js" defer></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

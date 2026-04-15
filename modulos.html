@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Módulos do Sistema | E-Transporte.pro</title>
+  <meta name="description" content="Mapa robusto dos módulos do sistema E-Transporte.pro com visão de status funcional, condicionalidades e escopo de uso." />
+  <link rel="stylesheet" href="/css/institucional.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="/">E-Transporte<span>.pro</span></a>
+      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
+      <nav class="menu" data-nav>
+        <a href="/">Início</a>
+        <a href="/funcionalidades.html">Funcionalidades</a>
+        <a href="/modulos.html" aria-current="page">Módulos</a>
+        <a href="/seguranca.html">Segurança</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/contato.html">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Inventário funcional</span>
+        <h1>Mapa institucional de módulos e status</h1>
+        <p class="lead">Resumo baseado na documentação auditada do painel executivo, com separação entre recursos maduros e áreas em evolução.</p>
+      </header>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Módulo</th><th>Escopo principal</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Home</td><td>Checklist, atalhos e governança de acesso ao Network</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Atualizações</td><td>Inbox unificada de transfer, grupos e motoristas</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Abrangência</td><td>Mapa de reservas com geocodificação assistida</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Transfer / Grupos</td><td>Solicitações, reservas, contratos, PDF e comunicação</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Geolocalização</td><td>Envio de webhook para rastreamento</td><td><span class="tag tag--ok">Operacional</span></td></tr>
+            <tr><td>Campanhas / Leads</td><td>Ativos de captação e exportação CSV de leads</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Receptivos / QR Code</td><td>Materiais de marketing com geração de PDF/PNG</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Network / Comunidade</td><td>Colaboração e social interno com realtime</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Google</td><td>Presença Business Profile com regras de plano</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
+            <tr><td>Disparador</td><td>Ferramenta externa de campanhas WhatsApp</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
+            <tr><td>Configurações / Automações</td><td>Dados da empresa, MFA, webhooks e mapping técnico</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Comunicador Evolution</td><td>Instância WhatsApp com QR e sync</td><td><span class="tag tag--warn">Condicional por feature flag</span></td></tr>
+            <tr><td>Métricas</td><td>Painel KPI com estrutura visual</td><td><span class="tag tag--danger">Evolução de dados reais</span></td></tr>
+            <tr><td>Veículos</td><td>Base visual para frota e filtros</td><td><span class="tag tag--danger">Evolução de backend</span></td></tr>
+            <tr><td>Agendamentos</td><td>Calendário e UX inicial</td><td><span class="tag tag--danger">Roadmap</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <section class="section">
+        <h2>Estrutura por domínio de negócio</h2>
+        <div class="grid grid--3">
+          <article class="card"><h3>Operação</h3><p class="section__sub">Transfer, Grupos, reservas, contratos, comunicação, abrangência e rastreamento.</p></article>
+          <article class="card"><h3>Growth</h3><p class="section__sub">Campanhas, leads, website, domínios, e-mail business, Google e Disparador.</p></article>
+          <article class="card"><h3>Governança</h3><p class="section__sub">Configurações corporativas, tickets, anotações, automações e regras de acesso.</p></article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+  <script src="/js/site.js" defer></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

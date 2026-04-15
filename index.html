@@ -3,1050 +3,195 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <title>E-Transporte.pro — Gestão para motorista executivo e taxista</title>
-  <meta name="description" content="E-Transporte.pro para motorista executivo e taxista: solicitações, reservas, cadastro e marketing. Planos Seed a Apex; FREE com limites. Solicite acesso." />
-  <!-- Domínio: https://e-transporte.pro (canónico) e https://www.e-transporte.pro — configure redirecionamento www no DNS/host -->
-  <link rel="canonical" href="https://e-transporte.pro/" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://e-transporte.pro/" />
-  <meta property="og:title" content="E-Transporte.pro — Gestão para motorista executivo e taxista" />
-  <meta property="og:description" content="Painel único para solicitações, reservas, cadastro e marketing. Planos claros e evolução com a sua operação." />
-  <meta property="og:image" content="https://e-transporte.pro/og-image.svg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="E-Transporte.pro — Gestão para motorista executivo e taxista" />
-  <meta name="twitter:description" content="Painel único para solicitações, reservas, cadastro e marketing. Planos Seed a Apex; FREE com limites." />
-  <meta name="twitter:image" content="https://e-transporte.pro/og-image.svg" />
-
+  <title>E-Transporte.pro | Site institucional da plataforma</title>
+  <meta name="description" content="Site institucional completo da E-Transporte.pro com visão de módulos, segurança, automações, operação, blog técnico e documentação de funcionalidades para motorista executivo." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/institucional.css" />
 </head>
 <body>
-  <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo</a>
-
-  <header class="site-header" id="topo" data-header>
-    <div class="container header__inner">
-      <a class="brand" href="#topo" aria-label="E-Transporte.pro — início">
-        <span class="brand__text">E-Transporte<span class="brand__dot">.pro</span></span>
-      </a>
-      <nav class="nav" aria-label="Principal">
-        <ul class="nav__list">
-          <li><a href="#funcionalidades">Funcionalidades</a></li>
-          <li><a href="#o-painel">O painel</a></li>
-          <li><a href="#planos">Planos</a></li>
-          <li><a href="#captura">Teste grátis</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-        <div class="nav__actions">
-          <a class="btn btn--primary btn--sm btn--nav-cta" href="#captura">Solicitar acesso</a>
-        </div>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="/">E-Transporte<span>.pro</span></a>
+      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
+      <nav class="menu" data-nav>
+        <a href="/" aria-current="page">Início</a>
+        <a href="/funcionalidades.html">Funcionalidades</a>
+        <a href="/modulos.html">Módulos</a>
+        <a href="/seguranca.html">Segurança</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/contato.html">Contato</a>
+        <a class="btn btn--primary" href="/contato.html">Solicitar acesso</a>
       </nav>
-      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="menu-mobile" data-nav-toggle>
-        <span class="nav-toggle__bar" aria-hidden="true"></span>
-        <span class="nav-toggle__bar" aria-hidden="true"></span>
-        <span class="sr-only">Abrir menu</span>
-      </button>
-    </div>
-    <div class="nav-mobile" id="menu-mobile" hidden data-nav-panel>
-      <ul class="nav-mobile__list">
-        <li><a href="#funcionalidades">Funcionalidades</a></li>
-        <li><a href="#o-painel">O painel</a></li>
-        <li><a href="#planos">Planos</a></li>
-        <li><a href="#captura">Teste grátis</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a class="btn btn--primary btn--block btn--nav-cta" href="#captura">Solicitar acesso</a></li>
-      </ul>
     </div>
   </header>
 
-  <main id="conteudo-principal">
-    <section class="hero section" aria-labelledby="hero-heading">
-      <div class="hero__bg" aria-hidden="true"></div>
+  <main>
+    <section class="hero">
       <div class="container hero__grid">
-        <div class="hero__copy reveal" data-reveal>
-          <p class="eyebrow">Operação organizada</p>
-          <h1 id="hero-heading">Gestão completa para motorista executivo e taxista</h1>
+        <div>
+          <span class="eyebrow">Site institucional oficial</span>
+          <h1>Plataforma robusta para operação executiva, marketing e gestão completa</h1>
           <p class="lead">
-            Solicitações, reservas, cadastro e marketing num painel único. Planos claros e evolução <strong>Seed → Grow → Rise → Apex</strong>, com <strong>FREE</strong> para explorar com limites definidos.
+            A E-Transporte.pro reúne operação de transfer e grupos, cadastro e gestão de motoristas, contratos, automações, marketing, presença digital,
+            network, comunidade e suporte em um ecossistema único para empresas de transporte executivo.
           </p>
-          <div class="hero__ctas">
-            <a class="btn btn--primary btn--lg" href="#captura" data-cta-primary>Solicitar acesso</a>
-            <a class="btn btn--secondary btn--lg" href="#planos">Ver planos</a>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="/funcionalidades.html">Explorar funcionalidades</a>
+            <a class="btn btn--ghost" href="/blog.html">Ler blog técnico</a>
           </div>
-          <ul class="hero__trust-inline" aria-label="Benefícios do primeiro contato">
-            <li><strong>Teste sem cartão</strong> no plano FREE</li>
-            <li><strong>Ativação</strong> após validação por e-mail</li>
-            <li><span class="hero__lgpd">Dados tratados com critério B2B (LGPD)</span></li>
+          <div class="section section--tight">
+            <div class="kpis">
+              <article class="kpi"><strong>35</strong><span>Páginas funcionais no painel mapeadas</span></article>
+              <article class="kpi"><strong>10+</strong><span>Áreas críticas de operação e growth</span></article>
+              <article class="kpi"><strong>Real-time</strong><span>Network e comunidade com atualização contínua</span></article>
+              <article class="kpi"><strong>B2B</strong><span>Foco em gestão profissional, compliance e escala</span></article>
+            </div>
+          </div>
+        </div>
+        <aside class="panel card">
+          <h3>Panorama institucional</h3>
+          <p class="section__sub">Este site foi expandido para apresentar todo o que importa da plataforma sem expor segredos, credenciais ou dados internos sensíveis.</p>
+          <ul class="list">
+            <li>Catálogo completo das áreas estratégicas: Operação, Marketing, Sistema, Comunidade, Tickets e Mentoria.</li>
+            <li>Destaque explícito para recursos maduros, recursos em evolução e limitações atuais.</li>
+            <li>Navegação multi-página para uso comercial, institucional e de onboarding.</li>
           </ul>
-        </div>
-        <div class="hero__visual reveal reveal--delay" data-reveal>
-          <div class="hero__mock-glow" aria-hidden="true"></div>
-          <div class="panel-mock-wrap" data-panel-mock>
-            <div class="panel-mock-skeleton" aria-hidden="true">
-              <div class="panel-mock-skeleton__bar"></div>
-              <div class="panel-mock-skeleton__grid">
-                <div class="panel-mock-skeleton__rail"></div>
-                <div class="panel-mock-skeleton__main">
-                  <div class="panel-mock-skeleton__kpi"></div>
-                  <div class="panel-mock-skeleton__kpi"></div>
-                  <div class="panel-mock-skeleton__kpi"></div>
-                  <div class="panel-mock-skeleton__row"></div>
-                  <div class="panel-mock-skeleton__row"></div>
-                  <div class="panel-mock-skeleton__row"></div>
-                </div>
-              </div>
-            </div>
-          <div class="panel-mock" role="img" aria-label="Prévia do painel: lista de solicitações, resumo do dia e status">
-            <div class="panel-mock__chrome">
-              <span class="panel-mock__dot"></span>
-              <span class="panel-mock__dot"></span>
-              <span class="panel-mock__dot"></span>
-              <span class="panel-mock__title">Painel — E-Transporte.pro</span>
-            </div>
-            <div class="panel-mock__body">
-              <aside class="panel-mock__rail">
-                <span class="panel-mock__nav is-active">Solicitações</span>
-                <span class="panel-mock__nav">Reservas</span>
-                <span class="panel-mock__nav">Veículos</span>
-                <span class="panel-mock__nav">Contratos</span>
-              </aside>
-              <div class="panel-mock__main">
-                <div class="panel-mock__kpis">
-                  <div class="panel-mock__kpi"><span class="panel-mock__kpi-label">Hoje</span><span class="panel-mock__kpi-val">12</span></div>
-                  <div class="panel-mock__kpi"><span class="panel-mock__kpi-label">Pendentes</span><span class="panel-mock__kpi-val">3</span></div>
-                  <div class="panel-mock__kpi"><span class="panel-mock__kpi-label">Semana</span><span class="panel-mock__kpi-val">48</span></div>
-                </div>
-                <ul class="panel-mock__list">
-                  <li><span class="tag">Transfer</span> Aeroporto → Hotel <em>14:20</em></li>
-                  <li><span class="tag tag--muted">Táxi</span> Centro — solicitação app <em>Agora</em></li>
-                  <li><span class="tag">Executivo</span> Retorno corporativo <em>18:00</em></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <div class="trust-marquee reveal" data-reveal>
-          <p class="trust-marquee__headline"><strong>1 painel.</strong> Centralize solicitações e reservas sem dispersar ferramentas.</p>
-          <div class="trust-marquee__viewport" data-marquee-viewport>
-            <div class="trust-marquee__track" data-marquee-track>
-              <span class="trust-marquee__item">Operação</span>
-              <span class="trust-marquee__item">Reservas</span>
-              <span class="trust-marquee__item">Contratos</span>
-              <span class="trust-marquee__item">Suporte por e-mail</span>
-              <span class="trust-marquee__item">Motorista executivo</span>
-              <span class="trust-marquee__item">Taxista</span>
-              <span class="trust-marquee__item">Pequena frota</span>
-              <span class="trust-marquee__item">Operação</span>
-              <span class="trust-marquee__item">Reservas</span>
-              <span class="trust-marquee__item">Contratos</span>
-              <span class="trust-marquee__item">Suporte por e-mail</span>
-              <span class="trust-marquee__item">Motorista executivo</span>
-              <span class="trust-marquee__item">Taxista</span>
-              <span class="trust-marquee__item">Pequena frota</span>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </section>
 
-    <section class="section section--tight" aria-labelledby="contexto-heading">
+    <section class="section">
       <div class="container">
-        <div class="context-card glass glass--soft reveal" data-reveal>
-          <p id="contexto-heading" class="context-card__text">
-            Desenvolvido para quem vive da operação na rua — com foco em clareza, cadastro e acompanhamento do dia a dia.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="funcionalidades" aria-labelledby="feat-heading">
-      <div class="container">
-        <header class="section__head reveal" data-reveal>
-          <h2 id="feat-heading">Funcionalidades</h2>
-          <p class="section__sub">Resumo do ecossistema. O passo a passo de cada módulo (Transfer, Grupos, Marketing, tickets, Network) está em <a href="#o-painel">O painel</a>.</p>
+        <header class="section__head">
+          <h2>Ecossistema visual da plataforma</h2>
+          <p class="section__sub">As artes oficiais enviadas por você foram mantidas e integradas ao novo site institucional.</p>
         </header>
-        <div class="bento">
-          <article class="bento__card bento__card--wide glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-            </div>
-            <h3>Solicitações unificadas</h3>
-            <p><strong>Centralize</strong> pedidos de app, transfer e corporativo numa fila única. Priorize, filtre e responda sem perder contexto.</p>
-            <a class="bento__more" href="#o-painel">Detalhe do painel</a>
-          </article>
-          <article class="bento__card glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            </div>
-            <h3>Reservas e transfer</h3>
-            <p><strong>Acompanhe</strong> horários, origem e destino. Menos troca de mensagens fora do fluxo.</p>
-            <a class="bento__more" href="#planos">Saiba mais</a>
-          </article>
-          <article class="bento__card glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-.4-2.2-.8c-.3-.2-.6-.2-.8-.2H8c-.2 0-.5 0-.8.2C6.3 9.6 5 10 5 10s-2.7.6-3.5 1.1A2 2 0 0 0 1 13v3c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-            </div>
-            <h3>Veículos e cadastros</h3>
-            <p><strong>Mantenha</strong> documentação e dados do veículo alinhados ao que a operação exige.</p>
-            <a class="bento__more" href="#como-funciona">Saiba mais</a>
-          </article>
-          <article class="bento__card glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-            </div>
-            <h3>Contratos</h3>
-            <p><strong>Organize</strong> acordos e condições para consulta rápida quando precisar.</p>
-            <a class="bento__more" href="#planos">Saiba mais</a>
-          </article>
-          <article class="bento__card glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <h3>Tickets e suporte</h3>
-            <p><strong>Envie</strong> demandas à equipe por canal estruturado, com histórico.</p>
-            <a class="bento__more" href="#faq">Saiba mais</a>
-          </article>
-          <article class="bento__card glass reveal" data-reveal>
-            <div class="feat-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-            </div>
-            <h3>Configurações</h3>
-            <p><strong>Ajuste</strong> preferências da operação, integrações permitidas e visibilidade do que importa.</p>
-            <a class="bento__more" href="#captura">Saiba mais</a>
-          </article>
-          <figure class="bento__promo glass reveal" data-reveal aria-label="Potencialize seu negócio com as ferramentas do E-Transporte.pro">
-            <img
-              src="img/banner-potencialize-e-transporte.jpg"
-              alt="Potencialize seu negócio com as ferramentas do E-Transporte.pro — e-mail profissional, domínio oficial, campanhas e QR Code."
-              width="1024"
-              height="325"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </div>
+        <figure class="banner">
+          <img src="/images/banner-site.png" width="1600" height="640" alt="Banner de website institucional para transporte executivo." loading="lazy" decoding="async" />
+        </figure>
+        <figure class="banner">
+          <img src="/images/banner-google.png" width="1600" height="640" alt="Banner de Google Business Profile para transportadoras executivas." loading="lazy" decoding="async" />
+        </figure>
+        <figure class="banner">
+          <img src="/images/banner-network.png" width="1600" height="640" alt="Banner de Network Nacional E-Transporte.pro." loading="lazy" decoding="async" />
+        </figure>
       </div>
     </section>
 
-    <section class="section" id="como-funciona" aria-labelledby="steps-heading">
+    <section class="section">
       <div class="container">
-        <header class="section__head reveal" data-reveal>
-          <h2 id="steps-heading">Como funciona</h2>
-          <p class="section__sub">Três passos para começar a operar com método.</p>
+        <header class="section__head">
+          <h2>Áreas-chave do sistema</h2>
+          <p class="section__sub">Visão executiva das capacidades mais relevantes para gestão operacional e crescimento.</p>
         </header>
-        <ol class="timeline" aria-label="Passos para começar">
-          <li class="timeline__item glass reveal" data-reveal>
-            <span class="timeline__node" aria-hidden="true">1</span>
-            <h3>Criar conta</h3>
-            <p>Login com e-mail e senha (e verificação de segurança). Quem não é admin entra no dashboard; o plano atribuído pela administração libera ou bloqueia módulos.</p>
-          </li>
-          <li class="timeline__item glass reveal" data-reveal>
-            <span class="timeline__node" aria-hidden="true">2</span>
-            <h3>Completar perfil e configurações</h3>
-            <p>Cadastro, veículos e preferências alinhados à sua realidade.</p>
-          </li>
-          <li class="timeline__item glass reveal" data-reveal>
-            <span class="timeline__node" aria-hidden="true">3</span>
-            <h3>Operar solicitações no painel</h3>
-            <p>Fila única, reservas e acompanhamento do dia a dia.</p>
-            <a class="btn btn--secondary timeline__cta" href="#captura">Criar conta grátis</a>
-          </li>
-        </ol>
+        <div class="grid grid--3">
+          <article class="card feature-card">
+            <span class="tag tag--ok">Operação</span>
+            <h3>Transfer e Grupos</h3>
+            <p>Pipeline completo: solicitação, conversão em reserva, PDF, comunicação ao cliente e contratos personalizados.</p>
+          </article>
+          <article class="card feature-card">
+            <span class="tag tag--ok">Automação</span>
+            <h3>Sistema de webhooks</h3>
+            <p>Automações com mapeamento de payload para Transfer, Grupo, Motoristas e Campanhas, com testes de integração.</p>
+          </article>
+          <article class="card feature-card">
+            <span class="tag tag--ok">Marketing</span>
+            <h3>Captação e conversão</h3>
+            <p>Campanhas, leads com exportação CSV, receptivos em PDF, QR Codes e presença digital integrada.</p>
+          </article>
+          <article class="card feature-card">
+            <span class="tag tag--warn">Colaboração</span>
+            <h3>Network e Comunidade</h3>
+            <p>Feed colaborativo em tempo real, publicações, comentários, likes, categorias e segmentação por contexto.</p>
+          </article>
+          <article class="card feature-card">
+            <span class="tag tag--warn">Gestão</span>
+            <h3>Configurações e compliance</h3>
+            <p>Dados corporativos, cabeçalho contratual, MFA, preferências de operação e regras de elegibilidade no network.</p>
+          </article>
+          <article class="card feature-card">
+            <span class="tag tag--danger">Transparência</span>
+            <h3>Módulos em evolução</h3>
+            <p>Métricas, Veículos e alguns fluxos possuem estágios de maturidade diferentes e são comunicados com honestidade técnica.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section class="section section--banners" aria-labelledby="banners-heading">
+    <section class="section">
       <div class="container">
-        <header class="section__head section__head--center reveal" data-reveal>
-          <h2 id="banners-heading">Trilha do ecossistema</h2>
-          <p class="section__sub">Cada bloco abaixo mostra o <strong>arte</strong>, o <strong>como funciona</strong> no painel e um atalho para o formulário — sem parar só na imagem.</p>
+        <header class="section__head">
+          <h2>Inventário institucional de cobertura funcional</h2>
+          <p class="section__sub">Mapa consolidado dos blocos que mais importam no painel do motorista executivo.</p>
         </header>
-
-        <div class="promo-trilha" role="list">
-          <article class="promo-stack glass reveal" data-reveal role="listitem">
-            <div class="promo-stack__media">
-              <img
-                class="promo-stack__img"
-                src="images/banner-site.png"
-                width="1600"
-                height="640"
-                alt="Ilustração: site para transporte executivo com modelos prontos e laptop."
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="promo-stack__orbit" aria-hidden="true"></span>
-            </div>
-            <div class="promo-stack__body">
-              <span class="promo-stack__label">01 · Website</span>
-              <h3 class="promo-stack__title">Site que puxa pedido para o Transfer</h3>
-              <ol class="promo-stack__steps">
-                <li>Você escolhe um <strong>modelo pronto</strong> e envia o briefing no editor do painel.</li>
-                <li>Domínio e publicação seguem o fluxo do produto; no <strong>FREE</strong> você explora até o ponto que pede upgrade (ex.: continuar após “Próximo” → <strong>Rise</strong>).</li>
-                <li>Quem preenche o site entra nas <strong>solicitações de Transfer</strong> via integração (webhook) — um fio direto do marketing para a operação.</li>
-              </ol>
-              <p class="promo-stack__hint">Ideal para chauffeur e transporte executivo que quer credibilidade e lead no mesmo lugar.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero site + painel</a>
-            </div>
-          </article>
-
-          <article class="promo-stack glass reveal" data-reveal role="listitem">
-            <div class="promo-stack__media">
-              <img
-                class="promo-stack__img"
-                src="images/banner-google.png"
-                width="1600"
-                height="640"
-                alt="Ilustração: Google Maps e Business Profile em smartphone e notebook."
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="promo-stack__orbit" aria-hidden="true"></span>
-            </div>
-            <div class="promo-stack__body">
-              <span class="promo-stack__label">02 · Google</span>
-              <h3 class="promo-stack__title">Maps e Business Profile sem sair do painel</h3>
-              <ol class="promo-stack__steps">
-                <li>Configure dados da empresa e categorias pelo fluxo guiado na área <strong>Google</strong>.</li>
-                <li>Ganhe visibilidade em busca e no mapa; ações como <strong>criar novo perfil</strong> podem exigir <strong>Apex</strong>, conforme política do produto.</li>
-                <li>Tudo amarrado ao mesmo login e ao seu plano — sem planilha paralela.</li>
-              </ol>
-              <p class="promo-stack__hint">Quem busca “transfer perto de mim” te encontra com consistência de marca.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero Google no ecossistema</a>
-            </div>
-          </article>
-
-          <article class="promo-stack glass reveal" data-reveal role="listitem">
-            <div class="promo-stack__media">
-              <img
-                class="promo-stack__img"
-                src="images/banner-email.png"
-                width="1600"
-                height="640"
-                alt="Ilustração: e-mail corporativo profissional no ecrã do portátil."
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="promo-stack__orbit" aria-hidden="true"></span>
-            </div>
-            <div class="promo-stack__body">
-              <span class="promo-stack__label">03 · E-mail business</span>
-              <h3 class="promo-stack__title">Remetente profissional no mesmo painel</h3>
-              <ol class="promo-stack__steps">
-                <li>Defina e gerencie <strong>e-mail corporativo</strong> no módulo dedicado (ex.: contato@seudominio).</li>
-                <li>Comunicação e campanhas alinhadas à identidade que você já configurou.</li>
-                <li>Menos “gmail genérico” na proposta B2B — mais confiança na resposta.</li>
-              </ol>
-              <p class="promo-stack__hint">Fecha o trio site + Google + caixa de entrada séria.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero e-mail no pacote</a>
-            </div>
-          </article>
-
-          <article class="promo-stack glass reveal" data-reveal role="listitem">
-            <div class="promo-stack__media">
-              <img
-                class="promo-stack__img"
-                src="images/banner-whatsapp.png"
-                width="1600"
-                height="640"
-                alt="Ilustração: disparador WhatsApp com menus, botões e aviso legal."
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="promo-stack__orbit" aria-hidden="true"></span>
-            </div>
-            <div class="promo-stack__body">
-              <span class="promo-stack__label">04 · Disparador</span>
-              <h3 class="promo-stack__title">Mensagens com menu, botão e lista — com regras claras</h3>
-              <ol class="promo-stack__steps">
-                <li>O painel explica a jornada (chip, QR, listas, botões) antes de qualquer uso real.</li>
-                <li>Uso efetivo costuma exigir plano <strong>Grow</strong> (ou superior) e <strong>link externo</strong> configurável — não é serviço da Meta nem tem garantia da plataforma.</li>
-                <li>Responsabilidade de compliance com a lei e com as políticas do WhatsApp é da operação.</li>
-              </ol>
-              <p class="promo-stack__hint">Para quem quer conversão com estrutura, não só texto solto.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero disparar mensagens no WhatsApp</a>
-            </div>
-          </article>
-
-          <article class="promo-stack glass reveal" data-reveal role="listitem">
-            <div class="promo-stack__media">
-              <img
-                class="promo-stack__img"
-                src="images/banner-network.png"
-                width="1600"
-                height="640"
-                alt="Ilustração: network nacional E-Transporte.pro com mapa e ligações."
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="promo-stack__orbit" aria-hidden="true"></span>
-            </div>
-            <div class="promo-stack__body">
-              <span class="promo-stack__label">05 · Network nacional</span>
-              <h3 class="promo-stack__title">Demanda corporativa na sua região</h3>
-              <ol class="promo-stack__steps">
-                <li>Você <strong>aceita os termos</strong> do Network Nacional dentro do painel (com regras e registro).</li>
-                <li>Só então o menu <strong>Network</strong> libera o CRUD de contatos B2B — empresas suas e outras atribuídas pelo admin.</li>
-                <li>Se sair do programa, pode haver <strong>cooldown</strong> (ex.: 60 dias) antes de voltar a aceitar.</li>
-              </ol>
-              <p class="promo-stack__hint">Amplia atendimento nacional recebendo oportunidades de parceiros da base.</p>
-              <a class="btn btn--primary promo-stack__cta" href="#captura">Quero entrar no Network</a>
-            </div>
-          </article>
-        </div>
-
-        <div class="promo-operacao section--alt-inner" id="o-painel">
-          <header class="promo-operacao__head reveal" data-reveal>
-            <h2 id="painel-heading" class="promo-operacao__title">O painel no dia a dia</h2>
-            <p class="section__sub">A trilha acima é a “vitrine” digital. Abaixo está o que você usa para <strong>rodar serviço</strong> — Transfer, grupos, pessoas, frota e suporte.</p>
-          </header>
-
-          <div class="painel-intro glass reveal" data-reveal>
-            <h3 class="painel-intro__title">Acesso e plano</h3>
-            <p>
-              Login com <strong>e-mail e senha</strong> e verificação anti-bot. Quem não é admin cai no <strong>dashboard</strong> com menu lateral. O plano <strong>FREE → Apex</strong> abre ou tranca módulos (ex.: Disparador a partir de <strong>Grow</strong>; trechos de <strong>Google</strong> com <strong>Apex</strong>).
-            </p>
-          </div>
-
-          <div class="painel-grid">
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Principal</h3>
-              <ul>
-                <li><strong>Home:</strong> carrossel, checklist (perfil + dados contratuais) e mapa do ecossistema.</li>
-                <li><strong>Atualizações:</strong> últimas de Transfer, Grupos e Motoristas num só lugar.</li>
-                <li><strong>Métricas:</strong> estrutura de KPIs — dados podem ser demonstrativos conforme release.</li>
-                <li><strong>Abrangência:</strong> placeholder no menu nesta fase.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Transfer</h3>
-              <ul>
-                <li>Solicitações, comunicação com cliente, PDF, CSV, reserva com pré-preenchimento.</li>
-                <li>Reservas, contrato e geolocalização no mesmo módulo.</li>
-                <li>Origem via site (webhook) quando configurado.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Grupos</h3>
-              <ul>
-                <li>Mesmo padrão do Transfer para demanda em grupo.</li>
-                <li>Aparece nas <strong>Atualizações</strong> integrado.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Motoristas</h3>
-              <ul>
-                <li>Cadastro, parcerias e solicitações — foco no <strong>gestor</strong>; app táxi/admin tem rota própria.</li>
-                <li>Lista em evolução conforme dados no backend.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Veículos</h3>
-              <ul>
-                <li>Cards e filtros; CRUD completo conforme versão implantada.</li>
-                <li>Categorias, documentação e vínculo com motoristas quando aplicável.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Marketing (além da trilha)</h3>
-              <ul>
-                <li><strong>Campanhas</strong> (ativos/leads), <strong>receptivos</strong>, <strong>QR Codes</strong>.</li>
-                <li>Site, Google, e-mail e Disparador já descritos nos blocos visuais acima.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Contratos &amp; confirmações</h3>
-              <ul>
-                <li>Geração de <strong>PDF de confirmação</strong> e fluxo de <strong>contratos de prestação</strong> alinhado à operação.</li>
-                <li>Dados da reserva reaproveitados para reduzir retrabalho e erro manual.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Rastreamento &amp; viagem</h3>
-              <ul>
-                <li><strong>Links em tempo real</strong> para acompanhamento e segurança do passageiro.</li>
-                <li>Combina com geolocalização do módulo Transfer conforme configuração e plano.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Clientes &amp; histórico</h3>
-              <ul>
-                <li>Cadastro e histórico de serviços para retorno e suporte sem perder contexto.</li>
-                <li>Útil para corporativo, receptivo e operação recorrente.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Integrações &amp; exportação</h3>
-              <ul>
-                <li><strong>CSV</strong>, exportações e <strong>webhooks</strong> para site ou ferramentas externas quando liberado.</li>
-                <li>Escopo varia por release e plano — confirme na implantação.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Tarifas &amp; políticas</h3>
-              <ul>
-                <li>Bases para tabelas, extras (aeroporto, espera) e regras de precificação da frota.</li>
-                <li>Reduz divergência entre reserva, contrato e execução no dia.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Agenda &amp; disponibilidade</h3>
-              <ul>
-                <li>Visão de ocupação, janelas e conflitos entre membros da equipe e veículos.</li>
-                <li>Apoia planejamento de demanda de transfer, grupo e corporativo.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Notificações &amp; lembretes</h3>
-              <ul>
-                <li>Roteiros de aviso ao cliente e à equipe conforme eventos da reserva (conforme versão).</li>
-                <li>Reduz no-show e retrabalho em confirmação de horário e local.</li>
-              </ul>
-            </article>
-            <article class="painel-mod glass reveal" data-reveal>
-              <h3>Sistema &amp; extras</h3>
-              <ul>
-                <li><strong>Configurações</strong> (marca, integrações, Network com cooldown ao sair).</li>
-                <li><strong>Automações, comunicador, anotações</strong>.</li>
-                <li><strong>Tickets</strong> reais; <strong>mentoria</strong>; <strong>Empty Legs</strong>.</li>
-                <li><strong>Chat</strong> flutuante se URL configurada (ex. Typebot).</li>
-              </ul>
-            </article>
-            <article class="painel-mod painel-mod--note glass glass--soft reveal" data-reveal>
-              <h3>Transparência</h3>
-              <p class="painel-mod__note">
-                Métricas, parte de motoristas e veículos podem estar em modo demonstração ou esqueleto. Network só no menu após aceite. WhatsApp: não é Meta; compliance da operação.
-              </p>
-            </article>
-          </div>
-
-          <p class="painel-cta reveal" data-reveal>
-            <a class="btn btn--secondary" href="#planos">Ver planos</a>
-            <a class="btn btn--primary" href="#captura">Solicitar acesso</a>
-          </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bloco</th>
+                <th>Capacidade central</th>
+                <th>Status institucional</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Home e Atualizações</td><td>Checklist operacional, atalhos e inbox unificada</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Transfer / Grupos</td><td>Solicitação, reserva, contrato, PDF e comunicação</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Abrangência</td><td>Mapa com reservas e geocodificação assistida</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Campanhas e Leads</td><td>Ativação de campanhas e exportação CSV real</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Receptivos e QR</td><td>Materiais de marketing físico e digital</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Network e Comunidade</td><td>Colaboração com realtime</td><td><span class="tag tag--ok">Implementado</span></td></tr>
+              <tr><td>Google / Disparador</td><td>Módulos com gatilho de plano/feature flag</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
+              <tr><td>Métricas / Veículos / Agendamentos</td><td>UI disponível com partes em evolução</td><td><span class="tag tag--danger">Evolução técnica</span></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <section class="section" id="planos" aria-labelledby="planos-heading">
-      <div class="container">
-        <header class="section__head reveal" data-reveal>
-          <h2 id="planos-heading">Planos pensados para evoluir com você</h2>
-          <p class="section__sub">A administração atribui <strong>Seed</strong>, <strong>Grow</strong>, <strong>Rise</strong> ou <strong>Apex</strong>. O <strong>FREE</strong> permite explorar o sistema com limites claros.</p>
-        </header>
-        <div
-          class="plans-carousel"
-          data-plans-carousel
-          role="region"
-          aria-roledescription="Carrossel"
-          aria-label="Comparação dos planos FREE, Seed, Grow, Rise e Apex"
-          tabindex="0"
-        >
-          <div class="plans-carousel__shell">
-          <button
-            type="button"
-            class="plans-carousel__btn plans-carousel__btn--prev"
-            data-carousel-prev
-            aria-label="Planos anteriores"
-            disabled
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <div class="plans-carousel__viewport" data-carousel-viewport>
-            <div class="plans-carousel__track" data-carousel-track>
-              <article class="plan plan--free glass reveal" data-reveal id="teste-gratis">
-                <h3>FREE</h3>
-                <p class="plan__hint">Explorar com limites</p>
-                <ul class="plan__list">
-                  <li class="is-ok">Navegue pelo modelo e fluxos principais</li>
-                  <li class="is-ok">Entenda o painel antes de investir</li>
-                  <li class="is-ok">Limites claros por módulo (ver regras)</li>
-                  <li class="is-na">Contratos e escala plena</li>
-                  <li class="is-na">Integração Google / Apex</li>
-                </ul>
-                <a class="btn btn--secondary btn--block" href="#free-detalhes">O que inclui o FREE</a>
-              </article>
-              <article class="plan glass reveal" data-reveal>
-                <h3>Seed</h3>
-                <p class="plan__hint">Entrada operacional</p>
-                <ul class="plan__list">
-                  <li>Painel e solicitações essenciais</li>
-                  <li>Cadastros e veículos centralizados</li>
-                  <li>Suporte por e-mail</li>
-                  <li class="is-na">Marketing e módulos ampliados (Grow+)</li>
-                  <li class="is-na">Prioridade de atendimento</li>
-                </ul>
-                <a class="btn btn--primary btn--block" href="#captura">Solicitar proposta</a>
-              </article>
-              <article class="plan glass reveal" data-reveal>
-                <h3>Grow</h3>
-                <p class="plan__hint">Consolidação</p>
-                <ul class="plan__list">
-                  <li>Painel e solicitações essenciais</li>
-                  <li>Cadastros e veículos centralizados</li>
-                  <li>Marketing e módulos ampliados</li>
-                  <li>Suporte por e-mail</li>
-                  <li class="is-na">Prioridade de atendimento</li>
-                </ul>
-                <a class="btn btn--primary btn--block" href="#captura">Solicitar proposta</a>
-              </article>
-              <article class="plan glass plan--highlight reveal" data-reveal>
-                <span class="plan__badge">Mais escolhido</span>
-                <h3>Rise</h3>
-                <p class="plan__hint">Operação em escala</p>
-                <ul class="plan__list">
-                  <li>Painel e solicitações em volume</li>
-                  <li>Reservas e contratos com mais controle</li>
-                  <li>Marketing e módulos ampliados</li>
-                  <li>Suporte com prioridade</li>
-                  <li>Evolução natural em direção ao Apex</li>
-                </ul>
-                <a class="btn btn--primary btn--block" href="#captura">Solicitar proposta</a>
-              </article>
-              <article class="plan glass reveal" data-reveal>
-                <h3>Apex</h3>
-                <p class="plan__hint">Presença digital completa</p>
-                <ul class="plan__list">
-                  <li>Base Rise adaptada às políticas Google</li>
-                  <li>Integração com perfil Google (conforme políticas)</li>
-                  <li>Máximo de módulos liberados pela administração</li>
-                  <li>Suporte com prioridade</li>
-                  <li>Indicado para operação madura</li>
-                </ul>
-                <a class="btn btn--primary btn--block" href="#captura">Solicitar proposta</a>
-              </article>
-            </div>
-          </div>
-          <button type="button" class="plans-carousel__btn plans-carousel__btn--next" data-carousel-next aria-label="Próximos planos">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          </div>
+    <section class="section">
+      <div class="container cta">
+        <h2>Conheça o detalhamento completo</h2>
+        <p class="section__sub">Navegue pelas páginas de funcionalidades, módulos e blog técnico para visão profunda do produto, regras e melhores práticas operacionais.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="/modulos.html">Ver mapa completo de módulos</a>
+          <a class="btn btn--ghost" href="/blog-operacao-transfer.html">Ler post: fluxo Transfer</a>
         </div>
-        <p class="plan-note reveal" data-reveal>Valores sob consulta — sem preços fictícios no site. <a href="#captura">Solicitar acesso</a> para proposta alinhada ao seu perfil.</p>
-      </div>
-    </section>
-
-    <section class="section section--alt solicitar-acesso-wrap" id="captura" aria-labelledby="free-heading">
-      <div class="container solicitar-acesso-stack">
-        <div class="free-block glass glass--strong reveal" data-reveal id="free-detalhes">
-          <header class="section__head section__head--tight">
-            <h2 id="free-heading">Plano FREE: comece a operar na hora</h2>
-            <p class="section__sub">Ao acessar a plataforma, você inicia no <strong>plano FREE</strong> e tem <strong>14 dias corridos</strong> para avaliar e decidir se quer mudar de plano. Desde o primeiro acesso, você já pode:</p>
-          </header>
-          <div class="free-grid">
-            <div class="free-item">
-              <div class="feat-icon feat-icon--sm" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              </div>
-              <h3>Reservas e equipe</h3>
-              <p>Fazer reservas de <strong>transfer</strong> e <strong>grupos</strong>; <strong>cadastrar motoristas manualmente</strong> no sistema.</p>
-            </div>
-            <div class="free-item">
-              <div class="feat-icon feat-icon--sm" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-              </div>
-              <h3>Documentos</h3>
-              <p>Gerar <strong>PDF de confirmação de reserva</strong> e elaborar <strong>contratos de prestação de serviços</strong>.</p>
-            </div>
-            <div class="free-item">
-              <div class="feat-icon feat-icon--sm" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              </div>
-              <h3>Rastreamento</h3>
-              <p>Criar <strong>links de rastreamento em tempo real</strong> para proteção e transparência com o cliente.</p>
-            </div>
-          </div>
-          <p class="free-close"><strong>Operação real desde o dia 1 — amplie com Seed, Grow, Rise ou Apex quando precisar.</strong></p>
-        </div>
-
-        <div class="cta-banner__inner glass glass--hero reveal" data-reveal aria-labelledby="cta-heading">
-          <div class="cta-banner__text">
-            <h2 id="cta-heading">Pronto para organizar sua operação?</h2>
-            <p class="section__sub">Use o botão para solicitar acesso no painel oficial — retornamos com os próximos passos.</p>
-          </div>
-          <button type="button" class="btn btn--primary btn--lg" data-open-lead-modal data-cta-primary>
-            Conhecer plataforma gratuitamente
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="faq" aria-labelledby="faq-heading">
-      <div class="container container--narrow">
-        <header class="section__head reveal" data-reveal>
-          <h2 id="faq-heading">Perguntas frequentes</h2>
-          <p class="section__sub">Teste grátis, planos, módulos do painel (Transfer, Marketing, Network, tickets) e transparência sobre o que está em evolução.</p>
-        </header>
-        <div class="accordion" data-accordion>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-1" aria-expanded="false" aria-controls="faq-panel-1" data-accordion-trigger>
-              <span>O teste grátis inclui tudo?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-1" role="region" aria-labelledby="faq-btn-1" hidden>
-              <p>Não inclui tudo: você começa no <strong>FREE</strong> com <strong>14 dias corridos</strong> para decidir o plano. Já no primeiro acesso você pode reservar transfers e grupos, cadastrar motoristas manualmente, gerar PDFs de confirmação, elaborar contratos e criar links de rastreamento em tempo real. Módulos como site próprio, disparador e integrações Google seguem a liberação por plano (<strong>Rise</strong>, <strong>Grow</strong>, <strong>Apex</strong>), conforme indicado em <a href="#o-painel">O painel</a> e na equipe.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-2" aria-expanded="false" aria-controls="faq-panel-2" data-accordion-trigger>
-              <span>Quanto tempo leva para liberar o acesso?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-2" role="region" aria-labelledby="faq-btn-2" hidden>
-              <p>Após a solicitação, a equipe confirma dados e atribui o plano adequado. O prazo depende da validação — você recebe retorno por e-mail.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-3" aria-expanded="false" aria-controls="faq-panel-3" data-accordion-trigger>
-              <span>Preciso cadastrar cartão para o FREE?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-3" role="region" aria-labelledby="faq-btn-3" hidden>
-              <p>O FREE é para exploração com regras claras. Condições de pagamento e contrato são tratadas ao migrar para planos pagos, na proposta com a equipe.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-4" aria-expanded="false" aria-controls="faq-panel-4" data-accordion-trigger>
-              <span>Qual a diferença entre Seed, Grow, Rise e Apex?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-4" role="region" aria-labelledby="faq-btn-4" hidden>
-              <p><strong>Seed</strong> cobre a operação essencial. <strong>Grow</strong> amplia módulos e cadastros. <strong>Rise</strong> é o plano com mais destaque para escala. <strong>Apex</strong> inclui integração com perfil Google, sujeita a políticas. A administração indica o plano certo para cada perfil.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-5" aria-expanded="false" aria-controls="faq-panel-5" data-accordion-trigger>
-              <span>Como funciona o suporte?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-5" role="region" aria-labelledby="faq-btn-5" hidden>
-              <p>Há canal de tickets e suporte por e-mail. Planos superiores podem ter prioridade de atendimento, conforme contrato.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-6" aria-expanded="false" aria-controls="faq-panel-6" data-accordion-trigger>
-              <span>Meus dados estão seguros?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-6" role="region" aria-labelledby="faq-btn-6" hidden>
-              <p>O produto segue práticas de segurança e privacidade alinhadas ao uso B2B. Detalhes contratuais e políticas completas constam nos documentos legais do site.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-7" aria-expanded="false" aria-controls="faq-panel-7" data-accordion-trigger>
-              <span>Para quem o E-Transporte.pro não é indicado?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-7" role="region" aria-labelledby="faq-btn-7" hidden>
-              <p>Quem busca apenas um app de corrida genérico, sem gestão de cadastro, contratos e reservas, pode achar o escopo amplo demais. O foco é motorista executivo, taxista e pequenos operadores que precisam de painel único.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-8" aria-expanded="false" aria-controls="faq-panel-8" data-accordion-trigger>
-              <span>Quem define meu plano?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-8" role="region" aria-labelledby="faq-btn-8" hidden>
-              <p>A administração da plataforma atribui Seed, Grow, Rise ou Apex conforme perfil e necessidade. O FREE é para exploração inicial com limites.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-9" aria-expanded="false" aria-controls="faq-panel-9" data-accordion-trigger>
-              <span>Depois do login, para onde sou levado?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-9" role="region" aria-labelledby="faq-btn-9" hidden>
-              <p>Com e-mail e senha validados (e verificação anti-bot), quem não é administrador acessa o <strong>dashboard</strong> principal, com layout padrão do produto e menu lateral. De lá você navega por Principal, Transfer, Grupos, Marketing etc., conforme o seu plano.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-10" aria-expanded="false" aria-controls="faq-panel-10" data-accordion-trigger>
-              <span>O Disparador (WhatsApp) e o plano Grow — o que preciso saber?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-10" role="region" aria-labelledby="faq-btn-10" hidden>
-              <p>O produto inclui uma jornada educativa sobre disparos (listas, botões, integrações). O <strong>acesso efetivo</strong> ao uso do Disparador está condicionado ao plano <strong>Grow</strong> (ou superior) e a um <strong>link externo</strong> configurável. O serviço não é oferecido pela Meta; cumpra a legislação e as políticas do WhatsApp.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-11" aria-expanded="false" aria-controls="faq-panel-11" data-accordion-trigger>
-              <span>Por que algumas ações de Google pedem Apex?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-11" role="region" aria-labelledby="faq-btn-11" hidden>
-              <p>A área de <strong>Google</strong> (Business Profile / Maps) usa o plano como contexto: criar ou gerir certos perfis pode exibir fluxo de <strong>upgrade para Apex</strong>, conforme política do produto e liberação da administração.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-12" aria-expanded="false" aria-controls="faq-panel-12" data-accordion-trigger>
-              <span>Como o menu “Network” aparece?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-12" role="region" aria-labelledby="faq-btn-12" hidden>
-              <p>O <strong>Network Nacional</strong> só entra no menu depois do <strong>aceite explícito</strong> do fluxo (com regras e armazenamento no próprio painel). Se você sair do programa, pode haver <strong>período de espera (cooldown)</strong> — por exemplo 60 dias — antes de voltar a aceitar os termos.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-13" aria-expanded="false" aria-controls="faq-panel-13" data-accordion-trigger>
-              <span>Os números do dashboard de métricas são sempre reais?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-13" role="region" aria-labelledby="faq-btn-13" hidden>
-              <p>A tela de <strong>Métricas</strong> tem estrutura de KPIs e gráficos pronta para evolução. Em algumas versões o conteúdo pode ser <strong>demonstrativo</strong> ou estático — não assuma que todo indicador reflete dados ao vivo até a sua instância estar integrada.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-14" aria-expanded="false" aria-controls="faq-panel-14" data-accordion-trigger>
-              <span>Veículos e cadastro de motoristas já estão completos?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-14" role="region" aria-labelledby="faq-btn-14" hidden>
-              <p><strong>Veículos</strong> hoje reforça visão em cards e filtros, com evolução de CRUD. <strong>Motoristas</strong> tem cadastro, parcerias e solicitações, mas a lista principal pode ainda estar em maturação. Pergunte na implantação o que já está ligado ao seu banco de dados.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-15" aria-expanded="false" aria-controls="faq-panel-15" data-accordion-trigger>
-              <span>Como funcionam os tickets de suporte?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-15" role="region" aria-labelledby="faq-btn-15" hidden>
-              <p>Há <strong>tickets reais</strong> no painel: você abre chamados (melhoria, bug, dúvida, sugestão), acompanha status e vê resposta da equipe da plataforma — canal formal além do e-mail.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-16" aria-expanded="false" aria-controls="faq-panel-16" data-accordion-trigger>
-              <span>Sou motorista de aplicativo — é este o painel que uso no dia a dia?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-16" role="region" aria-labelledby="faq-btn-16" hidden>
-              <p>O menu principal do E-Transporte.pro é pensado para o <strong>gestor</strong> da operação (executivo, frota pequena, taxista como negócio). Cadastro de motoristas de campo e parcerias existe no produto, mas o <strong>app/admin de táxi</strong> segue outra rota e perfil no sistema.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-17" aria-expanded="false" aria-controls="faq-panel-17" data-accordion-trigger>
-              <span>Existe chat de ajuda dentro do painel?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-17" role="region" aria-labelledby="faq-btn-17" hidden>
-              <p>Pode haver um <strong>chat flutuante</strong> (por exemplo integração Typebot) quando a URL de chat está configurada no ambiente. Caso contrário, o produto pode exibir mensagem de configuração pendente — use tickets e e-mail enquanto isso.</p>
-            </div>
-          </div>
-          <div class="accordion__item">
-            <button type="button" class="accordion__trigger" id="faq-btn-18" aria-expanded="false" aria-controls="faq-panel-18" data-accordion-trigger>
-              <span>O que é “Abrangência” no menu?</span>
-              <span class="accordion__icon" aria-hidden="true"></span>
-            </button>
-            <div class="accordion__panel" id="faq-panel-18" role="region" aria-labelledby="faq-btn-18" hidden>
-              <p>É um <strong>item reservado</strong> no mapa de navegação, sem funcionalidade implementada na fase atual do código. Pode ganhar uso futuro sem mudar o restante do layout.</p>
-            </div>
-          </div>
-        </div>
-        <p class="faq__footer-help reveal" data-reveal>
-          Não encontrou o que precisa?
-          <a href="mailto:contato@e-transporte.pro">Falar com suporte</a>
-        </p>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="footer">
     <div class="container footer__grid">
-      <div class="footer__col">
-        <a class="brand brand--footer" href="#topo">
-          <span class="brand__text">E-Transporte<span class="brand__dot">.pro</span></span>
-        </a>
-        <p class="footer__pitch">Gestão para motorista executivo e taxista — solicitações, reservas e cadastro num painel único.</p>
+      <div>
+        <p class="brand">E-Transporte<span>.pro</span></p>
+        <p>Site institucional da plataforma de gestão para motorista executivo, com foco em operação, automação, marketing e governança.</p>
+        <p>© <span data-year></span> E-Transporte.pro</p>
       </div>
-      <div class="footer__col">
-        <h3 class="footer__title">Produto</h3>
-        <ul class="footer__links">
-          <li><a href="#funcionalidades">Funcionalidades</a></li>
-          <li><a href="#o-painel">O painel</a></li>
-          <li><a href="#planos">Planos</a></li>
-          <li><a href="#captura">Teste grátis</a></li>
-          <li><a href="#faq">FAQ</a></li>
+      <div>
+        <ul>
+          <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+          <li><a href="/modulos.html">Módulos</a></li>
+          <li><a href="/seguranca.html">Segurança e acesso</a></li>
+          <li><a href="/blog.html">Blog e conteúdo</a></li>
         </ul>
       </div>
-      <div class="footer__col">
-        <h3 class="footer__title">Legal</h3>
-        <ul class="footer__links">
-          <li><a href="https://e-transporte.pro/termos">Termos de uso</a></li>
+      <div>
+        <ul>
+          <li><a href="/contato.html">Contato comercial</a></li>
+          <li><a href="mailto:contato@e-transporte.pro">contato@e-transporte.pro</a></li>
+          <li><a href="https://e-transporte.pro/termos">Termos</a></li>
           <li><a href="https://e-transporte.pro/privacidade">Privacidade</a></li>
-          <li><a href="#captura">Solicitar acesso</a></li>
         </ul>
       </div>
-      <div class="footer__col">
-        <h3 class="footer__title">Contato</h3>
-        <ul class="footer__contact">
-          <li>
-            <a class="footer__contact-link" href="mailto:contato@e-transporte.pro">
-              <span class="footer__contact-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
-              </span>
-              contato@e-transporte.pro
-            </a>
-          </li>
-          <!-- Substitua 5511999999999 pelo número comercial (código do país + DDD + número, sem símbolos). -->
-          <li>
-            <a class="footer__contact-link" href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20o%20E-Transporte.pro" rel="noopener noreferrer">
-              <span class="footer__contact-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-              </span>
-              WhatsApp
-            </a>
-          </li>
-        </ul>
-        <p class="footer__site"><a href="https://e-transporte.pro/" rel="noopener">e-transporte.pro</a></p>
-        <ul class="footer__social" aria-label="Redes sociais">
-          <li>
-            <a href="https://instagram.com/" rel="noopener noreferrer" aria-label="Instagram">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01"/></svg>
-            </a>
-          </li>
-          <li>
-            <a href="https://facebook.com/" rel="noopener noreferrer" aria-label="Facebook">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="container footer__bottom">
-      <p>© <span id="year"></span> E-Transporte.pro. Todos os direitos reservados.</p>
     </div>
   </footer>
 
-  <div
-    class="lead-modal"
-    id="lead-modal"
-    hidden
-    data-lead-modal
-    role="presentation"
-  >
-    <div class="lead-modal__backdrop" data-lead-modal-close tabindex="-1" aria-hidden="true"></div>
-    <div
-      class="lead-modal__dialog"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="lead-modal-title"
-      tabindex="-1"
-    >
-      <button type="button" class="lead-modal__close" data-lead-modal-close aria-label="Fechar formulário">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <div class="lead-modal__header">
-        <p class="lead-modal__eyebrow">E-Transporte.pro</p>
-        <h2 id="lead-modal-title">Conheça a plataforma</h2>
-        <p class="lead-modal__lede">Preencha os dados abaixo. Eles serão enviados de forma segura para nossa equipe; em instantes você verá a confirmação na tela.</p>
-      </div>
-
-      <form class="lead-modal__form" id="lead-form" novalidate>
-        <div class="lead-modal__grid">
-          <div class="field">
-            <label class="field__label" for="lead-nome">Nome completo *</label>
-            <input class="field__input" id="lead-nome" name="nome" type="text" autocomplete="name" required maxlength="120" />
-          </div>
-          <div class="field">
-            <label class="field__label" for="lead-email">Melhor e-mail *</label>
-            <input class="field__input" id="lead-email" name="email" type="email" autocomplete="email" required maxlength="120" />
-          </div>
-          <div class="field">
-            <label class="field__label" for="lead-tel">Telefone para contato *</label>
-            <input class="field__input" id="lead-tel" name="telefone" type="tel" autocomplete="tel" required maxlength="32" placeholder="DDD + número" />
-          </div>
-          <div class="field">
-            <label class="field__label" for="lead-estado">Estado (UF) *</label>
-            <select class="field__input" id="lead-estado" name="estado" required aria-describedby="lead-estado-hint">
-              <option value="">Carregando estados…</option>
-            </select>
-            <span id="lead-estado-hint" class="field__hint">Dados oficiais do IBGE.</span>
-          </div>
-          <div class="field field--full city-field" data-city-field hidden>
-            <label class="field__label" for="lead-cidade-filter">Cidade *</label>
-            <p class="field__hint field__hint--above">Selecione o estado primeiro. Depois busque ou role a lista.</p>
-            <input
-              class="field__input city-combo__filter"
-              id="lead-cidade-filter"
-              type="text"
-              autocomplete="off"
-              placeholder="Buscar cidade…"
-              aria-label="Filtrar cidades"
-              aria-controls="lead-cidade-list"
-              aria-autocomplete="list"
-              disabled
-            />
-            <input type="hidden" id="lead-cidade" name="cidade" value="" />
-            <div
-              class="city-combo__list"
-              id="lead-cidade-list"
-              role="listbox"
-              aria-label="Lista de cidades"
-              hidden
-            ></div>
-          </div>
-          <div class="field field--full">
-            <label class="field__label" for="lead-empresa">Nome da empresa <span class="field__optional">(opcional)</span></label>
-            <input class="field__input" id="lead-empresa" name="empresa" type="text" maxlength="160" autocomplete="organization" />
-          </div>
-          <fieldset class="lead-modal__fieldset field--full">
-            <legend class="field__label">De onde nos encontrou? *</legend>
-            <div class="lead-modal__radios">
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="google" required /> Google</label>
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="linkedin" /> LinkedIn</label>
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="facebook" /> Facebook</label>
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="instagram" /> Instagram</label>
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="indicacao" /> Indicação</label>
-              <label class="lead-modal__radio"><input type="radio" name="fonte" value="outro" /> Outro</label>
-            </div>
-            <div class="field lead-modal__fonte-outro" data-fonte-outro hidden>
-              <label class="field__label" for="lead-fonte-outro-text">Especifique *</label>
-              <input class="field__input" id="lead-fonte-outro-text" name="fonte_outro" type="text" maxlength="120" />
-            </div>
-          </fieldset>
-          <div class="field field--full">
-            <label class="field__label" for="lead-msg">Mensagem <span class="field__optional">(opcional)</span></label>
-            <textarea class="field__input field__textarea" id="lead-msg" name="mensagem" rows="3" maxlength="800" placeholder="Conte brevemente sua operação ou dúvida"></textarea>
-          </div>
-        </div>
-
-        <p class="lead-modal__error" id="lead-form-error" role="alert" hidden></p>
-
-        <div class="lead-modal__actions">
-          <button type="button" class="btn btn--ghost" data-lead-modal-close>Cancelar</button>
-          <button type="submit" class="btn btn--primary" id="lead-submit">
-            <span class="lead-modal__submit-label">Enviar</span>
-            <span class="lead-modal__submit-wait" hidden aria-hidden="true">Preparando…</span>
-          </button>
-        </div>
-      </form>
-
-      <div class="lead-modal__success" id="lead-success" hidden>
-        <p class="lead-modal__success-title">Recebemos seus dados</p>
-        <p class="lead-modal__success-text" id="lead-success-msg"></p>
-        <button type="button" class="btn btn--primary" data-lead-modal-close>Fechar</button>
-      </div>
-
-      <p class="field--honeypot" aria-hidden="true">
-        <label for="lead-website">Website</label>
-        <input type="text" id="lead-website" name="website" tabindex="-1" autocomplete="off" />
-      </p>
-    </div>
-  </div>
-
-  <div id="axus-root"></div>
-  <script src="/js/main.js" defer type="module"></script>
+  <script src="/js/site.js" defer></script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Segurança e Acesso | E-Transporte.pro</title>
+  <meta name="description" content="Políticas institucionais de segurança, sessão, login, MFA e acesso por perfil na plataforma E-Transporte.pro." />
+  <link rel="stylesheet" href="/css/institucional.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="/">E-Transporte<span>.pro</span></a>
+      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
+      <nav class="menu" data-nav>
+        <a href="/">Início</a>
+        <a href="/funcionalidades.html">Funcionalidades</a>
+        <a href="/modulos.html">Módulos</a>
+        <a href="/seguranca.html" aria-current="page">Segurança</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/contato.html">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Governança e proteção</span>
+        <h1>Segurança, sessão e controle de acesso</h1>
+        <p class="lead">Visão institucional de segurança baseada em práticas implementadas na aplicação, sem exposição de chaves, tokens, secrets ou endpoints sensíveis privados.</p>
+      </header>
+
+      <div class="grid grid--2">
+        <article class="card">
+          <h3>Autenticação e sessão</h3>
+          <ul class="list">
+            <li>Fluxo de login com proteção por CAPTCHA e verificação de credenciais.</li>
+            <li>Suporte a MFA (TOTP) para cenários de maior segurança operacional.</li>
+            <li>Controle de validade de sessão com renovação e expiração planejada.</li>
+            <li>Roteamento pós-login por perfil (painel executivo, táxi ou administração).</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Acesso por papel e contexto</h3>
+          <ul class="list">
+            <li>Camada de rotas protegidas para impedir acesso indevido sem autenticação.</li>
+            <li>Funcionalidades condicionais por feature flags e plano.</li>
+            <li>Itens de menu dependentes de elegibilidade (ex.: Network Nacional).</li>
+            <li>Ações críticas com confirmação explícita em interface.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Dados e integrações</h3>
+          <ul class="list">
+            <li>Integrações de automação via webhook com mapeamento controlado.</li>
+            <li>Fluxos de exportação e geração de documentos com trilha operacional.</li>
+            <li>Comunicação de dependências externas quando recurso exige serviço terceiro.</li>
+            <li>Separação institucional entre funcionalidades estáveis e áreas em evolução.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Boas práticas recomendadas</h3>
+          <ul class="list">
+            <li>Manter MFA ativo para contas administrativas e usuárias-chave.</li>
+            <li>Revisar periodicamente configurações, contratos e automações.</li>
+            <li>Validar payloads em ambiente de teste antes de ativar produção.</li>
+            <li>Evitar compartilhamento de contas e adotar gestão de acessos por perfil.</li>
+          </ul>
+        </article>
+      </div>
+
+      <section class="section">
+        <div class="cta">
+          <h2>Compromisso institucional</h2>
+          <p class="section__sub">A comunicação pública do produto prioriza transparência técnica: o que está estável, o que é condicional e o que está em roadmap.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="/modulos.html">Ver status dos módulos</a>
+            <a class="btn btn--ghost" href="/contato.html">Falar com equipe</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+  <script src="/js/site.js" defer></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
