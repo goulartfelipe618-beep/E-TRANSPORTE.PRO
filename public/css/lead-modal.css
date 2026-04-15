@@ -535,3 +535,23 @@
 .lead-modal__form[hidden] {
   display: none !important;
 }
+
+/* Pós-envio: esconde o cabeçalho do formulário para ficar só a confirmação */
+.lead-modal__dialog.lead-modal__dialog--success .lead-modal__header,
+.lead-modal__dialog.lead-modal__dialog--success .lead-modal__error {
+  display: none !important;
+}
+
+.lead-modal__dialog.lead-modal__dialog--success {
+  justify-content: center;
+}
+
+.lead-modal__dialog.lead-modal__dialog--success .lead-modal__success {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.25rem 0.75rem 1.25rem;
+  max-width: 26rem;
+  margin-inline: auto;
+}

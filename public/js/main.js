@@ -373,6 +373,11 @@
     var municipiosCache = [];
     var municipiosFull = [];
     var lastFocus = null;
+    var DIALOG_SUCCESS = "lead-modal__dialog--success";
+
+    function clearDialogSuccessState() {
+      if (dialog) dialog.classList.remove(DIALOG_SUCCESS);
+    }
 
     /** n8n: teste fora do domínio oficial; produção em e-transporte.pro */
     var N8N_WEBHOOK_PROD = "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
@@ -418,6 +423,7 @@
 
     function openModal() {
       lastFocus = document.activeElement;
+      clearDialogSuccessState();
       root.removeAttribute("hidden");
       root.classList.add("is-open");
       document.body.style.overflow = "hidden";
@@ -442,6 +448,7 @@
     }
 
     function closeModal() {
+      clearDialogSuccessState();
       root.classList.remove("is-open");
       root.setAttribute("hidden", "");
       document.body.style.overflow = "";
@@ -453,6 +460,7 @@
     }
 
     function resetFormView() {
+      clearDialogSuccessState();
       if (form) form.hidden = false;
       if (successEl) successEl.hidden = true;
       if (submitBtn) {
@@ -802,6 +810,7 @@
           if (form) form.hidden = true;
           if (successEl) successEl.hidden = false;
           if (successMsg) successMsg.textContent = message;
+          if (dialog) dialog.classList.add(DIALOG_SUCCESS);
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.removeAttribute("aria-busy");
