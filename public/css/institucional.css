@@ -565,18 +565,37 @@ td {
   text-align: right;
 }
 
-/* Chatwoot: launcher dentro da viewport + safe-area (evita corte à direita / em baixo) */
+/* Chatwoot: viewport + safe-area (mobile: painel fixo à direita não pode ultrapassar a borda esquerda) */
 #cw-widget-holder,
 .woot-widget-holder,
 body > div[id^="chatwoot"] {
   right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px)) !important;
   bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 14px)) !important;
   left: auto !important;
+  /* Largura máxima = viewport menos margens e safe-area (evita overflow-x no iOS/Android) */
+  max-width: calc(
+    100vw - max(28px, calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px) + 28px))
+  ) !important;
+  max-width: calc(
+    100svw - max(28px, calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px) + 28px))
+  ) !important;
+  width: auto !important;
   overflow: visible !important;
   box-sizing: border-box !important;
 }
 
+#cw-widget-holder iframe,
+.woot-widget-holder iframe,
+body > div[id^="chatwoot"] iframe {
+  max-width: 100% !important;
+}
+
 #chatwoot_live_chat_widget {
   overflow: visible !important;
-  max-width: none !important;
+  max-width: calc(
+    100vw - max(28px, calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px) + 28px))
+  ) !important;
+  max-width: calc(
+    100svw - max(28px, calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px) + 28px))
+  ) !important;
 }
