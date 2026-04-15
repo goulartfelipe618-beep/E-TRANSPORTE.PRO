@@ -490,3 +490,62 @@ td {
     grid-template-columns: 1fr;
   }
 }
+
+/* Página “link na bio” (/link/) */
+.linkbio-chat {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(232, 163, 23, 0.4);
+  background: rgba(232, 163, 23, 0.08);
+  color: var(--muted);
+  max-width: 42rem;
+}
+
+.linkbio-chat strong {
+  color: var(--text);
+}
+
+.linkbio-menu-intro {
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+.linkbio-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+}
+
+.linkbio-menu li {
+  margin: 0;
+}
+
+.linkbio-menu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.linkbio-menu a:hover,
+.linkbio-menu a:focus-visible {
+  border-color: rgba(232, 163, 23, 0.45);
+  color: var(--accent-strong);
+}
+
+.linkbio-menu a .muted {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: right;
+}

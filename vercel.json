@@ -1,7 +1,6 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "redirects": [{ "source": "/link", "destination": "/link/", "permanent": true }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

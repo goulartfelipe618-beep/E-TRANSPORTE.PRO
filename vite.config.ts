@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
         blogNetworkComunidade: resolve(__dirname, "blog-network-comunidade.html"),
         blogAutomacoesWebhooks: resolve(__dirname, "blog-automacoes-webhooks.html"),
         contato: resolve(__dirname, "contato.html"),
+        linkBio: resolve(__dirname, "link/index.html"),
+        linkBioRedirect: resolve(__dirname, "link.html"),
       },
     },
   },
