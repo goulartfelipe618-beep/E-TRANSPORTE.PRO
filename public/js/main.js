@@ -426,7 +426,8 @@
       clearDialogSuccessState();
       root.removeAttribute("hidden");
       root.classList.add("is-open");
-      document.body.style.overflow = "hidden";
+      /* overflow no documentElement evita cortar widgets fixed (ex.: Chatwoot) ligados ao body em WebKit */
+      document.documentElement.style.overflow = "hidden";
       clearError();
       if (form) form.hidden = false;
       if (successEl) successEl.hidden = true;
@@ -451,7 +452,7 @@
       clearDialogSuccessState();
       root.classList.remove("is-open");
       root.setAttribute("hidden", "");
-      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       if (lastFocus && typeof lastFocus.focus === "function") {
         try {
           lastFocus.focus();

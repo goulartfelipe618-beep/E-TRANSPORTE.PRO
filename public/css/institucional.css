@@ -564,3 +564,19 @@ td {
   color: var(--muted);
   text-align: right;
 }
+
+/* Chatwoot: launcher dentro da viewport + safe-area (evita corte à direita / em baixo) */
+#cw-widget-holder,
+.woot-widget-holder,
+body > div[id^="chatwoot"] {
+  right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px)) !important;
+  bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 14px)) !important;
+  left: auto !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+#chatwoot_live_chat_widget {
+  overflow: visible !important;
+  max-width: none !important;
+}
