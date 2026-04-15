@@ -430,6 +430,27 @@ td {
 }
 
 @media (max-width: 760px) {
+  :root {
+    /* Largura total no mobile: o conteúdo usa 100% da viewport com respiro lateral simétrico. */
+    --maxw: 100%;
+    --mobile-gutter: clamp(14px, 4.2vw, 18px);
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+    padding-inline: var(--mobile-gutter);
+  }
+
+  .section {
+    padding-block: 40px;
+  }
+
+  .hero {
+    padding-top: 48px;
+    padding-bottom: 28px;
+  }
+
   .menu {
     position: fixed;
     inset: 74px 0 auto 0;
@@ -448,6 +469,13 @@ td {
 
   .mobile-toggle {
     display: inline-flex;
+    color: #000000;
+  }
+
+  .mobile-toggle:hover,
+  .mobile-toggle:focus-visible {
+    color: #000000;
+    border-color: rgba(232, 163, 23, 0.55);
   }
 
   .grid--3,
