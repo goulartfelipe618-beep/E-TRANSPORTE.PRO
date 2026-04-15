@@ -94,6 +94,12 @@ img {
   font-size: 0.92rem;
 }
 
+.menu .menu__cta {
+  min-width: 172px;
+  height: 44px;
+  white-space: nowrap;
+}
+
 .menu a:hover,
 .menu a[aria-current="page"] {
   color: var(--text);
