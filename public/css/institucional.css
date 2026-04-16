@@ -585,3 +585,20 @@ body > div[id^="chatwoot"] iframe,
 #chatwoot_live_chat_widget iframe {
   max-width: 100% !important;
 }
+
+/* SDK Chatwoot usa 20px na bolha e no holder (desktop); igualamos às margens de 5px */
+.woot-widget-bubble.woot-elements--right {
+  right: calc(5px + env(safe-area-inset-right, 0px)) !important;
+}
+.woot-widget-bubble.woot-elements--left {
+  left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+}
+
+@media only screen and (min-width: 667px) {
+  .woot-widget-holder.woot-elements--right {
+    right: calc(5px + env(safe-area-inset-right, 0px)) !important;
+  }
+  .woot-widget-holder.woot-elements--left {
+    left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+  }
+}
