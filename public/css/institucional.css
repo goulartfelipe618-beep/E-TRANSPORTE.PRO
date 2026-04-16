@@ -565,18 +565,38 @@ td {
   text-align: right;
 }
 
-/* Chatwoot: largura total com 5px à esquerda e à direita (+ safe-area, simétrico) */
-#cw-widget-holder,
-.woot-widget-holder,
-body > div[id^="chatwoot"],
-#chatwoot_live_chat_widget {
-  left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+/* Chatwoot: não fixar left+right ao mesmo tempo no holder “right” (caía o painel à esquerda, longe da bolha) */
+#cw-widget-holder.woot-elements--right,
+.woot-widget-holder.woot-elements--right {
+  left: auto !important;
   right: calc(5px + env(safe-area-inset-right, 0px)) !important;
   bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 14px)) !important;
-  width: auto !important;
-  max-width: none !important;
-  overflow: visible !important;
   box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+#cw-widget-holder.woot-elements--left,
+.woot-widget-holder.woot-elements--left {
+  right: auto !important;
+  left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+  bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 14px)) !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+/* Mobile: faixa útil entre 5px e safe-area (só aqui left+right juntos) */
+@media only screen and (max-width: 667px) {
+  #cw-widget-holder.woot-elements--right,
+  .woot-widget-holder.woot-elements--right,
+  #cw-widget-holder.woot-elements--left,
+  .woot-widget-holder.woot-elements--left {
+    left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+    right: calc(5px + env(safe-area-inset-right, 0px)) !important;
+    width: auto !important;
+    max-width: none !important;
+    top: 0 !important;
+    height: 100% !important;
+  }
 }
 
 #cw-widget-holder iframe,
@@ -584,9 +604,10 @@ body > div[id^="chatwoot"],
 body > div[id^="chatwoot"] iframe,
 #chatwoot_live_chat_widget iframe {
   max-width: 100% !important;
+  width: 100% !important;
 }
 
-/* SDK Chatwoot usa 20px na bolha e no holder (desktop); igualamos às margens de 5px */
+/* SDK usa 20px na bolha; alinhar às mesmas margens de 5px */
 .woot-widget-bubble.woot-elements--right {
   right: calc(5px + env(safe-area-inset-right, 0px)) !important;
 }
@@ -595,10 +616,14 @@ body > div[id^="chatwoot"] iframe,
 }
 
 @media only screen and (min-width: 667px) {
+  #cw-widget-holder.woot-elements--right,
   .woot-widget-holder.woot-elements--right {
     right: calc(5px + env(safe-area-inset-right, 0px)) !important;
+    left: auto !important;
   }
+  #cw-widget-holder.woot-elements--left,
   .woot-widget-holder.woot-elements--left {
     left: calc(5px + env(safe-area-inset-left, 0px)) !important;
+    right: auto !important;
   }
 }
