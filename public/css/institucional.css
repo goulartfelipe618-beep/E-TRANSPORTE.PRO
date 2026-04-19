@@ -544,28 +544,27 @@ body.page-linkbio .linkbio-start {
 .linkbio-images {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 6px;
   width: 100%;
 }
 
 .linkbio-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: block;
   border: none;
   background: transparent;
   color: var(--text);
   text-decoration: none;
+  border-radius: var(--radius);
+  transition: box-shadow 0.15s ease;
 }
 
 .linkbio-card:focus-visible {
   outline: none;
 }
 
-.linkbio-card:hover .linkbio-card__desc,
-.linkbio-card:focus-visible .linkbio-card__desc {
-  border-color: rgba(232, 163, 23, 0.5);
-  box-shadow: 0 0 0 2px rgba(232, 163, 23, 0.15);
+.linkbio-card:hover,
+.linkbio-card:focus-visible {
+  box-shadow: 0 0 0 2px rgba(232, 163, 23, 0.22);
 }
 
 .linkbio-card__media {
@@ -579,18 +578,7 @@ body.page-linkbio .linkbio-start {
   height: auto;
   display: block;
   vertical-align: bottom;
-}
-
-.linkbio-card__desc {
-  margin: 0;
-  padding: 12px 14px 14px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--muted);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--card);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .linkbio-notice {
