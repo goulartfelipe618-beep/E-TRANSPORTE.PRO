@@ -38,10 +38,6 @@ jobs:
         env:
           # Domínio próprio na raiz (https://e-transporte.pro). Para preview só em github.io/REPO use /REPO/
           VITE_BASE_PATH: /
-          # Opcional: definir em Settings → Secrets and variables → Actions
-          # para o chat Áxus funcionar em produção
-          VITE_N8N_WEBHOOK_TEST: ${{ secrets.VITE_N8N_WEBHOOK_TEST }}
-          VITE_N8N_WEBHOOK_PROD: ${{ secrets.VITE_N8N_WEBHOOK_PROD }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

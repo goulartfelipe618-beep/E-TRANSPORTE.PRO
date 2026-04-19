@@ -73,17 +73,6 @@ git push
 
 ---
 
-## Chat Áxus (opcional)
-
-Para o webhook funcionar na build do GitHub Actions, crie secrets: **Settings** → **Secrets and variables** → **Actions**:
-
-- `VITE_N8N_WEBHOOK_TEST`
-- `VITE_N8N_WEBHOOK_PROD`
-
-(O workflow já referencia estes nomes.)
-
----
-
 ## Teste local
 
 ```powershell
