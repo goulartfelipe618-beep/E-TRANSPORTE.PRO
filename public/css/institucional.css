@@ -533,7 +533,7 @@ td {
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
-  background: var(--card);
+  background: transparent;
   color: var(--text);
   text-decoration: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -549,7 +549,7 @@ td {
 .linkbio-card__media {
   display: block;
   line-height: 0;
-  background: var(--card-soft);
+  background: transparent;
 }
 
 .linkbio-card__media img {
@@ -566,6 +566,7 @@ td {
   line-height: 1.5;
   color: var(--muted);
   border-top: 1px solid var(--border);
+  background: var(--card);
 }
 
 .linkbio-notice {
