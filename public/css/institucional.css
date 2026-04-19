@@ -503,9 +503,31 @@ td {
   }
 }
 
-/* Página “link na bio” (/link/) */
-.linkbio-start {
-  padding-top: 28px;
+/* Página “link na bio” (/link/) — sem topbar */
+body.page-linkbio .linkbio-start {
+  padding-top: max(24px, env(safe-area-inset-top, 0px));
+}
+
+.linkbio-hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.linkbio-hero__mark {
+  display: block;
+  margin: 0 auto 14px;
+  width: min(112px, 28vw);
+  height: auto;
+  border-radius: 22px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.linkbio-hero__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 /* Link na bio: bloco contínuo — ajuste a folga nas laterais em --linkbio-gutter */
@@ -529,21 +551,21 @@ td {
 .linkbio-card {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--border);
+  gap: 10px;
+  border: none;
   background: transparent;
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.linkbio-card:hover,
 .linkbio-card:focus-visible {
-  border-color: rgba(232, 163, 23, 0.5);
-  box-shadow: 0 0 0 2px rgba(232, 163, 23, 0.2);
   outline: none;
+}
+
+.linkbio-card:hover .linkbio-card__desc,
+.linkbio-card:focus-visible .linkbio-card__desc {
+  border-color: rgba(232, 163, 23, 0.5);
+  box-shadow: 0 0 0 2px rgba(232, 163, 23, 0.15);
 }
 
 .linkbio-card__media {
@@ -565,8 +587,10 @@ td {
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--muted);
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   background: var(--card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .linkbio-notice {
