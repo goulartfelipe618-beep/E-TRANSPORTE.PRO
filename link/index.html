@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Link na bio | E-Transporte.pro</title>
-  <meta name="description" content="Links oficiais E-Transporte.pro: site institucional, login do app, blog, funcionalidades e Api-construtor. Atendimento pelo chat à direita." />
+  <meta name="description" content="Links oficiais E-Transporte.pro: site, blog, login do app e Api-construtor. Toque nos cartões para abrir. Atendimento pelo chat à direita." />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,86 +32,66 @@
   <main>
     <h1 class="sr-only">Links oficiais E-Transporte.pro</h1>
 
-    <section class="section section--tight linkbio-start">
-      <div class="container">
-        <h2 class="sr-only">Links em cards</h2>
-        <div class="grid grid--2">
-          <article class="card">
-            <h3>Conheça nosso sistema</h3>
-            <p class="section__sub">Site institucional com visão de módulos, segurança, operação e conteúdo técnico.</p>
-            <div class="hero__actions">
-              <a class="btn btn--primary" href="https://www.e-transporte.pro/" rel="noopener noreferrer">Abrir site</a>
-            </div>
-          </article>
-          <article class="card">
-            <h3>Já sou cliente</h3>
-            <p class="section__sub">Acesse o painel e o login oficial do aplicativo.</p>
-            <div class="hero__actions">
-              <a class="btn btn--primary" href="https://app.e-transporte.pro/login" rel="noopener noreferrer">Ir para o login</a>
-            </div>
-          </article>
-          <article class="card">
-            <h3>Conheça nosso blog</h3>
-            <p class="section__sub">Artigos sobre fluxo Transfer, network, webhooks e boas práticas.</p>
-            <div class="hero__actions">
-              <a class="btn btn--primary" href="https://www.e-transporte.pro/blog.html" rel="noopener noreferrer">Abrir blog</a>
-            </div>
-          </article>
-          <article class="card">
-            <h3>Sistema de cards e menu em lista</h3>
-            <p class="section__sub">Demonstração no ecossistema Api-construtor.pro.</p>
-            <div class="hero__actions">
-              <a class="btn btn--primary" href="https://www.api-construtor.pro/" rel="noopener noreferrer">Abrir Api-construtor</a>
-            </div>
-          </article>
-          <article class="card">
-            <h3>Vantagens de ser E-Transporte<span>.pro</span></h3>
-            <p class="section__sub">Catálogo institucional de funcionalidades e valor para a operação executiva.</p>
-            <div class="hero__actions">
-              <a class="btn btn--primary" href="https://www.e-transporte.pro/funcionalidades.html" rel="noopener noreferrer">Ver funcionalidades</a>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section--tight">
-      <div class="container">
-        <h2 class="sr-only">Links em lista</h2>
-        <nav aria-label="Atalhos oficiais E-Transporte.pro">
-          <ul class="linkbio-menu">
-            <li>
-              <a href="https://www.e-transporte.pro/" rel="noopener noreferrer">
-                <span>Conheça nosso sistema</span>
-                <span class="muted">e-transporte.pro</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://app.e-transporte.pro/login" rel="noopener noreferrer">
-                <span>Já sou cliente</span>
-                <span class="muted">app → login</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.e-transporte.pro/blog.html" rel="noopener noreferrer">
-                <span>Conheça nosso blog</span>
-                <span class="muted">/blog.html</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.api-construtor.pro/" rel="noopener noreferrer">
-                <span>Cards e menu (Api-construtor)</span>
-                <span class="muted">api-construtor.pro</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.e-transporte.pro/funcionalidades.html" rel="noopener noreferrer">
-                <span>Vantagens / funcionalidades</span>
-                <span class="muted">/funcionalidades.html</span>
-              </a>
-            </li>
-          </ul>
+    <section class="section section--tight linkbio-start" aria-labelledby="linkbio-heading">
+      <h2 id="linkbio-heading" class="sr-only">Atalhos em imagem</h2>
+      <div class="linkbio-panel">
+        <nav class="linkbio-images" aria-label="Atalhos oficiais E-Transporte.pro">
+          <a class="linkbio-card" href="https://www.e-transporte.pro/" rel="noopener noreferrer">
+            <span class="linkbio-card__media">
+              <img
+                src="/images/link-bio-site.png"
+                width="860"
+                height="320"
+                alt="Conheça nossa plataforma — site institucional E-Transporte.pro."
+                loading="eager"
+                decoding="async"
+              />
+            </span>
+            <p class="linkbio-card__desc">Site institucional com visão de módulos, segurança, operação e conteúdo técnico.</p>
+          </a>
+          <a class="linkbio-card" href="https://www.e-transporte.pro/blog.html" rel="noopener noreferrer">
+            <span class="linkbio-card__media">
+              <img
+                src="/images/link-bio-blog.png"
+                width="860"
+                height="320"
+                alt="Conheça nosso blog — artigos e conteúdo técnico E-Transporte.pro."
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <p class="linkbio-card__desc">Artigos sobre fluxo Transfer, network, webhooks e boas práticas.</p>
+          </a>
+          <a class="linkbio-card" href="https://app.e-transporte.pro/login" rel="noopener noreferrer">
+            <span class="linkbio-card__media">
+              <img
+                src="/images/link-bio-login.png"
+                width="860"
+                height="320"
+                alt="Você já é cliente? Acesse o login do painel E-Transporte.pro."
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <p class="linkbio-card__desc">Acesse o painel e o login oficial do aplicativo.</p>
+          </a>
+          <a class="linkbio-card" href="https://www.api-construtor.pro/" rel="noopener noreferrer">
+            <span class="linkbio-card__media">
+              <img
+                src="/images/link-bio-api.png"
+                width="860"
+                height="320"
+                alt="Api-construtor.pro — cards, menus e integrações para WhatsApp."
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <p class="linkbio-card__desc">Acesse a plataforma de demonstração no ecossistema Api-construtor.pro.</p>
+          </a>
         </nav>
+        <div class="linkbio-notice" role="note">
+          <p>Atendimento humano: para conversar com um atendente, use o botão flutuante de chat à direita desta página (quando disponível).</p>
+        </div>
       </div>
     </section>
 
@@ -122,16 +102,9 @@
           <p class="section__sub">Use <strong>SOLICITAR ACESSO</strong> no topo para falar com a equipe.</p>
           <div class="hero__actions">
             <a class="btn btn--ghost" href="/">Voltar ao início institucional</a>
+            <a class="btn btn--primary" href="https://www.e-transporte.pro/funcionalidades.html" rel="noopener noreferrer">Ver funcionalidades</a>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section section--tight linkbio-chat-wrap">
-      <div class="container">
-        <aside class="linkbio-chat" role="note">
-          <strong>Atendimento humano:</strong> para conversar com um atendente, use o <strong>botão flutuante de chat à direita</strong> desta página (quando disponível).
-        </aside>
       </div>
     </section>
   </main>

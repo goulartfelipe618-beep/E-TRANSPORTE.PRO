@@ -508,61 +508,79 @@ td {
   padding-top: 28px;
 }
 
-.linkbio-chat-wrap {
-  padding-top: 0;
+/* Link na bio: bloco contínuo — ajuste a folga nas laterais em --linkbio-gutter */
+.linkbio-panel {
+  --linkbio-gutter: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-left: max(var(--linkbio-gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--linkbio-gutter), env(safe-area-inset-right, 0px));
 }
 
-.linkbio-chat {
-  margin-top: 0;
+.linkbio-images {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.linkbio-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.linkbio-card:hover,
+.linkbio-card:focus-visible {
+  border-color: rgba(232, 163, 23, 0.5);
+  box-shadow: 0 0 0 2px rgba(232, 163, 23, 0.2);
+  outline: none;
+}
+
+.linkbio-card__media {
+  display: block;
+  line-height: 0;
+  background: var(--card-soft);
+}
+
+.linkbio-card__media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: bottom;
+}
+
+.linkbio-card__desc {
+  margin: 0;
+  padding: 12px 14px 14px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.linkbio-notice {
+  margin-top: 16px;
   padding: 16px 18px;
   border-radius: var(--radius);
   border: 1px solid rgba(232, 163, 23, 0.4);
   background: rgba(232, 163, 23, 0.08);
   color: var(--muted);
-  max-width: 42rem;
 }
 
-.linkbio-chat strong {
-  color: var(--text);
-}
-
-.linkbio-menu {
-  list-style: none;
+.linkbio-notice p {
   margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-  max-width: 560px;
-}
-
-.linkbio-menu li {
-  margin: 0;
-}
-
-.linkbio-menu a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 18px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text);
-  font-weight: 600;
-}
-
-.linkbio-menu a:hover,
-.linkbio-menu a:focus-visible {
-  border-color: rgba(232, 163, 23, 0.45);
-  color: var(--accent-strong);
-}
-
-.linkbio-menu a .muted {
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--muted);
-  text-align: right;
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 /* Chatwoot: não fixar left+right ao mesmo tempo no holder “right” (caía o painel à esquerda, longe da bolha) */
