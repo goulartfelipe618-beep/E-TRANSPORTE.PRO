@@ -516,10 +516,11 @@ body.page-linkbio .linkbio-start {
 .linkbio-hero__mark {
   display: block;
   margin: 0 auto 14px;
-  width: min(112px, 28vw);
+  max-width: min(320px, 92%);
+  width: auto;
   height: auto;
-  border-radius: 22px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 .linkbio-hero__hint {
