@@ -379,16 +379,12 @@
       if (dialog) dialog.classList.remove(DIALOG_SUCCESS);
     }
 
-    /** n8n: teste fora do domínio oficial; produção em e-transporte.pro */
-    var N8N_WEBHOOK_PROD = "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
-    var N8N_WEBHOOK_TEST = "https://n8n.e-transporte.pro/webhook-test/eb54332d-b6ee-4922-99af-c4266c73b44c";
+    /** n8n: formulário «Solicitar acesso» — sempre este webhook de produção */
+    var N8N_LEAD_WEBHOOK =
+      "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
 
     function resolveN8nWebhookUrl() {
-      var h = (window.location.hostname || "").toLowerCase();
-      if (h === "e-transporte.pro" || h === "www.e-transporte.pro") {
-        return N8N_WEBHOOK_PROD;
-      }
-      return N8N_WEBHOOK_TEST;
+      return N8N_LEAD_WEBHOOK;
     }
 
     var IBGE_ESTADOS = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
