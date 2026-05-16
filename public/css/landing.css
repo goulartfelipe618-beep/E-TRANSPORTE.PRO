@@ -63,6 +63,18 @@
   white-space: nowrap;
 }
 
+.lp-sticky-cta .btn--primary {
+  background: #c89b3c;
+  color: #111111;
+  border-color: #a67f2f;
+  font-weight: 700;
+}
+
+.lp-sticky-cta .btn--primary:hover {
+  background: #d4a84a;
+  color: #111111;
+}
+
 /* Hero */
 .lp-hero {
   position: relative;

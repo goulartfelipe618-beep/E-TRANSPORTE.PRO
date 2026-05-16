@@ -422,7 +422,7 @@
       clearDialogSuccessState();
       root.removeAttribute("hidden");
       root.classList.add("is-open");
-      /* overflow no documentElement evita cortar widgets fixed (ex.: Chatwoot) ligados ao body em WebKit */
+      /* overflow no documentElement evita cortar widgets fixed ligados ao body em WebKit */
       document.documentElement.style.overflow = "hidden";
       clearError();
       if (form) form.hidden = false;

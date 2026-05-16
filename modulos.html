@@ -3,84 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Módulos do Sistema | E-Transporte.pro</title>
-  <meta name="description" content="Mapa robusto dos módulos do sistema E-Transporte.pro com visão de status funcional, condicionalidades e escopo de uso." />
+  <title>Módulos do sistema | Mapa funcional E-Transporte.pro</title>
+  <meta name="description" content="Inventário de módulos do painel executivo: status estável, condicional e roadmap — transfer, marketing, Network e automações." />
+  <meta name="keywords" content="módulos plataforma transporte executivo, mapa funcional transfer, painel motorista executivo" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="author" content="E-Transporte.pro" />
+  <meta name="theme-color" content="#0e1016" />
+  <link rel="canonical" href="https://www.e-transporte.pro/modulos.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.e-transporte.pro/modulos.html" />
+  <meta property="og:title" content="Módulos do sistema | Mapa funcional E-Transporte.pro" />
+  <meta property="og:description" content="Inventário de módulos do painel executivo: status estável, condicional e roadmap — transfer, marketing, Network e automações." />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="E-Transporte.pro" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Módulos do sistema | Mapa funcional E-Transporte.pro" />
+  <meta name="twitter:description" content="Inventário de módulos do painel executivo: status estável, condicional e roadmap — transfer, marketing, Network e automações." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" href="/css/institucional.css" as="style" />
+  <link rel="preload" href="/css/page.css" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="/css/institucional.css" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/page.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://www.e-transporte.pro/#website","url":"https://www.e-transporte.pro/","name":"E-Transporte.pro","description":"Plataforma nacional para transporte executivo: gestão de reservas, motoristas, geolocalização em tempo real, automação e escala para operadores de transfer e transporte corporativo.","inLanguage":"pt-BR","publisher":{"@id":"https://www.e-transporte.pro/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.e-transporte.pro/faq.html?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"Organization","@id":"https://www.e-transporte.pro/#organization","name":"E-Transporte.pro","url":"https://www.e-transporte.pro/","logo":{"@type":"ImageObject","url":"https://www.e-transporte.pro/apple-touch-icon.png"},"email":"contato@e-transporte.pro","sameAs":["https://www.instagram.com/e_transporte.pro/"],"description":"Plataforma nacional para transporte executivo: gestão de reservas, motoristas, geolocalização em tempo real, automação e escala para operadores de transfer e transporte corporativo."},{"@type":"LocalBusiness","@id":"https://www.e-transporte.pro/#localbusiness","name":"E-Transporte.pro","description":"Plataforma nacional de gestão para transporte executivo e transfer.","url":"https://www.e-transporte.pro/","email":"contato@e-transporte.pro","image":"https://www.e-transporte.pro/apple-touch-icon.png","priceRange":"$$","areaServed":{"@type":"Country","name":"Brasil"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"127","bestRating":"5","worstRating":"1"}},{"@type":"SoftwareApplication","name":"E-Transporte.pro","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL","description":"Solicitação de acesso gratuito para avaliação"},"description":"Plataforma nacional para transporte executivo: gestão de reservas, motoristas, geolocalização em tempo real, automação e escala para operadores de transfer e transporte corporativo."},{"@type":"WebPage","@id":"https://www.e-transporte.pro/modulos.html#webpage","url":"https://www.e-transporte.pro/modulos.html","name":"Módulos do sistema | Mapa funcional E-Transporte.pro","description":"Inventário de módulos do painel executivo: status estável, condicional e roadmap — transfer, marketing, Network e automações.","isPartOf":{"@id":"https://www.e-transporte.pro/#website"},"inLanguage":"pt-BR","speakable":{"@type":"SpeakableSpecification","cssSelector":[".page-hero h1",".page-hero__lead",".page-section p"]}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://www.e-transporte.pro/"},{"@type":"ListItem","position":2,"name":"Módulos","item":"https://www.e-transporte.pro/modulos.html"}]}]}</script>
 </head>
-<body>
-  <header class="topbar">
+<body class="lp-page page-inner" data-page="modulos">
+  <header class="topbar" role="banner">
     <div class="container topbar__inner">
       <a class="brand" href="/">E-Transporte<span>.pro</span></a>
-      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
-      <nav class="menu" data-nav>
-        <a href="/">Início</a>
-        <a href="/funcionalidades.html">Funcionalidades</a>
-        <a href="/modulos.html" aria-current="page">Módulos</a>
-        <a href="/seguranca.html">Segurança</a>
+      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-menu">Menu</button>
+      <nav class="menu" id="nav-menu" data-nav aria-label="Principal">
+        <a href="/sobre.html">Sobre</a>
+        <a href="/servicos.html">Serviços</a>
+        <a href="/#catalogo">Plataforma</a>
         <a href="/blog.html">Blog</a>
+        <a href="/faq.html">FAQ</a>
         <a href="/contato.html">Contato</a>
-        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">SOLICITAR ACESSO</button>
+        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">Solicitar Acesso Gratuito</button>
       </nav>
     </div>
   </header>
-
-  <main class="section">
-    <div class="container">
-      <header class="section__head">
-        <span class="eyebrow">Inventário funcional</span>
-        <h1>Mapa institucional de módulos e status</h1>
-        <p class="lead">Resumo baseado na documentação auditada do painel executivo, com separação entre recursos maduros e áreas em evolução.</p>
-      </header>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Módulo</th><th>Escopo principal</th><th>Status</th></tr>
-          </thead>
+  <div class="lp-sticky-cta" data-lp-sticky-cta hidden>
+    <div class="lp-sticky-cta__inner">
+      <p class="lp-sticky-cta__text"><strong>Acesso gratuito</strong> Plataforma nacional</p>
+      <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+    </div>
+  </div>
+  <main id="conteudo-principal">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Início</a></li><li aria-current="page">Módulos</li></ol></nav>
+    <article class="container page-article"><header class="page-hero lp-reveal">
+      <span class="lp-eyebrow">Inventário</span>
+      <h1>Mapa institucional de módulos e status</h1>
+      <p class="page-hero__lead">Visão auditada do painel: o que está estável, condicional ou em evolução.</p>
+    </header>
+      <section class="page-section"><div class="container page-table-wrap">
+        <table class="page-table">
+          <thead><tr><th>Módulo</th><th>Escopo</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Home</td><td>Checklist, atalhos e governança de acesso ao Network</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Atualizações</td><td>Inbox unificada de transfer, grupos e motoristas</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Abrangência</td><td>Mapa de reservas com geocodificação assistida</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Transfer / Grupos</td><td>Solicitações, reservas, contratos, PDF e comunicação</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Geolocalização</td><td>Envio de webhook para rastreamento</td><td><span class="tag tag--ok">Operacional</span></td></tr>
-            <tr><td>Campanhas / Leads</td><td>Ativos de captação e exportação CSV de leads</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Receptivos / QR Code</td><td>Materiais de marketing com geração de PDF/PNG</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Network / Comunidade</td><td>Colaboração e social interno com realtime</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Google</td><td>Presença Business Profile com regras de plano</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
-            <tr><td>Disparador</td><td>Ferramenta externa de campanhas WhatsApp</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
-            <tr><td>Configurações / Automações</td><td>Dados da empresa, MFA, webhooks e mapping técnico</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Comunicador Evolution</td><td>Instância WhatsApp com QR e sync</td><td><span class="tag tag--warn">Condicional por feature flag</span></td></tr>
-            <tr><td>Métricas</td><td>Painel KPI com estrutura visual</td><td><span class="tag tag--danger">Evolução de dados reais</span></td></tr>
-            <tr><td>Veículos</td><td>Base visual para frota e filtros</td><td><span class="tag tag--danger">Evolução de backend</span></td></tr>
-            <tr><td>Agendamentos</td><td>Calendário e UX inicial</td><td><span class="tag tag--danger">Roadmap</span></td></tr>
-            <tr><td>Tickets</td><td>Abertura e acompanhamento de solicitações de suporte</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Anotações</td><td>Registros operacionais pessoais no painel</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Mentoria</td><td>Conteúdos formativos e trilha de progresso</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Empty Legs</td><td>Oportunidades com status aprovado</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Website</td><td>Briefing completo e estrutura institucional de marca</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Domínios</td><td>Fluxo de aquisição e gestão de domínios</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>E-mail Business</td><td>Solicitação guiada de caixas corporativas</td><td><span class="tag tag--ok">Estável</span></td></tr>
-            <tr><td>Principal/Home</td><td>Checklist, atalho de módulos e direcionamento estratégico</td><td><span class="tag tag--ok">Estável</span></td></tr>
+            <tr><td>Transfer / Grupos</td><td>Solicitações, reservas, contratos, PDF</td><td><span class="page-tag page-tag--ok">Estável</span></td></tr>
+            <tr><td>Geolocalização</td><td>Rastreamento e links públicos</td><td><span class="page-tag page-tag--ok">Operacional</span></td></tr>
+            <tr><td>Campanhas / Leads</td><td>Captação e exportação CSV</td><td><span class="page-tag page-tag--ok">Estável</span></td></tr>
+            <tr><td>Network / Comunidade</td><td>Colaboração B2B</td><td><span class="page-tag page-tag--ok">Estável</span></td></tr>
+            <tr><td>Automações</td><td>Webhooks e mapeamento</td><td><span class="page-tag page-tag--ok">Estável</span></td></tr>
+            <tr><td>Comunicador</td><td>WhatsApp Evolution</td><td><span class="page-tag page-tag--warn">Condicional</span></td></tr>
+            <tr><td>Métricas / Veículos</td><td>KPIs e frota</td><td><span class="page-tag page-tag--road">Evolução</span></td></tr>
           </tbody>
         </table>
+      </div></section>
+      <section class="page-section lp-reveal">
+      <div class="container">
+        <h2>Por domínio</h2>
+        <div class="page-grid page-grid--3">
+        <article class="page-card-box"><h3>Operação</h3><p>Transfer, grupos, geo e abrangência.</p></article>
+        <article class="page-card-box"><h3>Growth</h3><p>Campanhas, site, domínio, e-mail.</p></article>
+        <article class="page-card-box"><h3>Governança</h3><p>Configurações, tickets, automações.</p></article>
       </div>
-
-      <section class="section">
-        <h2>Estrutura por domínio de negócio</h2>
-        <div class="grid grid--3">
-          <article class="card"><h3>Operação</h3><p class="section__sub">Transfer, Grupos, reservas, contratos, comunicação, abrangência e rastreamento.</p></article>
-          <article class="card"><h3>Growth</h3><p class="section__sub">Campanhas, leads, website, domínios, e-mail business, Google e Disparador.</p></article>
-          <article class="card"><h3>Governança</h3><p class="section__sub">Configurações corporativas, tickets, anotações, automações e regras de acesso.</p></article>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section></article>
+    <aside class="page-cta lp-cta-band" aria-label="Chamada para ação">
+      <h2>Profissionalize sua operação executiva agora</h2>
+      <p>Solicite acesso gratuito à plataforma E-Transporte.pro e centralize reservas, motoristas, automação e geolocalização.</p>
+      <div class="hero__actions">
+        <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+        <a class="btn btn--ghost" href="/contato.html">Falar com a equipe</a>
+      </div>
+    </aside>
   </main>
-
-  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+  <footer class="lp-footer" role="contentinfo">
+    <div class="container">
+      <div class="lp-footer__grid">
+        <div class="lp-footer__brand">
+          <p class="brand">E-Transporte<span>.pro</span></p>
+          <p>Plataforma nacional para transporte executivo: gestão de reservas, motoristas, geolocalização em tempo real, automação e escala para operadores de transfer e transporte corporativo.</p>
+        </div>
+        <div>
+          <h3>Plataforma</h3>
+          <ul><li><a href="/funcionalidades.html">Funcionalidades</a></li><li><a href="/modulos.html">Módulos</a></li><li><a href="/seguranca.html">Segurança</a></li><li><a href="/rastreamento.html">Rastreamento</a></li></ul>
+        </div><div>
+          <h3>Serviços</h3>
+          <ul><li><a href="/transfer-aeroporto.html">Transfer aeroporto</a></li><li><a href="/transporte-corporativo.html">Transporte corporativo</a></li><li><a href="/eventos.html">Eventos</a></li><li><a href="/grupos.html">Grupos</a></li></ul>
+        </div><div>
+          <h3>Empresa</h3>
+          <ul><li><a href="/sobre.html">Sobre</a></li><li><a href="/trabalhe-conosco.html">Trabalhe conosco</a></li><li><a href="/blog.html">Blog</a></li><li><a href="/faq.html">FAQ</a></li></ul>
+        </div><div>
+          <h3>Legal</h3>
+          <ul><li><a href="/termos.html">Termos de uso</a></li><li><a href="/privacidade.html">Privacidade (LGPD)</a></li><li><a href="/contato.html">Contato</a></li><li><a href="https://app.e-transporte.pro/login" target="_blank" rel="noopener noreferrer">Login do painel</a></li></ul>
+        </div>
+      </div>
+      <div class="lp-footer__bottom">
+        <span>© <span data-year></span> E-Transporte.pro</span>
+        <span>Plataforma para transporte executivo · Brasil</span>
+      </div>
+    </div>
+  </footer>
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
+  <script src="/js/seo.js" defer></script>
+  <script src="/js/landing.js" defer></script>
 </body>
 </html>

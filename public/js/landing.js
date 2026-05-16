@@ -4,18 +4,25 @@
   var sticky = document.querySelector("[data-lp-sticky-cta]");
   var hero = document.querySelector("[data-lp-hero]");
 
+  function setStickyVisible(visible) {
+    if (!sticky) return;
+    sticky.classList.toggle("is-visible", visible);
+    if (visible) sticky.removeAttribute("hidden");
+    else sticky.setAttribute("hidden", "");
+  }
+
   if (sticky && hero && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
-          sticky.classList.toggle("is-visible", !entry.isIntersecting);
+          setStickyVisible(!entry.isIntersecting);
         });
       },
       { root: null, threshold: 0, rootMargin: "0px 0px -20% 0px" }
     );
     io.observe(hero);
   } else if (sticky) {
-    sticky.classList.add("is-visible");
+    setStickyVisible(true);
   }
 
   var reveals = document.querySelectorAll(".lp-reveal");

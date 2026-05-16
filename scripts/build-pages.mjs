@@ -6,6 +6,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, NAV, FOOTER_COLS, LOCAL_PAGES } from "./site-config.mjs";
+import { registerLegacyPages, buildBlogFiles } from "./legacy-and-blog.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -254,7 +255,7 @@ function pageShell(page, bodyHtml) {
   return `${head(page)}
 <body class="lp-page page-inner" data-page="${esc(page.slug || "")}">
   ${header(page.activeNav)}
-  <div class="lp-sticky-cta" data-lp-sticky-cta aria-hidden="true">
+  <div class="lp-sticky-cta" data-lp-sticky-cta hidden>
     <div class="lp-sticky-cta__inner">
       <p class="lp-sticky-cta__text"><strong>Acesso gratuito</strong> Plataforma nacional</p>
       <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
@@ -600,6 +601,8 @@ for (const loc of LOCAL_PAGES) {
   });
 }
 
+registerLegacyPages(addPage, { hero, sectionBlock });
+
 // Generate files
 for (const page of PAGES) {
   const html = pageShell(page, `<article class="container page-article">${page.body}</article>`);
@@ -664,3 +667,13 @@ Sitemap: ${SITE.baseUrl}/sitemap.xml
 `;
 writeFileSync(resolve(ROOT, "public/robots.txt"), robots, "utf8");
 console.log("built public/robots.txt");
+
+buildBlogFiles({
+  ROOT,
+  writeFileSync,
+  resolve,
+  head,
+  header,
+  footer,
+  buildSchemas,
+});
