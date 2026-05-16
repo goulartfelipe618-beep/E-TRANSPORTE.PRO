@@ -9,26 +9,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/institucional.css" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/blog.css" />
 </head>
-<body>
-  <header class="topbar">
+<body class="lp-page blog-page">
+    <header class="topbar">
     <div class="container topbar__inner">
       <a class="brand" href="/">E-Transporte<span>.pro</span></a>
       <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
       <nav class="menu" data-nav>
         <a href="/">Início</a>
-        <a href="/funcionalidades.html">Funcionalidades</a>
-        <a href="/modulos.html">Módulos</a>
-        <a href="/seguranca.html">Segurança</a>
         <a href="/blog.html" aria-current="page">Blog</a>
         <a href="/contato.html">Contato</a>
-        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">SOLICITAR ACESSO</button>
+        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">Solicitar Acesso Gratuito</button>
       </nav>
     </div>
   </header>
-  <main class="section">
-    <article class="container card">
-      <p class="meta">Publicado no Blog Institucional • Colaboração</p>
+  <main class="blog-article-wrap">
+    <article class="container blog-article">
+      <a class="blog-article__back" href="/blog.html">Voltar ao editorial</a>
+      <p class="blog-article__meta">Publicado no Blog Institucional • Colaboração</p>
       <h1>Network Nacional e Comunidade: colaboração sem perder governança</h1>
       <p class="lead">Crescer em rede exige equilíbrio: abertura para colaboração e controles claros para preservar qualidade de operação e reputação.</p>
 
@@ -47,9 +47,21 @@
 
       <h2>Benefício estratégico</h2>
       <p>Com governança, o ambiente colaborativo deixa de ser apenas “social” e vira um ativo de maturidade operacional para toda a rede de parceiros.</p>
+    
+      <div class="blog-article__cta">
+        <p>Quer aplicar isso na sua operação de transporte executivo?</p>
+        <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+      </div>
     </article>
   </main>
-  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+    <footer class="lp-footer">
+    <div class="container">
+      <div class="lp-footer__bottom" style="border-top:none;padding-top:0;">
+        <span>© <span data-year></span> E-Transporte.pro</span>
+        <a href="/blog.html">Editorial</a>
+      </div>
+    </div>
+  </footer>
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
 </body>

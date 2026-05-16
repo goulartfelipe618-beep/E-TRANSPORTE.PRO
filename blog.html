@@ -3,64 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Blog Institucional | E-Transporte.pro</title>
-  <meta name="description" content="Blog institucional da E-Transporte.pro com posts sobre operação de transporte executivo, automações, marketing, compliance e arquitetura funcional." />
+  <title>Blog | E-Transporte.pro — Transporte executivo, operação e tecnologia</title>
+  <meta name="description" content="Editorial E-Transporte.pro: operação de transfer, automações, Network Nacional e gestão de transporte executivo para gestores e operadores." />
+  <link rel="canonical" href="https://www.e-transporte.pro/blog.html" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/institucional.css" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/blog.css" />
 </head>
-<body>
+<body class="lp-page blog-page">
   <header class="topbar">
     <div class="container topbar__inner">
       <a class="brand" href="/">E-Transporte<span>.pro</span></a>
       <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
       <nav class="menu" data-nav>
         <a href="/">Início</a>
-        <a href="/funcionalidades.html">Funcionalidades</a>
-        <a href="/modulos.html">Módulos</a>
-        <a href="/seguranca.html">Segurança</a>
+        <a href="/#catalogo">Catálogo</a>
         <a href="/blog.html" aria-current="page">Blog</a>
         <a href="/contato.html">Contato</a>
-        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">SOLICITAR ACESSO</button>
+        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">Solicitar Acesso Gratuito</button>
       </nav>
     </div>
   </header>
 
-  <main class="section">
-    <div class="container">
-      <header class="section__head">
-        <span class="eyebrow">Conteúdo técnico e estratégico</span>
-        <h1>Blog institucional e editorial da plataforma</h1>
-        <p class="lead">Publicações para gestores de operação, times comerciais, liderança técnica e parceiros de implantação.</p>
-      </header>
+  <main>
+    <header class="blog-masthead">
+      <div class="container blog-masthead__inner">
+        <div>
+          <span class="blog-masthead__label">Editorial E-Transporte.pro</span>
+          <h1>Inteligência para quem opera transporte executivo</h1>
+          <p class="blog-masthead__lead">Análises de processo, arquitetura funcional e crescimento comercial — escritas para gestores que precisam escalar sem perder o padrão executivo.</p>
+        </div>
+        <div class="blog-masthead__issue" aria-hidden="true">
+          <span>Edição</span>
+          <strong>2026</strong>
+        </div>
+      </div>
+    </header>
 
-      <section class="post-list">
-        <article class="post-card">
-          <p class="meta">Operação • 8 min de leitura</p>
-          <h2>Fluxo Transfer ponta a ponta: da solicitação ao PDF e comunicação</h2>
-          <p>Como estruturar um fluxo operacional limpo com rastreabilidade, menos retrabalho e melhor experiência para cliente e equipe.</p>
-          <a class="btn btn--primary" href="/blog-operacao-transfer.html">Ler artigo</a>
-        </article>
+    <div class="blog-layout">
+      <div class="container">
+        <a class="blog-featured" href="/blog-operacao-transfer.html">
+          <div class="blog-featured__visual">
+            <span class="blog-featured__category">Operação</span>
+          </div>
+          <div class="blog-featured__body">
+            <p class="blog-featured__meta">8 min de leitura · Transfer e reservas</p>
+            <h2>Fluxo Transfer ponta a ponta: da solicitação ao PDF e comunicação</h2>
+            <p>Como estruturar um pipeline operacional com rastreabilidade, menos retrabalho e experiência premium para cliente corporativo e equipe interna.</p>
+            <span class="blog-featured__cta">Ler artigo em destaque</span>
+          </div>
+        </a>
 
-        <article class="post-card">
-          <p class="meta">Colaboração • 7 min de leitura</p>
-          <h2>Network Nacional e Comunidade: colaboração com governança</h2>
-          <p>Boas práticas para escalar relacionamento com parceiros mantendo regras claras de participação e visibilidade.</p>
-          <a class="btn btn--primary" href="/blog-network-comunidade.html">Ler artigo</a>
-        </article>
+        <div class="blog-grid">
+          <a class="blog-card blog-card--wide" href="/blog-automacoes-webhooks.html">
+            <div class="blog-card__stripe" aria-hidden="true"></div>
+            <div class="blog-card__visual" aria-hidden="true"></div>
+            <div class="blog-card__body">
+              <span class="blog-card__index">02 — Tecnologia</span>
+              <p class="blog-card__meta">9 min · Automação para transporte</p>
+              <h2>Automações e webhooks: integração segura entre marketing e operação</h2>
+              <p>Mapeamento de payloads, validação de cenários e redução de risco em integrações entre formulários, campanhas e o painel.</p>
+              <span class="blog-card__link">Continuar leitura</span>
+            </div>
+          </a>
 
-        <article class="post-card">
-          <p class="meta">Tecnologia • 9 min de leitura</p>
-          <h2>Automações e webhooks: integração segura entre marketing e operação</h2>
-          <p>Um guia institucional para mapear payloads, validar cenários e reduzir risco de erros em integrações.</p>
-          <a class="btn btn--primary" href="/blog-automacoes-webhooks.html">Ler artigo</a>
-        </article>
-      </section>
+          <a class="blog-card" href="/blog-network-comunidade.html">
+            <div class="blog-card__stripe" aria-hidden="true"></div>
+            <div class="blog-card__visual" aria-hidden="true"></div>
+            <div class="blog-card__body">
+              <span class="blog-card__index">03 — Rede</span>
+              <p class="blog-card__meta">7 min · Network Nacional</p>
+              <h2>Network e Comunidade: colaboração com governança</h2>
+              <p>Escalar parcerias entre operadores com regras claras de participação e visibilidade profissional.</p>
+              <span class="blog-card__link">Continuar leitura</span>
+            </div>
+          </a>
+        </div>
+
+        <aside class="blog-newsletter">
+          <div>
+            <h2>Profissionalize sua operação executiva</h2>
+            <p>Acesso gratuito à plataforma nacional de gestão — reservas, motoristas, geolocalização e automações em um único painel.</p>
+          </div>
+          <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+        </aside>
+      </div>
     </div>
   </main>
 
-  <footer class="footer"><div class="container"><p>© <span data-year></span> E-Transporte.pro</p></div></footer>
+  <footer class="lp-footer">
+    <div class="container">
+      <div class="lp-footer__bottom" style="border-top:none;padding-top:0;">
+        <span>© <span data-year></span> E-Transporte.pro</span>
+        <a href="/">Voltar ao início</a>
+      </div>
+    </div>
+  </footer>
+
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
 </body>
