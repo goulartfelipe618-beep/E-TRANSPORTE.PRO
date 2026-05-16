@@ -54,6 +54,7 @@
     }
 
     var N8N_LEAD_WEBHOOK =
+      (window.ETransporteLeadPayload && window.ETransporteLeadPayload.N8N_LEAD_WEBHOOK) ||
       "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
 
     var IBGE_ESTADOS = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";

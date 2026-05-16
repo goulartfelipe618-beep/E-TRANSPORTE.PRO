@@ -24,6 +24,10 @@
 
   var LEAD_SOURCE_DEFAULT = "Landing Page";
 
+  /** Webhook n8n — produção (formulário Solicitar Demonstração) */
+  var N8N_LEAD_WEBHOOK =
+    "https://n8n.e-transporte.pro/webhook/eb54332d-b6ee-4922-99af-c4266c73b44c";
+
   function buildLeadPayload(input) {
     var data = input || {};
     return {
@@ -47,6 +51,7 @@
   global.ETransporteLeadPayload = {
     VERSION: "1",
     LEAD_SOURCE_DEFAULT: LEAD_SOURCE_DEFAULT,
+    N8N_LEAD_WEBHOOK: N8N_LEAD_WEBHOOK,
     build: buildLeadPayload,
   };
 })(typeof window !== "undefined" ? window : globalThis);
