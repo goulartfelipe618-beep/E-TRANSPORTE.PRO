@@ -260,6 +260,7 @@ function pageShell(page, bodyHtml) {
   ${footer()}
   <script type="application/ld+json">${buildSchemas(page)}</script>
   <script src="/js/site.js" defer></script>
+  <script src="/js/lead-payload.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/seo.js" defer></script>
   <script src="/js/landing.js" defer></script>

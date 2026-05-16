@@ -317,8 +317,6 @@
         var fonteEl = root.querySelector('input[name="fonte"]:checked');
         var fonte = fonteEl ? fonteEl.value : "";
         var fonteOutro = (fonteOutroInput && fonteOutroInput.value.trim()) || "";
-        var origemEl = document.getElementById("lead-origem");
-        var origem = (origemEl && origemEl.value) || "Landing Page";
         var origemPagina = (inputOrigemPagina && inputOrigemPagina.value) || resolveOrigemPagina();
 
         if (!nome) {
@@ -349,31 +347,49 @@
         var estadoOptSel = selEstado && selEstado.options[selEstado.selectedIndex];
         var estadoSigla = estadoOptSel ? estadoOptSel.getAttribute("data-sigla") || "" : "";
 
-        var payload = {
-          nome: nome,
-          telefone: telMasked,
-          telefone_limpo: telDigits,
-          whatsapp: telMasked,
-          estado_id: estadoId,
-          estado_texto: estadoLabel,
-          estado_sigla: estadoSigla,
-          cidade_id: cidadeId,
-          cidade_nome: cidadeNome,
-          empresa: empresa,
-          fonte: fonte,
-          fonte_label: fonteLabel,
-          fonte_outro: fonte === "outro" ? fonteOutro : "",
-          mensagem: msg,
-          origem: origem,
-          origem_pagina: origemPagina,
-          lead_source: origem,
-          origem_url: window.location.href,
-          origem_host: window.location.hostname || "",
-          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "",
-          idioma_navegador: typeof navigator !== "undefined" ? navigator.language || "" : "",
-          enviado_em_iso: new Date().toISOString(),
-          ambiente_n8n: "producao",
-        };
+        var mensagemFinal = msg;
+        if (fonteLabel) {
+          mensagemFinal = (mensagemFinal ? mensagemFinal + "\n\n" : "") + "Como nos encontrou: " + fonteLabel;
+        }
+
+        var buildPayload =
+          window.ETransporteLeadPayload && window.ETransporteLeadPayload.build
+            ? window.ETransporteLeadPayload.build
+            : null;
+
+        var payload = buildPayload
+          ? buildPayload({
+              nome: nome,
+              whatsapp: telMasked,
+              telefone_limpo: telDigits,
+              estado: estadoSigla,
+              cidade: cidadeId,
+              cidade_nome: cidadeNome,
+              empresa: empresa,
+              mensagem: mensagemFinal,
+              lead_source: "Landing Page",
+              origem: fonteLabel,
+              origem_pagina: origemPagina,
+              origem_url: window.location.href,
+              origem_host: window.location.hostname || "",
+              created_at: new Date().toISOString(),
+            })
+          : {
+              nome: nome,
+              whatsapp: telMasked,
+              telefone_limpo: telDigits,
+              estado: estadoSigla,
+              cidade: cidadeId,
+              cidade_nome: cidadeNome,
+              empresa: empresa,
+              mensagem: mensagemFinal,
+              lead_source: "Landing Page",
+              origem: fonteLabel,
+              origem_pagina: origemPagina,
+              origem_url: window.location.href,
+              origem_host: window.location.hostname || "",
+              created_at: new Date().toISOString(),
+            };
 
         if (submitBtn) {
           submitBtn.disabled = true;
