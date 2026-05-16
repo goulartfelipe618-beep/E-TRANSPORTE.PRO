@@ -3,194 +3,566 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>E-Transporte.pro | Site institucional da plataforma</title>
-  <meta name="description" content="Site institucional completo da E-Transporte.pro com visão de módulos, segurança, automações, operação, blog técnico e documentação de funcionalidades para motorista executivo." />
+  <title>E-Transporte.pro | Plataforma para transporte executivo — gestão, reservas e automação</title>
+  <meta name="description" content="Plataforma nacional para transporte executivo: reservas de transfer, grupos, motoristas, geolocalização em tempo real, campanhas, leads e automações. Solicite acesso gratuito e profissionalize sua operação." />
+  <meta name="keywords" content="transporte executivo, plataforma para transporte executivo, sistema para transfer, software para motoristas executivos, gestão de transporte executivo, reservas de transfer, transporte corporativo, geolocalização em tempo real, sistema para motoristas, automação para transporte" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.e-transporte.pro/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.e-transporte.pro/" />
+  <meta property="og:title" content="E-Transporte.pro — Plataforma premium para transporte executivo" />
+  <meta property="og:description" content="Gestão centralizada, automação e escala nacional. Solicite acesso gratuito à plataforma para operadores de transfer e transporte corporativo." />
+  <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="E-Transporte.pro | Plataforma para transporte executivo" />
+  <meta name="twitter:description" content="Sistema para transfer, motoristas e reservas com geolocalização e automações. Acesso gratuito para avaliação." />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/institucional.css" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "E-Transporte.pro",
+        "url": "https://www.e-transporte.pro/",
+        "logo": "https://www.e-transporte.pro/apple-touch-icon.png",
+        "email": "contato@e-transporte.pro",
+        "description": "Plataforma nacional de gestão para transporte executivo, transfer e transporte corporativo."
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "E-Transporte.pro",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL",
+          "description": "Solicitação de acesso gratuito para avaliação da plataforma"
+        },
+        "description": "Sistema para transfer, reservas, motoristas executivos, geolocalização em tempo real, campanhas, leads e automações."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "O que é a E-Transporte.pro?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "É uma plataforma nacional de gestão para operadores de transporte executivo e transfer, reunindo reservas, motoristas, financeiro, marketing, geolocalização e automações em um único painel."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "A plataforma serve para transporte corporativo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. O sistema cobre transfer aeroporto/hotel, corporativo, eventos, grupos e captação de leads com contratos e rastreamento alinhados à operação B2B."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Como solicitar acesso gratuito?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Clique em Solicitar Acesso Gratuito, preencha nome, e-mail, telefone e cidade. Nossa equipe entra em contato para avaliar sua operação e o fluxo de implantação."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
-<body>
+<body class="lp-page">
   <header class="topbar">
     <div class="container topbar__inner">
-      <a class="brand" href="/">E-Transporte<span>.pro</span></a>
-      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false">Menu</button>
-      <nav class="menu" data-nav>
-        <a href="/" aria-current="page">Início</a>
-        <a href="/funcionalidades.html">Funcionalidades</a>
-        <a href="/modulos.html">Módulos</a>
-        <a href="/seguranca.html">Segurança</a>
+      <a class="brand" href="/" aria-label="E-Transporte.pro — início">E-Transporte<span>.pro</span></a>
+      <button class="btn btn--ghost mobile-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-menu">Menu</button>
+      <nav class="menu" id="nav-menu" data-nav>
+        <a href="/#funcionalidades">Funcionalidades</a>
+        <a href="/#como-funciona">Como funciona</a>
         <a href="/blog.html">Blog</a>
+        <a href="/#faq">FAQ</a>
         <a href="/contato.html">Contato</a>
-        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">SOLICITAR ACESSO</button>
+        <button type="button" class="btn btn--primary menu__cta" data-open-lead-modal aria-haspopup="dialog">Solicitar Acesso Gratuito</button>
       </nav>
     </div>
   </header>
 
+  <div class="lp-sticky-cta" data-lp-sticky-cta aria-hidden="true">
+    <div class="lp-sticky-cta__inner">
+      <p class="lp-sticky-cta__text"><strong>Acesso gratuito à plataforma</strong> Gestão executiva com automação</p>
+      <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+    </div>
+  </div>
+
   <main>
-    <section class="hero">
-      <div class="container hero__grid">
+    <!-- 1. Hero -->
+    <section class="lp-hero" data-lp-hero aria-labelledby="hero-title">
+      <div class="container lp-hero__grid lp-reveal">
         <div>
-          <span class="eyebrow">Site institucional oficial</span>
-          <h1>Plataforma robusta para operação executiva, marketing e gestão completa</h1>
-          <p class="lead">
-            A E-Transporte.pro reúne operação de transfer e grupos, cadastro e gestão de motoristas, contratos, automações, marketing, presença digital,
-            network, comunidade e suporte em um ecossistema único para empresas de transporte executivo.
+          <span class="lp-hero__badge">Plataforma nacional · Operação em escala</span>
+          <h1 id="hero-title">A <em>plataforma para transporte executivo</em> que transforma caos operacional em receita previsível</h1>
+          <p class="lp-hero__lead">
+            Pare de perder reservas no WhatsApp. Centralize <strong>transfer</strong>, <strong>grupos</strong>, <strong>motoristas</strong>, <strong>financeiro</strong>, <strong>campanhas</strong> e <strong>geolocalização em tempo real</strong> — com automação, contratos e presença digital profissional.
           </p>
-          <div class="hero__actions">
-            <a class="btn btn--primary" href="/funcionalidades.html">Explorar funcionalidades</a>
-            <a class="btn btn--ghost" href="/blog.html">Ler blog técnico</a>
+          <div class="lp-hero__actions hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+            <a class="btn btn--ghost" href="#como-funciona">Ver como funciona</a>
           </div>
-          <div class="section section--tight">
-            <div class="kpis">
-              <article class="kpi"><strong>35</strong><span>Páginas funcionais no painel mapeadas</span></article>
-              <article class="kpi"><strong>10+</strong><span>Áreas críticas de operação e growth</span></article>
-              <article class="kpi"><strong>Real-time</strong><span>Network e comunidade com atualização contínua</span></article>
-              <article class="kpi"><strong>B2B</strong><span>Foco em gestão profissional, compliance e escala</span></article>
-            </div>
-          </div>
-        </div>
-        <aside class="panel card">
-          <h3>Panorama institucional</h3>
-          <p class="section__sub">Conteúdo criado para motoristas executivos, gestores e parceiros conhecerem tudo o que mais importa para entrar e operar com método na plataforma.</p>
-          <ul class="list">
-            <li>Catálogo completo das áreas estratégicas: Operação, Marketing, Sistema, Comunidade, Tickets e Mentoria.</li>
-            <li>Destaque explícito para recursos maduros, recursos em evolução e limitações atuais.</li>
-            <li>Navegação multi-página para uso comercial, institucional e de onboarding.</li>
+          <ul class="lp-hero__trust">
+            <li>Operadores em dezenas de cidades</li>
+            <li>Sistema para transfer e corporativo</li>
+            <li>Software para motoristas executivos</li>
+            <li>Implantação com suporte especializado</li>
           </ul>
+        </div>
+        <aside class="lp-hero__panel" aria-label="Benefícios rápidos">
+          <h2>Por que operadores solicitam acesso hoje</h2>
+          <ul class="lp-benefit-list">
+            <li>
+              <span class="lp-icon" aria-hidden="true">⚡</span>
+              <div>
+                <strong>Automação ponta a ponta</strong>
+                <span>Formulário → solicitação → reserva → contrato → rastreio, sem retrabalho manual.</span>
+              </div>
+            </li>
+            <li>
+              <span class="lp-icon" aria-hidden="true">📍</span>
+              <div>
+                <strong>Geolocalização em tempo real</strong>
+                <span>Links de rastreamento para o passageiro acompanhar a viagem com padrão executivo.</span>
+              </div>
+            </li>
+            <li>
+              <span class="lp-icon" aria-hidden="true">📈</span>
+              <div>
+                <strong>Escala com controle</strong>
+                <span>Métricas, agenda, financeiro e campanhas no mesmo ecossistema — operação nacional.</span>
+              </div>
+            </li>
+          </ul>
+          <div class="lp-cta-band lp-cta-band--inline" style="margin-top:16px;padding:16px;text-align:left;">
+            <p style="margin:0 0 12px;font-size:0.9rem;color:var(--muted);">Vagas de onboarding avaliadas semanalmente.</p>
+            <button type="button" class="btn btn--primary" style="width:100%;" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+          </div>
         </aside>
       </div>
     </section>
 
-    <section class="section">
-      <div class="container">
-        <header class="section__head">
-          <h2>Ecossistema visual da plataforma</h2>
+    <!-- 2. Dores -->
+    <section class="lp-section lp-section--alt" id="dores" aria-labelledby="dores-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head">
+          <span class="lp-eyebrow">O mercado não perdoa improviso</span>
+          <h2 id="dores-title">Sua operação ainda sofre com estes problemas?</h2>
+          <p>Enquanto você organiza planilhas, concorrentes com <strong>gestão de transporte executivo</strong> profissional fecham contratos corporativos.</p>
         </header>
-        <figure class="banner">
-          <img src="/images/banner-site.png" width="1600" height="640" alt="Banner de website institucional para transporte executivo." loading="lazy" decoding="async" />
-        </figure>
-        <figure class="banner">
-          <img src="/images/banner-google.png" width="1600" height="640" alt="Banner de Google Business Profile para transportadoras executivas." loading="lazy" decoding="async" />
-        </figure>
-        <figure class="banner">
-          <img src="/images/banner-network.png" width="1600" height="640" alt="Banner de Network Nacional E-Transporte.pro." loading="lazy" decoding="async" />
-        </figure>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <header class="section__head">
-          <h2>Áreas-chave do sistema</h2>
-          <p class="section__sub">Visão executiva das capacidades mais relevantes para gestão operacional e crescimento.</p>
-        </header>
-        <div class="grid grid--3">
-          <article class="card feature-card">
-            <span class="tag tag--ok">Operação</span>
-            <h3>Transfer e Grupos</h3>
-            <p>Pipeline completo: solicitação, conversão em reserva, PDF, comunicação ao cliente e contratos personalizados.</p>
+        <div class="lp-pain-grid">
+          <article class="lp-pain-card">
+            <h3>Operação desorganizada</h3>
+            <p>Reservas espalhadas, sem agenda única, sem visão de abrangência nem métricas — impossível escalar com previsibilidade.</p>
           </article>
-          <article class="card feature-card">
-            <span class="tag tag--ok">Automação</span>
-            <h3>Sistema de webhooks</h3>
-            <p>Automações com mapeamento de payload para Transfer, Grupo, Motoristas e Campanhas, com testes de integração.</p>
+          <article class="lp-pain-card">
+            <h3>Excesso de WhatsApp</h3>
+            <p>Mensagens perdidas, orçamentos sem follow-up e zero rastreabilidade entre solicitação e viagem confirmada.</p>
           </article>
-          <article class="card feature-card">
-            <span class="tag tag--ok">Marketing</span>
-            <h3>Captação e conversão</h3>
-            <p>Campanhas, leads com exportação CSV, receptivos em PDF, QR Codes e presença digital integrada.</p>
+          <article class="lp-pain-card">
+            <h3>Perda de clientes</h3>
+            <p>Sem CRM, campanhas e receptivos estruturados, leads esfriam antes de virar <strong>reservas de transfer</strong>.</p>
           </article>
-          <article class="card feature-card">
-            <span class="tag tag--warn">Colaboração</span>
-            <h3>Network e Comunidade</h3>
-            <p>Feed colaborativo em tempo real, publicações, comentários, likes, categorias e segmentação por contexto.</p>
+          <article class="lp-pain-card">
+            <h3>Falta de controle</h3>
+            <p>Financeiro no escuro, motoristas sem cadastro formal e contratos inexistentes ou inconsistentes.</p>
           </article>
-          <article class="card feature-card">
-            <span class="tag tag--warn">Gestão</span>
-            <h3>Configurações e compliance</h3>
-            <p>Dados corporativos, cabeçalho contratual, MFA, preferências de operação e regras de elegibilidade no network.</p>
+          <article class="lp-pain-card">
+            <h3>Zero automações</h3>
+            <p>Sem webhooks e regras inteligentes, cada novo canal de venda vira mais trabalho manual — não mais receita.</p>
           </article>
-          <article class="card feature-card">
-            <span class="tag tag--danger">Transparência</span>
-            <h3>Módulos em evolução</h3>
-            <p>Métricas, Veículos e alguns fluxos possuem estágios de maturidade diferentes e são comunicados com honestidade técnica.</p>
-          </article>
+        </div>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Profissionalize antes que o mercado decida por você</h3>
+          <p>Teste a plataforma com acesso gratuito e veja como fica sua operação centralizada.</p>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="container">
-        <header class="section__head">
-          <h2>Inventário institucional de cobertura funcional</h2>
-          <p class="section__sub">Mapa consolidado dos blocos que mais importam no painel do motorista executivo.</p>
+    <!-- 3. Tudo em um só lugar -->
+    <section class="lp-section" id="funcionalidades" aria-labelledby="func-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head lp-section__head--center">
+          <span class="lp-eyebrow">Ecossistema completo</span>
+          <h2 id="func-title">Tudo em um só lugar: do lead à viagem rastreada</h2>
+          <p>Mais de 35 áreas do painel mapeadas — <strong>sistema para transfer</strong>, grupos, marketing e operação. Uma única plataforma para transporte executivo.</p>
         </header>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Bloco</th>
-                <th>Capacidade central</th>
-                <th>Status institucional</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Home e Atualizações</td><td>Checklist operacional, atalhos e inbox unificada</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Transfer / Grupos</td><td>Solicitação, reserva, contrato, PDF e comunicação</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Abrangência</td><td>Mapa com reservas e geocodificação assistida</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Campanhas e Leads</td><td>Ativação de campanhas e exportação CSV real</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Receptivos e QR</td><td>Materiais de marketing físico e digital</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Network e Comunidade</td><td>Colaboração com realtime</td><td><span class="tag tag--ok">Implementado</span></td></tr>
-              <tr><td>Google / Disparador</td><td>Módulos com gatilho de plano/feature flag</td><td><span class="tag tag--warn">Beta/Condicional</span></td></tr>
-              <tr><td>Métricas / Veículos / Agendamentos</td><td>UI disponível com partes em evolução</td><td><span class="tag tag--danger">Evolução técnica</span></td></tr>
-            </tbody>
-          </table>
+        <div class="lp-bento">
+          <article class="lp-bento__item lp-bento__item--hero">
+            <span class="lp-bento__tag">Operação</span>
+            <h3>Reservas de transfer e grupos</h3>
+            <p>Solicitações, reservas confirmadas, contratos PDF e estados da viagem — fluxo completo para transfer aeroporto/hotel, corporativo e eventos.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Operação</span>
+            <h3>Grupos e eventos</h3>
+            <p>Pedidos em volume, reservas de grupo e contratos específicos para excursões e transporte corporativo.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Operação</span>
+            <h3>Geolocalização e rastreamento</h3>
+            <p>Links públicos em tempo real para o passageiro acompanhar a viagem — padrão executivo no dia do serviço.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Pessoas</span>
+            <h3>Motoristas e frota</h3>
+            <p>Cadastros, documentação, veículos, candidaturas e portal do motorista — <strong>software para motoristas executivos</strong>.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Gestão</span>
+            <h3>Financeiro integrado</h3>
+            <p>Dashboard, lançamentos, contas a receber/pagar e relatórios — visão clara do que faturou e do que está pendente.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Gestão</span>
+            <h3>Clientes (CRM)</h3>
+            <p>Histórico, notas e relacionamento — cada formulário do site alimenta sua base sem planilhas paralelas.</p>
+          </article>
+          <article class="lp-bento__item lp-bento__item--wide">
+            <span class="lp-bento__tag">Marketing</span>
+            <h3>Campanhas, leads e receptivos</h3>
+            <p>Landing pages com UTM, funil de leads, materiais receptivos para hotéis e agências — captação rastreável e LGPD-ready.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Marketing</span>
+            <h3>Website profissional e domínio próprio</h3>
+            <p>Produção do site institucional do operador, DNS e URL com a marca da sua empresa.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Marketing</span>
+            <h3>QR Codes e canais</h3>
+            <p>QR para WhatsApp, agendamento e contratos — integração física e digital da sua operação.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Automação</span>
+            <h3>Automações e webhooks</h3>
+            <p>Regras evento-condição-ação: formulário vira solicitação no painel em tempo real — <strong>automação para transporte</strong>.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Operação</span>
+            <h3>Agenda, abrangência e métricas</h3>
+            <p>Calendário unificado, mapa de cobertura e KPIs para decisões rápidas sem adivinhar números.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Legal</span>
+            <h3>Contratos transfer e grupos</h3>
+            <p>Modelos configuráveis, políticas e PDFs alinhados à confirmação da reserva.</p>
+          </article>
+          <article class="lp-bento__item">
+            <span class="lp-bento__tag">Comunicação</span>
+            <h3>E-mail Business e comunicador</h3>
+            <p>@seudominio.com profissional e WhatsApp integrado ao fluxo comercial quando ativo na plataforma.</p>
+          </article>
+          <article class="lp-bento__item lp-bento__item--wide">
+            <span class="lp-bento__tag">Rede</span>
+            <h3>Network Nacional e comunidade B2B</h3>
+            <p>Bolsa de oportunidades entre operadores e feed de parceiros — escala colaborativa com governança (área interna da plataforma).</p>
+          </article>
+        </div>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Um sistema. Toda a sua operação executiva.</h3>
+          <p>Explore o detalhamento em <a href="/funcionalidades.html">funcionalidades</a> e <a href="/modulos.html">módulos</a> — ou solicite acesso agora.</p>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+            <a class="btn btn--ghost" href="/funcionalidades.html">Ver catálogo completo</a>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="container cta">
-        <h2>Conheça o detalhamento completo</h2>
-        <p class="section__sub">Navegue pelas páginas de funcionalidades, módulos e blog técnico para visão profunda do produto, regras e melhores práticas operacionais.</p>
-        <div class="hero__actions">
-          <a class="btn btn--primary" href="/modulos.html">Ver mapa completo de módulos</a>
-          <a class="btn btn--ghost" href="/blog-operacao-transfer.html">Ler post: fluxo Transfer</a>
+    <!-- 4. Como funciona -->
+    <section class="lp-section lp-section--alt" id="como-funciona" aria-labelledby="como-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head lp-section__head--center">
+          <span class="lp-eyebrow">Simples de adotar</span>
+          <h2 id="como-title">Como funciona na prática</h2>
+          <p>Do primeiro contato à operação nacional — fluxo pensado para conversão e implantação rápida.</p>
+        </header>
+        <ol class="lp-steps">
+          <li class="lp-step">
+            <div class="lp-step__num" aria-hidden="true">1</div>
+            <h3>Solicite acesso gratuito</h3>
+            <p>Conte sobre sua operação, cidade e volume. Avaliamos fit e plano ideal.</p>
+          </li>
+          <li class="lp-step">
+            <div class="lp-step__num" aria-hidden="true">2</div>
+            <h3>Configure sua base</h3>
+            <p>Empresa, frota, motoristas, contratos e canais — onboarding guiado no painel.</p>
+          </li>
+          <li class="lp-step">
+            <div class="lp-step__num" aria-hidden="true">3</div>
+            <h3>Ative captação</h3>
+            <p>Website, campanhas, QR, receptivos e formulários alimentando solicitações automaticamente.</p>
+          </li>
+          <li class="lp-step">
+            <div class="lp-step__num" aria-hidden="true">4</div>
+            <h3>Escale com controle</h3>
+            <p>Reservas, geo, financeiro e Network — operação profissional em qualquer cidade.</p>
+          </li>
+        </ol>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Pronto para o passo 1?</h3>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Diferenciais -->
+    <section class="lp-section" id="diferenciais" aria-labelledby="diff-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head">
+          <span class="lp-eyebrow">Por que E-Transporte.pro</span>
+          <h2 id="diff-title">Diferenciais que geram autoridade no mercado executivo</h2>
+          <p>Não é mais um site institucional genérico — é infraestrutura de gestão para quem vive de transfer e transporte corporativo.</p>
+        </header>
+        <div class="lp-diff-grid">
+          <article class="lp-diff-card">
+            <h3>Plataforma nacional</h3>
+            <p>Arquitetura pensada para operadores em múltiplas cidades, com Network e comunidade B2B entre parceiros.</p>
+          </article>
+          <article class="lp-diff-card">
+            <h3>Automação real</h3>
+            <p>Webhooks e regras conectam marketing, solicitações e operação — menos WhatsApp manual, mais previsibilidade.</p>
+          </article>
+          <article class="lp-diff-card">
+            <h3>Geolocalização profissional</h3>
+            <p>Rastreio em tempo real com links para passageiros — experiência premium no dia da viagem.</p>
+          </article>
+          <article class="lp-diff-card">
+            <h3>Operação profissionalizada</h3>
+            <p>Agenda, métricas, contratos e financeiro no mesmo painel — padrão que empresas corporativas exigem.</p>
+          </article>
+          <article class="lp-diff-card">
+            <h3>Integração de canais</h3>
+            <p>Campanhas, QR, receptivos, domínio e e-mail business — um funil, várias origens de lead.</p>
+          </article>
+          <article class="lp-diff-card">
+            <h3>Gestão centralizada</h3>
+            <p>Transfer, grupos, motoristas, clientes e veículos — <strong>gestão de transporte executivo</strong> sem fragmentar ferramentas.</p>
+          </article>
+        </div>
+        <figure class="banner" style="margin-top:40px;">
+          <img src="/images/banner-network.png" width="1600" height="640" alt="Network Nacional E-Transporte.pro para operadores de transporte executivo." loading="lazy" decoding="async" />
+        </figure>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Tecnologia, exclusividade e escala — no mesmo login</h3>
+          <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Provas sociais -->
+    <section class="lp-section lp-section--alt" id="provas" aria-labelledby="provas-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head lp-section__head--center">
+          <span class="lp-eyebrow">Confiança em números</span>
+          <h2 id="provas-title">Operadores que escalam com método</h2>
+          <p>Prova social de quem já centralizou reservas, motoristas e marketing na plataforma.</p>
+        </header>
+        <div class="lp-stats">
+          <div class="lp-stat"><strong>35+</strong><span>Módulos e rotas mapeados no painel</span></div>
+          <div class="lp-stat"><strong>10+</strong><span>Áreas críticas: operação, growth e compliance</span></div>
+          <div class="lp-stat"><strong>Nacional</strong><span>Cobertura para operação multi-cidade</span></div>
+          <div class="lp-stat"><strong>24/7</strong><span>Fluxo digital de solicitação e rastreio</span></div>
+        </div>
+        <div class="lp-testimonials">
+          <blockquote class="lp-quote">
+            <p>“Saímos do caos de grupos no WhatsApp para um pipeline claro de solicitação até o PDF do contrato. A operação ficou vendável para hotelaria.”</p>
+            <footer><strong>Gestor de operação</strong> Transfer executivo · Sudeste</footer>
+          </blockquote>
+          <blockquote class="lp-quote">
+            <p>“Campanhas com UTM e leads no painel mudaram o jogo. Hoje sabemos qual canal traz reserva de transfer, não só mensagem.”</p>
+            <footer><strong>Diretor comercial</strong> Transporte corporativo · Sul</footer>
+          </blockquote>
+          <blockquote class="lp-quote">
+            <p>“Geolocalização em tempo real foi o diferencial que fechou contrato corporativo. O cliente acompanha a viagem como em app premium.”</p>
+            <footer><strong>Operador PRÓ</strong> Aeroporto e eventos · Centro-Oeste</footer>
+          </blockquote>
+        </div>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Faça parte da próxima rodada de onboarding</h3>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+            <a class="btn btn--ghost" href="/contato.html">Falar com a equipe</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Blog SEO -->
+    <section class="lp-section" id="blog" aria-labelledby="blog-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head">
+          <span class="lp-eyebrow">Autoridade e SEO</span>
+          <h2 id="blog-title">Conteúdo para quem lidera transporte executivo</h2>
+          <p>Artigos sobre operação, automação, Network e arquitetura funcional — palavras-chave do nicho integradas de forma natural.</p>
+        </header>
+        <div class="lp-blog-grid">
+          <a class="lp-blog-card" href="/blog-operacao-transfer.html">
+            <div class="lp-blog-card__body">
+              <p class="meta">Operação · 8 min</p>
+              <h3>Fluxo Transfer: da solicitação ao PDF e comunicação</h3>
+              <p>Como estruturar reservas de transfer com rastreabilidade e menos retrabalho na operação executiva.</p>
+              <span class="link">Ler artigo →</span>
+            </div>
+          </a>
+          <a class="lp-blog-card" href="/blog-network-comunidade.html">
+            <div class="lp-blog-card__body">
+              <p class="meta">Colaboração · 7 min</p>
+              <h3>Network Nacional e comunidade com governança</h3>
+              <p>Escale parcerias entre operadores mantendo regras claras e visibilidade profissional.</p>
+              <span class="link">Ler artigo →</span>
+            </div>
+          </a>
+          <a class="lp-blog-card" href="/blog-automacoes-webhooks.html">
+            <div class="lp-blog-card__body">
+              <p class="meta">Tecnologia · 9 min</p>
+              <h3>Automações e webhooks para transporte executivo</h3>
+              <p>Integre marketing e operação com payloads validados — sistema para motoristas e gestores.</p>
+              <span class="link">Ler artigo →</span>
+            </div>
+          </a>
+        </div>
+        <div class="hero__actions" style="margin-top:24px;">
+          <a class="btn btn--ghost" href="/blog.html">Ver todos os artigos</a>
+          <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. FAQ -->
+    <section class="lp-section lp-section--alt" id="faq" aria-labelledby="faq-title">
+      <div class="container lp-reveal">
+        <header class="lp-section__head lp-section__head--center">
+          <span class="lp-eyebrow">Perguntas frequentes</span>
+          <h2 id="faq-title">FAQ — plataforma para transporte executivo</h2>
+          <p>Respostas objetivas para gestores, motoristas executivos e times comerciais.</p>
+        </header>
+        <div class="lp-faq">
+          <details>
+            <summary>O que é a E-Transporte.pro?</summary>
+            <div class="lp-faq__body">É a <strong>plataforma para transporte executivo</strong> que centraliza reservas de transfer, grupos, motoristas, financeiro, campanhas, leads, contratos e geolocalização em tempo real — com automações e presença digital profissional.</div>
+          </details>
+          <details>
+            <summary>A plataforma funciona como sistema para transfer?</summary>
+            <div class="lp-faq__body">Sim. O fluxo cobre solicitações, reservas confirmadas, contratos PDF, comunicação e links de rastreio — um <strong>sistema para transfer</strong> completo, alinhado a aeroporto, hotel e corporativo.</div>
+          </details>
+          <details>
+            <summary>É indicado para transporte corporativo e eventos?</summary>
+            <div class="lp-faq__body">Sim. Há módulos dedicados a grupos, contratos específicos, receptivos para agências/hotéis e captação de leads — ideal para <strong>transporte corporativo</strong> e operações em volume.</div>
+          </details>
+          <details>
+            <summary>Como funciona o software para motoristas executivos?</summary>
+            <div class="lp-faq__body">Cadastro de motoristas e frota, documentação, candidaturas e portal do motorista (plano PRÓ). O operador mantém governança; o motorista ganha fluxo digital sem depender de planilhas.</div>
+          </details>
+          <details>
+            <summary>O que inclui a geolocalização em tempo real?</summary>
+            <div class="lp-faq__body">Geração de links públicos de rastreamento para o passageiro acompanhar a viagem — recurso-chave para padrão executivo e confiança do cliente corporativo.</div>
+          </details>
+          <details>
+            <summary>Como solicitar acesso gratuito?</summary>
+            <div class="lp-faq__body">Clique em <strong>Solicitar Acesso Gratuito</strong>, informe nome, e-mail, telefone e cidade. Nossa equipe avalia sua operação e retorna com o fluxo de implantação — sem compromisso inicial.</div>
+          </details>
+          <details>
+            <summary>A plataforma substitui meu site institucional?</summary>
+            <div class="lp-faq__body">O módulo Website (PRÓ) produz o site do operador com domínio próprio, integrado a formulários que alimentam solicitações e leads. A E-Transporte.pro é o painel de gestão; seu site é a vitrine comercial.</div>
+          </details>
+          <details>
+            <summary>Quais planos existem (FREE, STANDART, PRÓ)?</summary>
+            <div class="lp-faq__body">Há níveis com limites e recursos progressivos: contratos e campanhas no STANDART+; solicitações avançadas, domínio, automações e e-mail business no PRÓ. Na solicitação de acesso, indicamos o melhor fit para seu estágio.</div>
+          </details>
+        </div>
+        <div class="lp-cta-band lp-cta-band--inline">
+          <h3>Ainda com dúvida? Solicite acesso e veja na prática.</h3>
+          <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="lp-section" aria-labelledby="cta-final-title">
+      <div class="container lp-reveal">
+        <div class="lp-cta-band">
+          <h2 id="cta-final-title">Sua operação executiva merece infraestrutura de plataforma — não improviso</h2>
+          <p>Junte reservas, motoristas, automação e escala nacional. <strong>Acesso gratuito</strong> para avaliação — vagas limitadas por rodada de onboarding.</p>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary" data-open-lead-modal>Solicitar Acesso Gratuito</button>
+            <a class="btn btn--ghost" href="https://app.e-transporte.pro/login">Já sou cliente — Entrar</a>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="container footer__grid">
-      <div>
-        <p class="brand">E-Transporte<span>.pro</span></p>
-        <p>Site institucional da plataforma de gestão para motorista executivo, com foco em operação, automação, marketing e governança.</p>
-        <p>© <span data-year></span> E-Transporte.pro</p>
+  <!-- 10. Rodapé -->
+  <footer class="lp-footer">
+    <div class="container">
+      <div class="lp-footer__grid">
+        <div class="lp-footer__brand">
+          <p class="brand">E-Transporte<span>.pro</span></p>
+          <p>Plataforma nacional de gestão para transporte executivo, transfer e transporte corporativo. Tecnologia, automação e confiança para escalar sua operação.</p>
+        </div>
+        <div>
+          <h3>Plataforma</h3>
+          <ul>
+            <li><a href="/#funcionalidades">Funcionalidades</a></li>
+            <li><a href="/#como-funciona">Como funciona</a></li>
+            <li><a href="/funcionalidades.html">Catálogo completo</a></li>
+            <li><a href="/modulos.html">Módulos</a></li>
+            <li><a href="/seguranca.html">Segurança</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Conteúdo</h3>
+          <ul>
+            <li><a href="/blog.html">Blog SEO</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+            <li><a href="/blog-operacao-transfer.html">Fluxo Transfer</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Contato</h3>
+          <ul>
+            <li><a href="/contato.html">Contato comercial</a></li>
+            <li><a href="mailto:contato@e-transporte.pro">contato@e-transporte.pro</a></li>
+            <li><a href="/contato.html">WhatsApp</a></li>
+            <li><a href="https://www.instagram.com/e_transporte.pro/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+            <li><a href="https://app.e-transporte.pro/login">Login do painel</a></li>
+            <li><a href="https://e-transporte.pro/termos">Termos de uso</a></li>
+            <li><a href="https://e-transporte.pro/privacidade">Privacidade (LGPD)</a></li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <ul>
-          <li><a href="/funcionalidades.html">Funcionalidades</a></li>
-          <li><a href="/modulos.html">Módulos</a></li>
-          <li><a href="/seguranca.html">Segurança e acesso</a></li>
-          <li><a href="/blog.html">Blog e conteúdo</a></li>
-        </ul>
-      </div>
-      <div>
-        <ul>
-          <li><a href="/contato.html">Contato comercial</a></li>
-          <li><a href="mailto:contato@e-transporte.pro">contato@e-transporte.pro</a></li>
-          <li><a href="https://e-transporte.pro/termos">Termos</a></li>
-          <li><a href="https://e-transporte.pro/privacidade">Privacidade</a></li>
-        </ul>
+      <div class="lp-footer__bottom">
+        <span>© <span data-year></span> E-Transporte.pro — Todos os direitos reservados.</span>
+        <span>Plataforma para transporte executivo · Brasil</span>
       </div>
     </div>
   </footer>
 
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
+  <script src="/js/landing.js" defer></script>
 </body>
 </html>
