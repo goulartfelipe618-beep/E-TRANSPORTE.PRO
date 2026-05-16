@@ -7,7 +7,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, NAV, FOOTER_COLS, LOCAL_PAGES } from "./site-config.mjs";
 import { registerLegacyPages, buildBlogFiles } from "./legacy-and-blog.mjs";
-import { CRITICAL_HEADER_STYLE, asyncStylesheet } from "./critical-css.mjs";
+import { CRITICAL_HEADER_STYLE, deferredSiteStyles } from "./critical-css.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -169,18 +169,8 @@ function head(page) {
   <meta name="twitter:description" content="${esc(page.description)}" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   ${CRITICAL_HEADER_STYLE}
-  <link rel="preload" href="/css/institucional.css" as="style" />
-  <link rel="preload" href="/css/landing.css" as="style" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="/css/institucional.css" />
-  <link rel="stylesheet" href="/css/landing.css" />
-  ${asyncStylesheet("/css/page.css")}
+  ${deferredSiteStyles({ page: true, blog: false })}
 </head>`;
 }
 

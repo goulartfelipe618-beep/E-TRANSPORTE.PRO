@@ -1,6 +1,12 @@
 (function () {
   "use strict";
 
+  var leadModalInjected = false;
+
+  function injectLeadModalAssets() {
+    if (leadModalInjected) return;
+    leadModalInjected = true;
+
   if (!document.querySelector("link[data-lead-modal-css]")) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
@@ -97,10 +103,22 @@
     if (first) document.body.appendChild(first);
   }
 
+    window.dispatchEvent(new CustomEvent("lead-modal-ready"));
+  }
+
+  function scheduleLeadModal() {
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(injectLeadModalAssets, { timeout: 5000 });
+    } else {
+      window.setTimeout(injectLeadModalAssets, 2000);
+    }
+  }
+
   document.addEventListener(
     "click",
     function (e) {
       if (!e.target.closest("[data-open-lead-modal]")) return;
+      injectLeadModalAssets();
       var nav = document.querySelector("[data-nav]");
       var nt = document.querySelector("[data-nav-toggle]");
       if (nav) nav.classList.remove("is-open");
@@ -122,4 +140,6 @@
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
     });
   }
+
+  scheduleLeadModal();
 })();

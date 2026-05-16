@@ -2,7 +2,7 @@
   "use strict";
 
   /* Modal lead + IBGE (estado → municípios) */
-  (function initLeadModal() {
+  function initLeadModal() {
     var root = document.querySelector("[data-lead-modal]");
     if (!root) return;
 
@@ -520,6 +520,12 @@
           });
       });
     }
-  })();
+  }
+
+  if (document.querySelector("[data-lead-modal]")) {
+    initLeadModal();
+  } else {
+    window.addEventListener("lead-modal-ready", initLeadModal, { once: true });
+  }
 
 })();

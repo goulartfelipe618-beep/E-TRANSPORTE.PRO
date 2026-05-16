@@ -25,15 +25,21 @@
     setStickyVisible(true);
   }
 
-  var reveals = document.querySelectorAll(".lp-reveal");
-  if (reveals.length && "IntersectionObserver" in window) {
+  function initReveals() {
+    var reveals = document.querySelectorAll(".lp-reveal");
+    if (!reveals.length) return;
+    if (!("IntersectionObserver" in window)) {
+      reveals.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
     var revealIo = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            revealIo.unobserve(entry.target);
-          }
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          revealIo.unobserve(entry.target);
         });
       },
       { root: null, threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
@@ -41,9 +47,11 @@
     reveals.forEach(function (el) {
       revealIo.observe(el);
     });
+  }
+
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(initReveals, { timeout: 3000 });
   } else {
-    reveals.forEach(function (el) {
-      el.classList.add("is-visible");
-    });
+    window.requestAnimationFrame(initReveals);
   }
 })();

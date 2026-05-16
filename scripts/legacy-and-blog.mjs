@@ -1,6 +1,6 @@
 /** Páginas legadas + blog — alinhamento ao shell premium */
 import { SITE, NAV, FOOTER_COLS } from "./site-config.mjs";
-import { asyncStylesheet } from "./critical-css.mjs";
+import { deferredSiteStyles } from "./critical-css.mjs";
 
 export function registerLegacyPages(addPage, { hero, sectionBlock }) {
   addPage({
@@ -203,8 +203,8 @@ export function buildBlogFiles(ctx) {
   };
 
   const listingHead = head(listingPage).replace(
-    "</head>",
-    `  ${asyncStylesheet("/css/blog.css")}\n</head>`
+    deferredSiteStyles({ page: true, blog: false }),
+    deferredSiteStyles({ page: true, blog: true })
   );
   const blogListing = `${listingHead}
 <body class="lp-page blog-page">
@@ -293,8 +293,8 @@ export function buildBlogFiles(ctx) {
       ogType: "article",
     };
     const pageHead = head(page).replace(
-      "</head>",
-      `  ${asyncStylesheet("/css/blog.css")}\n</head>`
+      deferredSiteStyles({ page: true, blog: false }),
+      deferredSiteStyles({ page: true, blog: true })
     );
     const html = `${pageHead}
 <body class="lp-page blog-page">
