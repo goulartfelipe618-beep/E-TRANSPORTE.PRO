@@ -1,0 +1,159 @@
+/* Páginas internas — premium SaaS */
+.page-inner main {
+  padding-bottom: 48px;
+}
+
+.breadcrumb {
+  padding: 16px 0 0;
+  font-size: 0.8rem;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "/";
+  margin-left: 10px;
+  opacity: 0.5;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+}
+
+.breadcrumb a:hover {
+  color: var(--accent-strong);
+}
+
+.page-article {
+  padding-bottom: 24px;
+}
+
+.page-hero {
+  padding: clamp(32px, 6vw, 56px) 0 clamp(24px, 4vw, 40px);
+  max-width: 48rem;
+}
+
+.page-hero h1 {
+  font-size: clamp(1.75rem, 4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.page-hero__lead,
+.page-lead {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.page-section {
+  padding: clamp(32px, 5vw, 48px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.page-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.page-section p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0 0 12px;
+}
+
+.page-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.page-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+.page-list strong {
+  color: var(--text);
+}
+
+.page-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.page-card {
+  display: block;
+  padding: 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.page-card:hover {
+  border-color: rgba(232, 163, 23, 0.35);
+  transform: translateY(-2px);
+  color: inherit;
+}
+
+.page-card h3 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.page-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.page-cta {
+  margin: 48px auto 0;
+  max-width: var(--maxw);
+  text-align: center;
+}
+
+.page-cta h2 {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.page-faq {
+  max-width: 52rem;
+}
+
+.page-section code {
+  font-size: 0.85em;
+  color: var(--accent);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 6px;
+  border-radius: 4px;
+}

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/build-pages.mjs && vite build",
     "deploy:gh-pages": "powershell -ExecutionPolicy Bypass -File scripts\\deploy-gh-pages.ps1 -RemoteName e-transporte -BranchName gh-pages",
     "preview": "vite preview",
     "test:carousel": "node scripts/test-carousel.mjs"

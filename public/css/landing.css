@@ -377,7 +377,15 @@
   background: var(--card);
   font-size: 0.88rem;
   font-weight: 500;
+}
+
+.lp-services li a {
   color: var(--text);
+  text-decoration: none;
+}
+
+.lp-services li a:hover {
+  color: var(--accent-strong);
 }
 
 /* Fluxos ponta a ponta */
