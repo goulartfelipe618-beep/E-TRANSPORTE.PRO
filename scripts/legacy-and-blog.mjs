@@ -1,5 +1,6 @@
 /** Páginas legadas + blog — alinhamento ao shell premium */
 import { SITE, NAV, FOOTER_COLS } from "./site-config.mjs";
+import { asyncStylesheet } from "./critical-css.mjs";
 
 export function registerLegacyPages(addPage, { hero, sectionBlock }) {
   addPage({
@@ -203,7 +204,7 @@ export function buildBlogFiles(ctx) {
 
   const listingHead = head(listingPage).replace(
     "</head>",
-    '  <link rel="stylesheet" href="/css/blog.css" />\n</head>'
+    `  ${asyncStylesheet("/css/blog.css")}\n</head>`
   );
   const blogListing = `${listingHead}
 <body class="lp-page blog-page">
@@ -268,6 +269,7 @@ export function buildBlogFiles(ctx) {
     </div>
   </main>
   ${footer()}
+  <script type="application/ld+json">${buildSchemas(listingPage)}</script>
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/seo.js" defer></script>
@@ -292,7 +294,7 @@ export function buildBlogFiles(ctx) {
     };
     const pageHead = head(page).replace(
       "</head>",
-      '  <link rel="stylesheet" href="/css/blog.css" />\n</head>'
+      `  ${asyncStylesheet("/css/blog.css")}\n</head>`
     );
     const html = `${pageHead}
 <body class="lp-page blog-page">
@@ -322,6 +324,7 @@ export function buildBlogFiles(ctx) {
     </article>
   </main>
   ${footer()}
+  <script type="application/ld+json">${buildSchemas(page)}</script>
   <script src="/js/site.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/seo.js" defer></script>

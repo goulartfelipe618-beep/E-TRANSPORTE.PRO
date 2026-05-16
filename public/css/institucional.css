@@ -123,7 +123,10 @@ img {
   min-width: 172px;
   height: 44px;
   white-space: nowrap;
-  color: #ffffff;
+  background: #c89b3c;
+  color: #111111;
+  border-color: #a67f2f;
+  font-weight: 700;
 }
 
 .menu button.menu__cta {
@@ -134,7 +137,8 @@ img {
 
 .menu .menu__cta:hover,
 .menu .menu__cta:focus-visible {
-  color: #ffffff;
+  background: #d4a84a;
+  color: #111111;
 }
 
 .menu a:hover,
