@@ -7,7 +7,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, NAV, FOOTER_COLS, LOCAL_PAGES } from "./site-config.mjs";
 import { registerLegacyPages, buildBlogFiles } from "./legacy-and-blog.mjs";
-import { CRITICAL_HEADER_STYLE, deferredSiteStyles } from "./critical-css.mjs";
+import { CRITICAL_HEADER_STYLE, siteStyles } from "./critical-css.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -170,7 +170,7 @@ function head(page) {
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   ${CRITICAL_HEADER_STYLE}
-  ${deferredSiteStyles({ page: true, blog: false })}
+  ${siteStyles({ page: true, blog: false })}
 </head>`;
 }
 

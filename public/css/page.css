@@ -1,4 +1,9 @@
 /* Páginas internas — premium SaaS */
+.page-inner .lp-reveal {
+  opacity: 1;
+  transform: none;
+}
+
 .page-inner main {
   padding-bottom: 48px;
 }
