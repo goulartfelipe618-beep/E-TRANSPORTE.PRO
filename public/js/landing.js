@@ -49,7 +49,9 @@
     });
   }
 
-  if ("requestIdleCallback" in window) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    initReveals();
+  } else if ("requestIdleCallback" in window) {
     requestIdleCallback(initReveals, { timeout: 3000 });
   } else {
     window.requestAnimationFrame(initReveals);

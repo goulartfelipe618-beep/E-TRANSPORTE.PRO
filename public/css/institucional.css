@@ -493,12 +493,12 @@ td {
 
   .mobile-toggle {
     display: inline-flex;
-    color: #000000;
+    color: var(--text);
   }
 
   .mobile-toggle:hover,
   .mobile-toggle:focus-visible {
-    color: #000000;
+    color: var(--text);
     border-color: rgba(232, 163, 23, 0.55);
   }
 

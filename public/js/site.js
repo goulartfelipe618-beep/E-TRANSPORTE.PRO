@@ -104,23 +104,27 @@
     window.dispatchEvent(new CustomEvent("lead-modal-ready"));
   }
 
-  function scheduleLeadModal() {
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(injectLeadModalAssets, { timeout: 5000 });
-    } else {
-      window.setTimeout(injectLeadModalAssets, 2000);
-    }
+  function closeMobileMenu() {
+    var menu = document.querySelector("[data-nav]");
+    var toggle = document.querySelector("[data-nav-toggle]");
+    if (menu) menu.classList.remove("is-open");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
   }
 
   document.addEventListener(
     "click",
     function (e) {
-      if (!e.target.closest("[data-open-lead-modal]")) return;
-      injectLeadModalAssets();
-      var nav = document.querySelector("[data-nav]");
-      var nt = document.querySelector("[data-nav-toggle]");
-      if (nav) nav.classList.remove("is-open");
-      if (nt) nt.setAttribute("aria-expanded", "false");
+      if (e.target.closest("[data-open-lead-modal]")) {
+        injectLeadModalAssets();
+        closeMobileMenu();
+        return;
+      }
+      if (e.target.closest("[data-nav-toggle]")) return;
+      var menu = document.querySelector("[data-nav]");
+      if (menu && menu.classList.contains("is-open") && !e.target.closest("[data-nav]")) {
+        closeMobileMenu();
+      }
     },
     true
   );
@@ -133,11 +137,22 @@
   var toggle = document.querySelector("[data-nav-toggle]");
   var menu = document.querySelector("[data-nav]");
   if (toggle && menu) {
-    toggle.addEventListener("click", function () {
-      var open = menu.classList.toggle("is-open");
+    toggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = !menu.classList.contains("is-open");
+      menu.classList.toggle("is-open", open);
+      document.body.classList.toggle("menu-open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    menu.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        closeMobileMenu();
+      });
     });
   }
 
-  scheduleLeadModal();
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeMobileMenu();
+  });
 })();
